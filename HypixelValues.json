@@ -1,0 +1,3710 @@
+{   
+    "Enchantments" : {
+        "armor" :{
+            "growth" : {
+                "0" : 0,
+                "1" : 15,
+                "2" : 30,
+                "3" : 45,
+                "4" : 60,
+                "5" : 75,
+                "6" : 90,
+                "7" : 105
+            },
+            "protection" : {
+                "0" : 0,
+                "1" : 4,
+                "2" : 8,
+                "3" : 12,
+                "4" : 16,
+                "5" : 20,
+                "6" : 25,
+                "7" : 30
+            },
+            "ultimate_wisdom" : {
+                "0" : 0,
+                "1" : 20,
+                "2" : 40,
+                "3" : 60,
+                "4" : 80,
+                "5" : 100
+            }
+        },
+        "helmet" : {
+            "big_brain" : {
+
+            }
+        },
+        "chestplate" : {
+            "true_protection" : {
+
+            }
+        },
+        "leggings" : {
+            "smarty_pants" : {
+
+            }
+        },
+        "boots" : {
+            "sugar_rush" : {
+
+            }
+        },
+        "sword" : {
+            "sharpness" : {
+                "0" : 0,
+                "1" : 5,
+                "2" : 10,
+                "3" : 15,
+                "4" : 20,
+                "5" : 30,
+                "6" : 45,
+                "7" : 65
+            },
+            "smite" : {
+                "0" : 0,
+                "1" : 10,
+                "2" : 20,
+                "3" : 30,
+                "4" : 40,
+                "5" : 60,
+                "6" : 80,
+                "7" : 100
+            },
+            "bane_of_arthropods" : {
+                "0" : 0,
+                "1" : 10,
+                "2" : 20,
+                "3" : 30,
+                "4" : 40,
+                "5" : 60,
+                "6" : 80,
+                "7" : 100
+            },
+            "critical" : {
+                "0" : 0,
+                "1" : 10,
+                "2" : 20,
+                "3" : 30,
+                "4" : 40,
+                "5" : 50,
+                "6" : 70,
+                "7" : 100
+            },
+            "ender_slayer" : {
+                "0" : 0,
+                "1" : 15,
+                "2" : 30,
+                "3" : 45,
+                "4" : 60,
+                "5" : 80,
+                "6" : 100,
+                "7" : 130
+            },
+            "cubism" : {
+                "0" : 0,
+                "1" : 10,
+                "2" : 20,
+                "3" : 30,
+                "4" : 40,
+                "5" : 60,
+                "6" : 80
+            },
+            "impaling" : {
+                "0" : 0,
+                "1" : 25,
+                "2" : 50,
+                "3" : 75
+            },
+            "first_strike" : {
+                "0" : 0,
+                "1" : 25,
+                "2" : 50,
+                "3" : 75,
+                "4" : 100,
+                "5" : 125
+            },
+            "triple_strike" : {
+                "0" : 0,
+                "1" : 10,
+                "2" : 20,
+                "3" : 30,
+                "4" : 40,
+                "5" : 50
+            },
+            "giant_killer" : {
+                "0" : 0,
+                "1" : 0.1,
+                "2" : 0.2,
+                "3" : 0.3,
+                "4" : 0.4,
+                "5" : 0.6,
+                "6" : 0.9,
+                "7" : 1.2
+            },
+            "prosecute" : {
+                "0" : 0,
+                "1" : 0.1,
+                "2" : 0.2,
+                "3" : 0.3,
+                "4" : 0.4,
+                "5" : 0.7,
+                "6" : 1
+            },
+            "dragon_hunter" : {
+                "0" : 0,
+                "1" : 8,
+                "2" : 16,
+                "3" : 24,
+                "4" : 32,
+                "5" : 40
+            }
+        },
+        "bow" : {
+            "cubism" : {
+
+            },
+            "dragon_hunter" : {
+
+            },
+            "flame" : {
+
+            },
+            "impaling" : {
+
+            },
+            "piercing" : {
+
+            },
+            "overload" : {
+
+            },
+            "power" : {
+
+            },
+            "snipe" : {
+
+            }
+        }
+    },
+    "Reforge" : {
+        "armor" : {
+            "clean" : {
+                "COMMON" : {
+                    "HEALTH" : 5,
+                    "DEFENSE" : 5,
+                    "CRITICAL_CHANCE" : 2
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "CRITICAL_CHANCE" : 4
+                },
+                "RARE" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10,
+                    "CRITICAL_CHANCE" : 6
+                },
+                "EPIC" : {
+                    "HEALTH" : 15,
+                    "DEFENSE" : 15,
+                    "CRITICAL_CHANCE" : 8
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 20,
+                    "DEFENSE" : 20,
+                    "CRITICAL_CHANCE" : 10
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 25,
+                    "DEFENSE" : 25,
+                    "CRITICAL_CHANCE" : 12
+                }
+                
+            },
+            "fierce" : {
+                "COMMON" : {
+                    "STRENGTH": 2,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 4
+    
+                },
+                "UNCOMMON" : {
+                    "STRENGTH": 4,
+                    "CRITICAL_CHANCE" : 3,
+                    "CRITICAL_DAMAGE" : 7
+                },
+                "RARE" : {
+                    "STRENGTH": 6,
+                    "CRITICAL_CHANCE" : 4,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "EPIC" : {
+                    "STRENGTH": 8,
+                    "CRITICAL_CHANCE" : 5,
+                    "CRITICAL_DAMAGE" : 14
+                },
+                "LEGENDARY" : {
+                    "STRENGTH": 10,
+                    "CRITICAL_CHANCE" : 6,
+                    "CRITICAL_DAMAGE" : 18
+                },
+                "MYTHIC" : {
+                    "STRENGTH": 12,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 24
+                }
+            },
+            "heavy" : {
+                "COMMON" : {
+                    "DEFENSE": 25,
+                    "SPEED" : -1,
+                    "CRITICAL_DAMAGE" : -1
+    
+                },
+                "UNCOMMON" : {
+                    "DEFENSE": 35,
+                    "SPEED" : -1,
+                    "CRITICAL_DAMAGE" : -2
+                },
+                "RARE" : {
+                    "DEFENSE": 50,
+                    "SPEED" : 2,
+                    "CRITICAL_DAMAGE" : -3
+                },
+                "EPIC" : {
+                    "DEFENSE": 65,
+                    "SPEED" : -1,
+                    "CRITICAL_DAMAGE" : -4
+                },
+                "LEGENDARY" : {
+                    "DEFENSE": 80,
+                    "SPEED" : -1,
+                    "CRITICAL_DAMAGE" : -5
+                },
+                "MYTHIC" : {
+                    "DEFENSE": 110,
+                    "SPEED" : -1,
+                    "CRITICAL_DAMAGE" : -7
+                }
+            },
+            "light" : {
+                "COMMON" : {
+                    "HEALTH" : 5,
+                    "DEFENSE": 1,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 1,
+                    "ATTACK_SPEED" : 1
+    
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 7,
+                    "DEFENSE": 2,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 2,
+                    "ATTACK_SPEED" : 2
+                },
+                "RARE" : {
+                    "HEALTH" : 10,
+                    "DEFENSE": 3,
+                    "SPEED" : 3,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 3,
+                    "ATTACK_SPEED" : 3
+                },
+                "EPIC" : {
+                    "HEALTH" : 15,
+                    "DEFENSE": 4,
+                    "SPEED" : 4,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 4,
+                    "ATTACK_SPEED" : 4
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 20,
+                    "DEFENSE": 5,
+                    "SPEED" : 5,
+                    "CRITICAL_CHANCE" : 3,
+                    "CRITICAL_DAMAGE" : 5,
+                    "ATTACK_SPEED" : 5
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 20,
+                    "DEFENSE": 6,
+                    "SPEED" : 6,
+                    "CRITICAL_CHANCE" : 3,
+                    "CRITICAL_DAMAGE" : 6,
+                    "ATTACK_SPEED" : 6
+                }
+            },
+            "mythic" : {
+                "COMMON" : {
+                    "HEALTH" : 2,
+                    "DEFENSE": 2,
+                    "STRENGTH" : 2,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 1,
+                    "INTELLIGENCE" : 20
+    
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 4,
+                    "DEFENSE": 4,
+                    "STRENGTH" : 4,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 2,
+                    "INTELLIGENCE" : 25
+                },
+                "RARE" : {
+                    "HEALTH" : 6,
+                    "DEFENSE": 6,
+                    "STRENGTH" : 6,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 3,
+                    "INTELLIGENCE" : 30
+                },
+                "EPIC" : {
+                    "HEALTH" : 8,
+                    "DEFENSE": 8,
+                    "STRENGTH" : 8,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 4,
+                    "INTELLIGENCE" : 40
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 10,
+                    "DEFENSE": 10,
+                    "STRENGTH" : 10,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 5,
+                    "INTELLIGENCE" : 50
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 12,
+                    "DEFENSE": 12,
+                    "STRENGTH" : 12,
+                    "SPEED" : 2,
+                    "CRITICAL_CHANCE" : 6,
+                    "INTELLIGENCE" : 60
+                }
+            },
+            "pure" : {
+                "COMMON" : {
+                    "HEALTH" : 2,
+                    "DEFENSE": 2,
+                    "STRENGTH" : 2,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 2,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 2
+    
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 3,
+                    "DEFENSE": 3,
+                    "STRENGTH" : 3,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 4,
+                    "CRITICAL_DAMAGE" : 3,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 3
+                },
+                "RARE" : {
+                    "HEALTH" : 4,
+                    "DEFENSE": 4,
+                    "STRENGTH" : 4,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 6,
+                    "CRITICAL_DAMAGE" : 4,
+                    "ATTACK_SPEED" : 2,
+                    "INTELLIGENCE" : 4
+                },
+                "EPIC" : {
+                    "HEALTH" : 6,
+                    "DEFENSE": 6,
+                    "STRENGTH" : 6,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 6,
+                    "ATTACK_SPEED" : 3,
+                    "INTELLIGENCE" : 6
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 8,
+                    "DEFENSE": 8,
+                    "STRENGTH" : 8,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 8,
+                    "ATTACK_SPEED" : 4,
+                    "INTELLIGENCE" : 8
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 10,
+                    "DEFENSE": 10,
+                    "STRENGTH" : 10,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 8,
+                    "ATTACK_SPEED" : 5,
+                    "INTELLIGENCE" : 10
+                }
+            },
+            "smart" : {
+                "COMMON" : {
+                    "HEALTH": 4,
+                    "DEFENSE" : 4,
+                    "INTELLIGENCE" : 20
+    
+                },
+                "UNCOMMON" : {
+                    "HEALTH": 6,
+                    "DEFENSE" : 6,
+                    "INTELLIGENCE" : 40
+                },
+                "RARE" : {
+                    "HEALTH": 9,
+                    "DEFENSE" : 9,
+                    "INTELLIGENCE" : 60
+                },
+                "EPIC" : {
+                    "HEALTH": 12,
+                    "DEFENSE" : 12,
+                    "INTELLIGENCE" : 80
+                },
+                "LEGENDARY" : {
+                    "HEALTH": 15,
+                    "DEFENSE" : 15,
+                    "INTELLIGENCE" : 100
+                },
+                "MYTHIC" : {
+                    "HEALTH": 20,
+                    "DEFENSE" : 20,
+                    "INTELLIGENCE" : 120
+                }
+            },
+            "titanic" : {
+                "COMMON" : {
+                    "HEALTH": 10,
+                    "DEFENSE" : 10
+                },
+                "UNCOMMON" : {
+                    "HEALTH": 15,
+                    "DEFENSE" : 15
+                },
+                "RARE" : {
+                    "HEALTH": 20,
+                    "DEFENSE" : 20
+                },
+                "EPIC" : {
+                    "HEALTH": 25,
+                    "DEFENSE" : 25
+                },
+                "LEGENDARY" : {
+                    "HEALTH": 35,
+                    "DEFENSE" : 35
+                },
+                "MYTHIC" : {
+                    "HEALTH": 50,
+                    "DEFENSE" : 50
+                }
+            },
+            "wise" : {
+                "COMMON" : {
+                    "HEALTH": 6,
+                    "SPEED" : 1,
+                    "INTELLIGENCE" : 25
+                },
+                "UNCOMMON" : {
+                    "HEALTH": 8,
+                    "SPEED" : 1,
+                    "INTELLIGENCE" : 50
+                },
+                "RARE" : {
+                    "HEALTH": 10,
+                    "SPEED" : 1,
+                    "INTELLIGENCE" : 75
+                },
+                "EPIC" : {
+                    "HEALTH": 12,
+                    "SPEED" : 2,
+                    "INTELLIGENCE" : 100
+                },
+                "LEGENDARY" : {
+                    "HEALTH": 15,
+                    "SPEED" : 2,
+                    "INTELLIGENCE" : 125
+                },
+                "MYTHIC" : {
+                    "HEALTH": 20,
+                    "SPEED" : 2,
+                    "INTELLIGENCE" : 150
+                }
+            },
+            "perfect" : {
+                "COMMON" : {
+                    "DEFENSE" : 25
+                },
+                "UNCOMMON" : {
+                    "DEFENSE" : 35
+                },
+                "RARE" : {
+                    "DEFENSE" : 50
+                },
+                "EPIC" : {
+                    "DEFENSE" : 65
+                },
+                "LEGENDARY" : {
+                    "DEFENSE" : 80
+                },
+                "MYTHIC" : {
+                    "DEFENSE" : 110
+                }
+            },
+            "necrotic" : {
+                "COMMON" : {
+                    "INTELLIGENCE" : 30
+                },
+                "UNCOMMON" : {
+                    "INTELLIGENCE" : 60
+                },
+                "RARE" : {
+                    "INTELLIGENCE" : 90
+                },
+                "EPIC" : {
+                    "INTELLIGENCE" : 120
+                },
+                "LEGENDARY" : {
+                    "INTELLIGENCE" : 150
+                },
+                "MYTHIC" : {
+                    "INTELLIGENCE" : 200
+                }
+            },
+            "ancient" : {
+                "COMMON" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 4,
+                    "CRITICAL_CHANCE" : 3,
+                    "INTELLIGENCE" : 6
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 8,
+                    "CRITICAL_CHANCE" : 5,
+                    "INTELLIGENCE" : 9
+                },
+                "RARE" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 7,
+                    "INTELLIGENCE" : 12
+                },
+                "EPIC" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 18,
+                    "CRITICAL_CHANCE" : 9,
+                    "INTELLIGENCE" : 16
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 25,
+                    "CRITICAL_CHANCE" : 12,
+                    "INTELLIGENCE" : 20
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 7,
+                    "DEFENSE" : 7,
+                    "STRENGTH" : 35,
+                    "CRITICAL_CHANCE" : 15,
+                    "INTELLIGENCE" : 25
+                }
+            },
+            "spiked" : {
+                "COMMON" : {
+                    "HEALTH" : 2,
+                    "DEFENSE" : 2,
+                    "STRENGTH" : 3,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 3,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 3
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 3,
+                    "DEFENSE" : 3,
+                    "STRENGTH" : 4,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 4,
+                    "CRITICAL_DAMAGE" : 4,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 4
+                },
+                "RARE" : {
+                    "HEALTH" : 4,
+                    "DEFENSE" : 4,
+                    "STRENGTH" : 6,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 6,
+                    "CRITICAL_DAMAGE" : 6,
+                    "ATTACK_SPEED" : 2,
+                    "INTELLIGENCE" : 6
+                },
+                "EPIC" : {
+                    "HEALTH" : 6,
+                    "DEFENSE" : 6,
+                    "STRENGTH" : 8,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 8,
+                    "ATTACK_SPEED" : 3,
+                    "INTELLIGENCE" : 8
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 8,
+                    "DEFENSE" : 8,
+                    "STRENGTH" : 10,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 10,
+                    "ATTACK_SPEED" : 4,
+                    "INTELLIGENCE" : 10
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10,
+                    "STRENGTH" : 12,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 12,
+                    "ATTACK_SPEED" : 5,
+                    "INTELLIGENCE" : 12
+                }
+            },
+            "renowned" : {
+                "COMMON" : {
+                    "HEALTH" : 2,
+                    "DEFENSE" : 2,
+                    "STRENGTH" : 3,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 3,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 3
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 3,
+                    "DEFENSE" : 3,
+                    "STRENGTH" : 4,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 4,
+                    "CRITICAL_DAMAGE" : 4,
+                    "ATTACK_SPEED" : 1,
+                    "INTELLIGENCE" : 4
+                },
+                "RARE" : {
+                    "HEALTH" : 4,
+                    "DEFENSE" : 4,
+                    "STRENGTH" : 6,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 6,
+                    "CRITICAL_DAMAGE" : 6,
+                    "ATTACK_SPEED" : 2,
+                    "INTELLIGENCE" : 6
+                },
+                "EPIC" : {
+                    "HEALTH" : 6,
+                    "DEFENSE" : 6,
+                    "STRENGTH" : 8,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 8,
+                    "ATTACK_SPEED" : 3,
+                    "INTELLIGENCE" : 8
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 8,
+                    "DEFENSE" : 8,
+                    "STRENGTH" : 10,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 10,
+                    "ATTACK_SPEED" : 4,
+                    "INTELLIGENCE" : 10
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10,
+                    "STRENGTH" : 12,
+                    "SPEED" : 1,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 12,
+                    "ATTACK_SPEED" : 5,
+                    "INTELLIGENCE" : 12
+                }
+            },
+            "cubic" : {
+                "COMMON" : {
+                    "HEALTH" : 3,
+                    "STRENGTH" : 5
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 5,
+                    "STRENGTH" : 7
+                },
+                "RARE" : {
+                    "HEALTH" : 7,
+                    "STRENGTH" : 10
+                },
+                "EPIC" : {
+                    "HEALTH" : 10,
+                    "STRENGTH" : 15
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 12,
+                    "STRENGTH" : 20
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 15,
+                    "STRENGTH" : 25
+                }
+            },
+            "hyper" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "ATTACK_SPEED" : 2,
+                    "SPEED" : 1
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 4,
+                    "ATTACK_SPEED" : 3,
+                    "SPEED" : 1
+                },
+                "RARE" : {
+                    "STRENGTH" : 6,
+                    "ATTACK_SPEED" : 4,
+                    "SPEED" : 2
+                },
+                "EPIC" : {
+                    "STRENGTH" : 7,
+                    "ATTACK_SPEED" : 5,
+                    "SPEED" : 2
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 10,
+                    "ATTACK_SPEED" : 6,
+                    "SPEED" : 3
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 12,
+                    "ATTACK_SPEED" : 7,
+                    "SPEED" : 3
+                }
+            },
+            "loving" : {
+                "COMMON" : {
+                    "HEALTH" : 4,
+                    "DEFENSE" : 4,
+                    "INTELLIGENCE" : 20
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 5,
+                    "DEFENSE" : 5,
+                    "INTELLIGENCE" : 10
+                },
+                "RARE" : {
+                    "HEALTH" : 6,
+                    "DEFENSE" : 6,
+                    "INTELLIGENCE" : 60
+                },
+                "EPIC" : {
+                    "HEALTH" : 8,
+                    "DEFENSE" : 7,
+                    "INTELLIGENCE" : 80
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10,
+                    "INTELLIGENCE" : 100
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 14,
+                    "DEFENSE" : 14,
+                    "INTELLIGENCE" : 120
+                }
+            },
+            "ridiculous" : {
+                "COMMON" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10,
+                    "CRITICAL_CHANCE" : 1
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 15,
+                    "DEFENSE" : 15,
+                    "CRITICAL_CHANCE" : 2
+                },
+                "RARE" : {
+                    "HEALTH" : 20,
+                    "DEFENSE" : 20,
+                    "CRITICAL_CHANCE" : 3
+                },
+                "EPIC" : {
+                    "HEALTH" : 25,
+                    "DEFENSE" : 25,
+                    "CRITICAL_CHANCE" : 4
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 35,
+                    "DEFENSE" : 35,
+                    "CRITICAL_CHANCE" : 5
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 50,
+                    "DEFENSE" : 50,
+                    "CRITICAL_CHANCE" : 6
+                }
+            },
+            "empowered" : {
+                "COMMON" : {
+                    "HEALTH" : 10,
+                    "DEFENSE" : 10
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 15,
+                    "DEFENSE" : 15
+                },
+                "RARE" : {
+                    "HEALTH" : 20,
+                    "DEFENSE" : 20
+                },
+                "EPIC" : {
+                    "HEALTH" : 25,
+                    "DEFENSE" : 25
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 35,
+                    "DEFENSE" : 35
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 50,
+                    "DEFENSE" : 50
+                }
+            },
+            "giant" : {
+                "COMMON" : {
+                    "HEALTH" : 50
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 60
+                },
+                "RARE" : {
+                    "HEALTH" : 80
+                },
+                "EPIC" : {
+                    "HEALTH" : 120
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 180
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 240
+                }
+            },
+            "submerged" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 2
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 4
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 6
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 8
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 10
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 12
+                }
+            },
+            "reinforced" : {
+                "COMMON" : {
+                    "DEFENSE" : 25
+                },
+                "UNCOMMON" : {
+                    "DEFENSE" : 35
+                },
+                "RARE" : {
+                    "DEFENSE" : 50
+                },
+                "EPIC" : {
+                    "DEFENSE" : 65
+                },
+                "LEGENDARY" : {
+                    "DEFENSE" : 80
+                },
+                "MYTHIC" : {
+                    "DEFENSE" : 110
+                }
+            }
+        },
+        "equipment" : {
+            "waxed" : {
+                "COMMON" : {
+                    "HEALTH" : 5,
+                    "CRITICAL_CHANCE" : 2
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 6,
+                    "CRITICAL_CHANCE" : 3
+                },
+                "RARE" : {
+                    "HEALTH" : 8,
+                    "CRITICAL_CHANCE" : 4
+                },
+                "EPIC" : {
+                    "HEALTH" : 10,
+                    "CRITICAL_CHANCE" : 5
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 12,
+                    "CRITICAL_CHANCE" : 6
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 15,
+                    "CRITICAL_CHANCE" : 7
+                }
+            },
+            "fortified" : {
+                "COMMON" : {
+                    "DEFENSE" : 12
+                },
+                "UNCOMMON" : {
+                    "DEFENSE" : 14
+                },
+                "RARE" : {
+                    "DEFENSE" : 17
+                },
+                "EPIC" : {
+                    "DEFENSE" : 20
+                },
+                "LEGENDARY" : {
+                    "DEFENSE" : 25
+                },
+                "MYTHIC" : {
+                    "DEFENSE" : 30
+                }
+            },
+            "strengthened" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "DEFENSE" : 3
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 3,
+                    "DEFENSE" : 4
+                },
+                "RARE" : {
+                    "STRENGTH" : 4,
+                    "DEFENSE" : 5
+                },
+                "EPIC" : {
+                    "STRENGTH" : 5,
+                    "DEFENSE" : 6
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 6,
+                    "DEFENSE" : 8
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 7,
+                    "DEFENSE" : 10
+                }
+            },
+            "glistening" : {
+                "COMMON" : {
+                    "INTELLIGENCE" : 2
+                },
+                "UNCOMMON" : {
+                    "INTELLIGENCE" : 3
+                },
+                "RARE" : {
+                    "INTELLIGENCE" : 4
+                },
+                "EPIC" : {
+                    "INTELLIGENCE" : 5
+                },
+                "LEGENDARY" : {
+                    "INTELLIGENCE" : 6
+                },
+                "MYTHIC" : {
+                    "INTELLIGENCE" : 7
+                }
+            }
+        },
+        "sword" : {
+            "gentle" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "ATTACK_SPEED" : 8
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 5,
+                    "ATTACK_SPEED" : 10
+                },
+                "RARE" : {
+                    "STRENGTH" : 7,
+                    "ATTACK_SPEED" : 15
+                },
+                "EPIC" : {
+                    "STRENGTH" : 10,
+                    "ATTACK_SPEED" : 20
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 15,
+                    "ATTACK_SPEED" : 25
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 20,
+                    "ATTACK_SPEED" : 30
+                }
+            },
+            "odd" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 10,
+                    "INTELLIGENCE" : -5
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 15,
+                    "INTELLIGENCE" : -10
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 15,
+                    "INTELLIGENCE" : -18
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 20,
+                    "CRITICAL_DAMAGE" : 22,
+                    "INTELLIGENCE" : -32
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 30,
+                    "INTELLIGENCE" : -50
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 30,
+                    "CRITICAL_DAMAGE" : 40,
+                    "INTELLIGENCE" : -75
+                }
+            },
+            "fast" : {
+                "COMMON" : {
+                    "ATTACK_SPEED" : 10
+                },
+                "UNCOMMON" : {
+                    "ATTACK_SPEED" : 20
+                },
+                "RARE" : {
+                    "ATTACK_SPEED" : 30
+                },
+                "EPIC" : {
+                    "ATTACK_SPEED" : 40
+                },
+                "LEGENDARY" : {
+                    "ATTACK_SPEED" : 50
+                },
+                "MYTHIC" : {
+                    "ATTACK_SPEED" : 60
+                }
+            },
+            "fair" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 2,
+                    "INTELLIGENCE" : 2,
+                    "ATTACK_SPEED" : 2
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 3,
+                    "CRITICAL_DAMAGE" : 3,
+                    "INTELLIGENCE" : 3,
+                    "ATTACK_SPEED" : 3
+                },
+                "RARE" : {
+                    "STRENGTH" : 4,
+                    "CRITICAL_CHANCE" : 4,
+                    "CRITICAL_DAMAGE" : 4,
+                    "INTELLIGENCE" : 4,
+                    "ATTACK_SPEED" : 4
+                },
+                "EPIC" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 7,
+                    "CRITICAL_DAMAGE" : 7,
+                    "INTELLIGENCE" : 7,
+                    "ATTACK_SPEED" : 7
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 10,
+                    "INTELLIGENCE" : 10,
+                    "ATTACK_SPEED" : 10
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 12,
+                    "INTELLIGENCE" : 12,
+                    "ATTACK_SPEED" : 12
+                }
+            },
+            "epic" : {
+                "COMMON" : {
+                    "STRENGTH" : 15,
+                    "CRITICAL_DAMAGE" : 10,
+                    "ATTACK_SPEED" : 1
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 20,
+                    "CRITICAL_DAMAGE" : 15,
+                    "ATTACK_SPEED" : 2
+                },
+                "RARE" : {
+                    "STRENGTH" : 25,
+                    "CRITICAL_DAMAGE" : 20,
+                    "ATTACK_SPEED" : 4
+                },
+                "EPIC" : {
+                    "STRENGTH" : 32,
+                    "CRITICAL_DAMAGE" : 27,
+                    "ATTACK_SPEED" : 7
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 40,
+                    "CRITICAL_DAMAGE" : 35,
+                    "ATTACK_SPEED" : 10
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 50,
+                    "CRITICAL_DAMAGE" : 45,
+                    "ATTACK_SPEED" : 15
+                }
+            },
+            "sharp" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 20
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 30
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 14,
+                    "CRITICAL_DAMAGE" : 40
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 17,
+                    "CRITICAL_DAMAGE" : 55
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 20,
+                    "CRITICAL_DAMAGE" : 75
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 90
+                }
+            },
+            "heroic" : {
+                "COMMON" : {
+                    "STRENGTH" : 15,
+                    "INTELLIGENCE" : 40,
+                    "ATTACK_SPEED" : 1
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 20,
+                    "INTELLIGENCE" : 50,
+                    "ATTACK_SPEED" : 2
+                },
+                "RARE" : {
+                    "STRENGTH" : 25,
+                    "INTELLIGENCE" : 65,
+                    "ATTACK_SPEED" : 2
+                },
+                "EPIC" : {
+                    "STRENGTH" : 32,
+                    "INTELLIGENCE" : 80,
+                    "ATTACK_SPEED" : 3
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 40,
+                    "INTELLIGENCE" : 100,
+                    "ATTACK_SPEED" : 5
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 50,
+                    "INTELLIGENCE" : 125,
+                    "ATTACK_SPEED" : 7
+                }
+            },
+            "spicy" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 25,
+                    "ATTACK_SPEED" : 1
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 35,
+                    "ATTACK_SPEED" : 2
+                },
+                "RARE" : {
+                    "STRENGTH" : 4,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 45,
+                    "ATTACK_SPEED" : 4
+                },
+                "EPIC" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 60,
+                    "ATTACK_SPEED" : 7
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 80,
+                    "ATTACK_SPEED" : 10
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 100,
+                    "ATTACK_SPEED" : 15
+                }
+            },
+            "legendary" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 5,
+                    "CRITICAL_DAMAGE" : 5,
+                    "INTELLIGENCE" : 5,
+                    "ATTACK_SPEED" : 2
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 7,
+                    "CRITICAL_DAMAGE" : 10,
+                    "INTELLIGENCE" : 8,
+                    "ATTACK_SPEED" : 3
+                },
+                "RARE" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 9,
+                    "CRITICAL_DAMAGE" : 15,
+                    "INTELLIGENCE" : 12,
+                    "ATTACK_SPEED" : 5
+                },
+                "EPIC" : {
+                    "STRENGTH" : 18,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 22,
+                    "INTELLIGENCE" : 18,
+                    "ATTACK_SPEED" : 7
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 25,
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 28,
+                    "INTELLIGENCE" : 25,
+                    "ATTACK_SPEED" : 12
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 32,
+                    "CRITICAL_CHANCE" : 18,
+                    "CRITICAL_DAMAGE" : 36,
+                    "INTELLIGENCE" : 35,
+                    "ATTACK_SPEED" : 15
+                }
+            },
+            "dirty" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "ATTACK_SPEED" : 2,
+                    "FEROCITY" : 2
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 4,
+                    "ATTACK_SPEED" : 3,
+                    "FEROCITY" : 3
+                },
+                "RARE" : {
+                    "STRENGTH" : 6,
+                    "ATTACK_SPEED" : 5,
+                    "FEROCITY" : 6
+                },
+                "EPIC" : {
+                    "STRENGTH" : 10,
+                    "ATTACK_SPEED" : 10,
+                    "FEROCITY" : 9
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 12,
+                    "ATTACK_SPEED" : 15,
+                    "FEROCITY" : 12
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 15,
+                    "ATTACK_SPEED" : 20,
+                    "FEROCITY" : 15
+                }
+            },
+            "fabled" : {
+                "COMMON" : {
+                    "STRENGTH" : 30,
+                    "CRITICAL_DAMAGE" : 15
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 35,
+                    "CRITICAL_DAMAGE" : 20
+                },
+                "RARE" : {
+                    "STRENGTH" : 40,
+                    "CRITICAL_DAMAGE" : 25
+                },
+                "EPIC" : {
+                    "STRENGTH" : 50,
+                    "CRITICAL_DAMAGE" : 32
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 60,
+                    "CRITICAL_DAMAGE" : 40
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 75,
+                    "CRITICAL_DAMAGE" : 50
+                }
+            },
+            "suspicious" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 1,
+                    "CRITICAL_DAMAGE" : 30
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 2,
+                    "CRITICAL_DAMAGE" : 40
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 3,
+                    "CRITICAL_DAMAGE" : 50
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 5,
+                    "CRITICAL_DAMAGE" : 65
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 7,
+                    "CRITICAL_DAMAGE" : 85
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 110
+                }
+            },
+            "gilded" : {
+                "LEGENDARY" : {
+                    "DAMAGE" : 75,
+                    "STRENGTH" : 75
+                },
+                "MYTHIC" : {
+                    "DAMAGE" : 90,
+                    "STRENGTH" : 90
+                }
+            },
+            "warped" : {
+                "RARE" : {
+                    "DAMAGE" : 165,
+                    "STRENGTH" : 165
+                },
+                "EPIC" : {
+                    "DAMAGE" : 165,
+                    "STRENGTH" : 165
+                },
+                "LEGENDARY" : {
+                    "DAMAGE" : 165,
+                    "STRENGTH" : 165,
+                    "INTELLIGENCE" : 65
+                }
+            },
+            "withered" : {
+                "COMMON" : {
+                    "STRENGTH" : 60
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 75
+                },
+                "RARE" : {
+                    "STRENGTH" : 90
+                },
+                "EPIC" : {
+                    "STRENGTH" : 110
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 135
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 170
+                }
+            },
+            "bulky" : {
+                "COMMON" : {
+                    "HEALTH" : 4,
+                    "DEFENSE" : 2
+                },
+                "UNCOMMON" : {
+                    "HEALTH" : 6,
+                    "DEFENSE" : 3
+                },
+                "RARE" : {
+                    "HEALTH" : 9,
+                    "DEFENSE" : 5
+                },
+                "EPIC" : {
+                    "HEALTH" : 12,
+                    "DEFENSE" : 8
+                },
+                "LEGENDARY" : {
+                    "HEALTH" : 15,
+                    "DEFENSE" : 13
+                },
+                "MYTHIC" : {
+                    "HEALTH" : 20,
+                    "DEFENSE" : 21
+                }
+            }
+        },
+        "bow" : {
+            "deadly" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 5
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 13,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 16,
+                    "CRITICAL_DAMAGE" : 18
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 19,
+                    "CRITICAL_DAMAGE" : 32
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 22,
+                    "CRITICAL_DAMAGE" : 50
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 78
+                }
+            },
+            "fine" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 5,
+                    "CRITICAL_DAMAGE" : 2
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 7,
+                    "CRITICAL_DAMAGE" : 4
+                },
+                "RARE" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 9,
+                    "CRITICAL_DAMAGE" : 7
+                },
+                "EPIC" : {
+                    "STRENGTH" : 18,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 25,
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 15
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 33,
+                    "CRITICAL_CHANCE" : 18,
+                    "CRITICAL_DAMAGE" : 20
+                }
+            },
+            "grand" : {
+                "COMMON" : {
+                    "STRENGTH" : 25
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 32
+                },
+                "RARE" : {
+                    "STRENGTH" : 40
+                },
+                "EPIC" : {
+                    "STRENGTH" : 50
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 60
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 75
+                }
+            },
+            "hasty" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 20
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 5,
+                    "CRITICAL_CHANCE" : 25
+                },
+                "RARE" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 30
+                },
+                "EPIC" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_CHANCE" : 40
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 15,
+                    "CRITICAL_CHANCE" : 50
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 20,
+                    "CRITICAL_CHANCE" : 75
+                }
+            },
+            "neat" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 4,
+                    "INTELLIGENCE" : 3
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 8,
+                    "INTELLIGENCE" : 6
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 14,
+                    "CRITICAL_DAMAGE" : 14,
+                    "INTELLIGENCE" : 10
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 17,
+                    "CRITICAL_DAMAGE" : 20,
+                    "INTELLIGENCE" : 15
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 20,
+                    "CRITICAL_DAMAGE" : 30,
+                    "INTELLIGENCE" : 20
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 40,
+                    "INTELLIGENCE" : 25
+                }
+            },
+            "rapid" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "CRITICAL_DAMAGE" : 35
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_DAMAGE" : 45
+                },
+                "RARE" : {
+                    "STRENGTH" : 4,
+                    "CRITICAL_DAMAGE" : 55
+                },
+                "EPIC" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_DAMAGE" : 65
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_DAMAGE" : 75
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 15,
+                    "CRITICAL_DAMAGE" : 90
+                }
+            },
+            "unreal" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 18,
+                    "CRITICAL_DAMAGE" : 5
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 9,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "RARE" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 18
+                },
+                "EPIC" : {
+                    "STRENGTH" : 18,
+                    "CRITICAL_CHANCE" : 11,
+                    "CRITICAL_DAMAGE" : 32
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 25,
+                    "CRITICAL_CHANCE" : 13,
+                    "CRITICAL_DAMAGE" : 50
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 34,
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 70
+                }
+            },
+            "awkward" : {
+                "COMMON" : {
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 5,
+                    "INTELLIGENCE" : -5
+                },
+                "UNCOMMON" : {
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 10,
+                    "INTELLIGENCE" : -10
+                },
+                "RARE" : {
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 15,
+                    "INTELLIGENCE" : -18
+                },
+                "EPIC" : {
+                    "CRITICAL_CHANCE" : 20,
+                    "CRITICAL_DAMAGE" : 22,
+                    "INTELLIGENCE" : -32
+                },
+                "LEGENDARY" : {
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 30,
+                    "INTELLIGENCE" : -50
+                },
+                "MYTHIC" : {
+                    "CRITICAL_CHANCE" : 30,
+                    "CRITICAL_DAMAGE" : 35,
+                    "INTELLIGENCE" : -72
+                }
+            },
+            "rich" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 1,
+                    "INTELLIGENCE" : 20
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 2,
+                    "INTELLIGENCE" : 25
+                },
+                "RARE" : {
+                    "STRENGTH" : 4,
+                    "CRITICAL_CHANCE" : 14,
+                    "CRITICAL_DAMAGE" : 4,
+                    "INTELLIGENCE" : 30
+                },
+                "EPIC" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 17,
+                    "CRITICAL_DAMAGE" : 7,
+                    "INTELLIGENCE" : 40
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_CHANCE" : 20,
+                    "CRITICAL_DAMAGE" : 10,
+                    "INTELLIGENCE" : 50
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 15,
+                    "CRITICAL_CHANCE" : 25,
+                    "CRITICAL_DAMAGE" : 15,
+                    "INTELLIGENCE" : 60
+                }
+            },
+            "precise" : {
+                "COMMON" : {
+                    "STRENGTH" : 3,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 5
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 7,
+                    "CRITICAL_CHANCE" : 9,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "RARE" : {
+                    "STRENGTH" : 12,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 18
+                },
+                "EPIC" : {
+                    "STRENGTH" : 18,
+                    "CRITICAL_CHANCE" : 11,
+                    "CRITICAL_DAMAGE" : 32
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 25,
+                    "CRITICAL_CHANCE" : 13,
+                    "CRITICAL_DAMAGE" : 50
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 34,
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 70
+                }
+            },
+            "spiritual" : {
+                "COMMON" : {
+                    "STRENGTH" : 4,
+                    "CRITICAL_CHANCE" : 7,
+                    "CRITICAL_DAMAGE" : 10
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 8,
+                    "CRITICAL_CHANCE" : 8,
+                    "CRITICAL_DAMAGE" : 15
+                },
+                "RARE" : {
+                    "STRENGTH" : 14,
+                    "CRITICAL_CHANCE" : 9,
+                    "CRITICAL_DAMAGE" : 23
+                },
+                "EPIC" : {
+                    "STRENGTH" : 20,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 37
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 28,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 55
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 38,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 16
+                }
+            },
+            "headstrong" : {
+                "COMMON" : {
+                    "STRENGTH" : 2,
+                    "CRITICAL_CHANCE" : 10,
+                    "CRITICAL_DAMAGE" : 4
+                },
+                "UNCOMMON" : {
+                    "STRENGTH" : 5,
+                    "CRITICAL_CHANCE" : 11,
+                    "CRITICAL_DAMAGE" : 8
+                },
+                "RARE" : {
+                    "STRENGTH" : 10,
+                    "CRITICAL_CHANCE" : 12,
+                    "CRITICAL_DAMAGE" : 16
+                },
+                "EPIC" : {
+                    "STRENGTH" : 16,
+                    "CRITICAL_CHANCE" : 13,
+                    "CRITICAL_DAMAGE" : 18
+                },
+                "LEGENDARY" : {
+                    "STRENGTH" : 23,
+                    "CRITICAL_CHANCE" : 15,
+                    "CRITICAL_DAMAGE" : 42
+                },
+                "MYTHIC" : {
+                    "STRENGTH" : 33,
+                    "CRITICAL_CHANCE" : 17,
+                    "CRITICAL_DAMAGE" : 60
+                }
+            }
+        }
+    },
+    "PowerStone" :{
+        "scorching" : {
+            "base" : {
+                "STRENGTH" : 8.4,
+                "CRITICAL_DAMAGE" : 9.6,
+                "ATTACK_SPEED" : 1.8
+            },
+            "unique" :{
+                "FEROCITY" : 7
+            }
+        },
+        "healthy" : {
+            "base" : {
+                "HEALTH" : 33.6
+            },
+            "unique" :{
+                "HEALTH" : 200
+            }
+        },
+        "slender" : {
+            "base" : {
+                "HEALTH" : 6.7,
+                "DEFENSE" : 4.8,
+                "SPEED" : 0.8,
+                "STRENGTH" : 4.8,
+                "INTELLIGENCE" : 7.2,
+                "CRITICAL_DAMAGE" : 4.8,
+                "ATTACK_SPEED" : 0.7
+            },
+            "unique" :{
+                "DEFENSE" : 100,
+                "STRENGTH" : 50
+            }
+        },
+        "strong" : {
+            "base" : {
+               "STRENGTH" : 12,
+               "CRITICAL_DAMAGE" : 12 
+            },
+            "unique" :{
+                "STRENGTH" : 25,
+                "CRITICAL_DAMAGE" : 25
+            }
+        },
+        "bizarre" : {
+            "base" : {
+                "STRENGTH" : -2.4,
+                "INTELLIGENCE" : 43.2,
+                "CRITICAL_DAMAGE" : -2.4
+            },
+            "unique" :{
+                "ABILITY_DAMAGE" : 5
+            }
+        },
+        "demonic" : {
+            "base" : {
+                "STRENGTH" : 5.5,
+                "INTELLIGENCE" : 27.725
+            },
+            "unique" :{
+                "CRITICAL_DAMAGE" : 50
+            }
+        },
+        "hurtful" : {
+            "base" : {
+                "STRENGTH" : 4.8,
+                "CRITICAL_DAMAGE" : 19.2
+            },
+            "unique" :{
+                "ATTACK_SPEED" : 15
+            }
+        },
+        "pleasant" : {
+            "base" : {
+                "HEALTH" : 13.45,
+                "DEFENSE" : 14.4
+            },
+            "unique" :{
+                
+            }
+        },
+        "adept" : {
+            "base" : {
+                "HEALTH" : 16.8,
+                "DEFENSE" : 9.6,
+                "INTELLIGENCE" : 3.6
+            },
+            "unique" :{
+                "HEALTH" : 100,
+                "DEFENSE" : 50
+            }
+        },
+        "bloody" : {
+            "base" : {
+                "STRENGTH" : 10.8,
+                "INTELLIGENCE" : 3.6,
+                "CRITICAL_DAMAGE" : 10.8
+            },
+            "unique" :{
+                "ATTACK_SPEED" : 10
+            }
+        },
+        "forceful" : {
+            "base" : {
+                "HEALTH" : 1.7,
+                "STRENGTH" : 18,
+                "CRITICAL_DAMAGE" : 4.8
+            },
+            "unique" :{
+                "FEROCITY" : 4
+            }
+        },
+        "itchy" : {
+            "base" : {
+                "SPEED" : 1.2,
+                "STRENGTH" : 7.2,
+                "CRITICAL_DAMAGE" : 8.4,
+                "ATTACK_SPEED" : 1.8
+            },
+            "unique" :{
+                "STRENGTH" : 15,
+                "CRITICAL_DAMAGE" : 15
+            }
+        },
+        "mythical" : {
+            "base" : {
+                "HEALTH" : 5.7,
+                "DEFENSE" : 4.05,
+                "SPEED" : 0.95,
+                "STRENGTH" : 4.05,
+                "INTELLIGENCE" : 6.1,
+                "CRITICAL_CHANCE" : 1.65,
+                "CRITICAL_DAMAGE" : 4.05
+            },
+            "unique" :{
+                "HEALTH" : 150,
+                "STRENGTH" : 40
+            }
+        },
+        "shaded" : {
+            "base" : {
+                "SPEED" : 0.6,
+                "STRENGTH" : 4.8,
+                "CRITICAL_DAMAGE" : 18
+            },
+            "unique" :{
+                "ATTACK_SPEED" : 3,
+                "FEROCITY" : 3
+            }
+        },
+        "sighted" : {
+            "base" : {
+                "INTELLIGENCE" : 36
+            },
+            "unique" :{
+                "ABILITY_DAMAGE" : 3
+            }
+        },
+        "silky" : {
+            "base" : {
+                "CRITICAL_DAMAGE" : 24
+            },
+            "unique" :{
+                "ATTACK_SPEED" : 5
+            }
+        },
+        "sweet" : {
+            "base" : {
+                "HEALTH" : 15.1,
+                "DEFENSE" : 10.8,
+                "SPEED" : 1.2
+            },
+            "unique" :{
+                "SPEED" : 5
+            }
+        }
+    },
+    "Pets" : {
+        "Tiger" : {
+            "baseStats" : {
+                "STRENGTH" : 5
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.1,
+                "FEROCITY" : 0.25,
+                "CRITICAL_CHANCE" : 0.05,
+                "CRITICAL_DAMAGE" : 0.5
+            },
+            "abilities" : [
+                {
+                   "action" : "addStatPerLevel",
+                   "stats" : {
+                    "FEROCITY" : [
+                        0.1,
+                        0.2,
+                        0.3
+                   ]
+                   } 
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "baseMultiplierPerLevel",
+                    "conditional" : true,
+                    "amount" : [
+                        1
+                    ] 
+                }
+            ]
+        },
+        "Lion" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "FEROCITY" : 0.05,
+                "SPEED" : 0.25
+            },
+            "abilities" : [
+                {
+                   "action" : "addStatPerLevel",
+                   "stats" : {
+                    "DAMAGE" : [
+                        0.03,
+                        0.05,
+                        0.1,
+                        0.15,
+                        0.2
+                   ],
+                    "STRENGTH" : [
+                        0.03,
+                        0.05,
+                        0.1,
+                        0.15,
+                        0.2
+                   ]
+                   } 
+                },
+                {
+                    "action" : "firstHitBuff",
+                    "amountPerLevel" : [
+                        0,
+                        0,
+                        0.75,
+                        1
+                    ]
+                    
+                },
+                {
+                    "action" : "baseMultiplierPerLevel",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        1.5
+                    ] 
+                }
+            ]
+        },
+        "Bal" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "FEROCITY" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "allStats",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.15
+                    ]
+                }
+            ]
+        },
+        "Black Cat" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "SPEED" : 0.25
+            },
+            "abilities" : [
+                {
+                    "action" : "addStatPerLevel",
+                    "stats" : {
+                        "SPEED" : [
+                            1
+                        ]
+                    }
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "stats" : {
+                        "MAGIC_FIND" : [
+                            0.15
+                        ]
+                    }
+                }
+            ]
+        },
+        "Blaze" : {
+            "baseStats" : {
+                "DEFENSE" : 10
+            },
+            "statsPerLevel" : {
+                "DEFENSE" : 0.2,
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "allStats",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.1
+                    ]
+                },
+                {
+                    "action" : "buffArmor",
+                    "armorKeyword" : "blaze",
+                    "amountPerLevel" : [
+                        0.4
+                    ]
+                },
+                {
+                    "action" : "doubleBooks"
+                }
+            ]
+        },
+        "Ender Dragon" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "CRITICAL_CHANCE" : 0.1,
+                "CRITICAL_DAMAGE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "buffMobType",
+                    "mobType" : "endMobs",
+                    "amountPerLevel" : [
+                        2
+                    ]
+                },
+                {
+                    "action" : "buffWeapon",
+                    "weapon" : "aspect of the dragons",
+                    "stats" : {
+                        "DAMAGE" : [
+                            0.5
+                       ],
+                        "STRENGTH" : [
+                            0.3
+                       ]
+                    } 
+                },
+                {
+                    "action" : "allStats",
+                    "amountPerLevel" : [
+                        0.1
+                    ]
+                }
+            ]
+        },
+        "Megalodon" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "MAGIC_FIND" : 0.1,
+                "FEROCITY" : 0.05
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffArmor",
+                    "armorKeyword" : "shark scale",
+                    "amountPerLevel" : [
+                        0.2
+                    ]
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Golden Dragon" : {
+            "baseStats" : {
+                "ATTACK_SPEED" : 25,
+                "STRENGTH" : 25,
+                "MAGIC_FIND" : 15
+            },
+            "statsPerLevel" : {
+                "ATTACK_SPEED" : 0.25,
+                "STRENGTH" : 0.25,
+                "MAGIC_FIND" : 0.05
+            },
+            "abilities" : [
+                {
+                    "action" : "goldsPower",
+                    "amountPerLevel" : [
+                        0.5
+                    ]
+                },
+                {
+                    "action" : "shiningScales"
+                },
+                {
+                    "action" : "dragonsGreed"
+                },
+                {
+                    "action" : "legendaryTreasure"
+                }
+            ]
+        },
+        "Enderman" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "CRITICAL_DAMAGE" : 0.75
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                     "DAMAGE" : [
+                        0,
+                        0,
+                        0.4,
+                        0.5
+                        ]
+                    }
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Ghoul" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "FEROCITY" : 0.05,
+                "HEALTH" : 1,
+                "INTELLIGENCE" : 0.75
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Golem" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1.5,
+                "STRENGTH" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "baseMultiplierPerLevel",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.3
+                    ] 
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "petAbility",
+                    "conditional" : true,
+                    "baseAmount" : [
+                        203
+                    ],
+                    "amountPerLevel" : [
+                        3
+                    ] 
+                }
+            ]
+        },
+        "Grandma Wolf Pet" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "HEALTH" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Griffin" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "CRITICAL_DAMAGE" : 0.5,
+                "INTELLIGENCE" : 0.1,
+                "MAGIC_FIND" : 0.1,
+                "CRITICAL_CHANCE" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "statByPercentage",
+                    "conditional" : true,
+                    "stat" : "STRENGTH",
+                    "amountPerLevel" : [
+                        0.14
+                    ] 
+                }
+            ]
+        },
+        "Horse" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 0.5,
+                "SPEED" : 0.25
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffBowDamage",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.25
+                    ]
+                }
+            ]
+        },
+        "Hound" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.4,
+                "FEROCITY" : 0.05,
+                "ATTACK_SPEED" : 0.15
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "statByPercentage",
+                    "conditional" : true,
+                    "stat" : "ATTACK_SPEED",
+                    "amountPerLevel" : [
+                        0.1
+                    ] 
+                }
+            ]
+        },
+        "Jerry" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : -1.0
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffWeapon",
+                    "weapon" : "aspect of the jerry",
+                    "stats" : {
+                        "DAMAGE" : [
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.5
+                       ]
+                    } 
+                }
+            ]
+        },
+        "Kuudra" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.4,
+                "HEALTH" : 4
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffMobType",
+                    "mobType" : "endMobs",
+                    "percentageAmount" : 5
+                }
+            ]
+        },
+        "Magma Cube" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.2,
+                "HEALTH" : 0.5,
+                "DEFENSE" : 0.33
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffMobType",
+                    "mobType" : "slime",
+                    "amountPerLevel" : [
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.25
+                    ]
+                },
+                {
+                    "action" : "buffArmor",
+                    "armorKeyword" : "ember",
+                    "amountPerLevel" : [
+                        0.5
+                    ]
+                }
+            ]
+        },
+        "Phoenix" : {
+            "baseStats" : {
+                "STRENGTH" : 10,
+                "INTELLIGENCE" : 50
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "petAbility"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Pigman" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "FEROCITY" : 0.05,
+                "DEFENSE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffWeapon",
+                    "weapon" : "pigman",
+                    "stats" : {
+                        "DAMAGE" : [
+                            0.4
+                       ],
+                        "STRENGTH" : [
+                            0.25
+                       ]
+                    } 
+                },
+                {
+                    "action" : "baseMultiplierPerLevel",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.25
+                    ]
+                }
+            ]
+        },
+        "Rat" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "CRITICAL_DAMAGE" : 0.1,
+                "HEALTH" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Skeleton Horse" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "SPEED" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffBowDamage",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        0.4
+                    ]
+                }
+            ]
+        },
+        "Snowman" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "CRITICAL_DAMAGE" : 0.25,
+                "DAMAGE" : 0.25
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Skeleton" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "CRITICAL_CHANCE" : 0.15,
+                "CRITICAL_DAMAGE" : 0.3
+            },
+            "abilities" : [
+                {
+                    "action" : "buffArrowDamage"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Spider" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.1,
+                "CRITICAL_CHANCE" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Spirit" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "SPEED" : 0.3,
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {"action" : "none"
+
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Tarantula" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.1,
+                "CRITICAL_CHANCE" : 0.1,
+                "CRITICAL_DAMAGE" : 0.3
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Turtle" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 0.1,
+                "DEFENSE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "statByPercentage",
+                    "conditional" : true,
+                    "stat" : "DEFENSE",
+                    "baseAmount" : 3,
+                    "amountPerLevel" : [
+                        0.27
+                    ]
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Wolf" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Zombie" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1,
+                "CRITICAL_DAMAGE" : 0.3
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffMobType",
+                    "mobType" : "zombie",
+                    "amountPerLevel" : [
+                        0.25
+                    ]
+                },
+                {
+                    "action" : "buffZombieSets",
+                    "amountPerLevel" :[
+                        0.2
+                    ]
+                }
+            ]
+        },
+        "Bee" : {
+            "baseStats" : {
+                "STRENGTH" : 5
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "INTELLIGENCE" : 0.5,
+                "SPEED" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Chicken" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Elephant" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1,
+                "INTELLIGENCE" : 0.75
+            },
+            "abilities" : [
+                {
+                    "action" : "statForStat",
+                    "receiveStat" : "DEFENSE",
+                    "dependentStat" : "SPEED",
+                    "dependentAmount" : [
+                        100
+                    ],
+                    "amountPerLevel" : [
+                        0.15,
+                        0.15,
+                        0.15,
+                        0.2,
+                        0.2
+                    ]
+
+                },
+                {
+                    "action" : "statForStat",
+                    "receiveStat" : "HEALTH",
+                    "dependentStat" : "DEFENSE",
+                    "dependentAmount" : [
+                        10
+                    ],
+                    "amountPerLevel" : [
+                        0.01
+                    ]
+                },
+                {
+                    "action" : "petAbility",
+                    "conditional" : true,
+                    "amountPerLevel" : [
+                        2
+                    ] 
+                }
+            ]
+        },"Mooshroom Cow" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Pig" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "SPEED" : 0.25
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Rabbit" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1,
+                "SPEED" : 0.2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Armadillo" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "DEFENSE" : 2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Bat" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "SPEED" : 0.05
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                     "INTELLIGENCE" : [
+                        0.2,
+                        0.2,
+                        0.3
+                        ],
+                     "SPEED" : [
+                        0.4,
+                        0.4,
+                        0.5
+                        ]
+                    }
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Endermite " : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                     "STRENGTH" : [
+                        0.3
+                        ],
+                     "SPEED" : [
+                        0.5
+                        ],
+                     "MAGIC_FIND" : [
+                        0.1
+                        ]
+                    }
+                }
+            ]
+        },"Mithril Golem" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "TRUE_DEFENSE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffCombatStats",
+                    "amountPerLevel" : [
+                        0.2
+                    ]
+                }
+            ]
+        },"Rock" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "TRUE_DEFENSE" : 0.1,
+                "DEFENSE" : 2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "statByPercentage",
+                    "conditional" : true,
+                    "stat" : "DEFENSE",
+                    "amountPerLevel" : [
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.25
+                    ]
+                },
+                {
+                    "action" : "statByPercentage",
+                    "conditional" : true,
+                    "stat" : "DAMAGE",
+                    "amountPerLevel" : [
+                        0.3
+                    ]
+                }
+            ]
+        },"Scatha" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "DEFENSE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Silverfish" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "DEFENSE" : 1,
+                "HEALTH" : 0.2
+            },
+            "abilities" : [
+                {
+                    "action" : "addStatPerLevel",
+                    "stats" : {
+                     "TRUE_DEFENSE" : [
+                        0.05,
+                        0.1,
+                        0.1,
+                        0.15
+                        ]
+                    }
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Snail" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },"Wither Skeleton" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.25,
+                "CRITICAL_DAMAGE" : 0.25,
+                "DEFENSE" : 0.25,
+                "CRITICAL_CHANCE" : 0.05,
+                "INTELLIGENCE" : 0.25
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffMobType",
+                    "mobType" : "wither",
+                    "amountPerLevel" : [
+                        0.25
+                    ]
+                },
+                {
+                    "action" : "petAbility"
+                }
+            ]
+        },
+        "Giraffe" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 1,
+                "CRITICAL_CHANCE" : 0.05
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                    "STRENGTH" : [
+                        0.4,
+                        0.4,
+                        0.4,
+                        0.5
+                   ],
+                    "CRITICAL_DAMAGE" : [
+                        0.1,
+                        0.1,
+                        0.1,
+                        0.25,
+                        0.4
+                   ]
+                   } 
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Monkey" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "SPEED" : 0.2,
+                "INTELLIGENCE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                    "SPEED" : [
+                        0.75,
+                        0.75,
+                        0.75,
+                        1
+                   ]
+                   } 
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Ocelot" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "SPEED" : 0.5,
+                "FEROCITY" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Ammonite" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "statBasedOnSkill",
+                    "skills" : {
+                        "mining" : [
+                            0.02
+                        ],
+                        "fishing" : [
+                            0.02
+                        ]
+                    }
+                }
+            ]
+        },
+        "Baby Yeti" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.4,
+                "INTELLIGENCE" : 0.75
+            },
+            "abilities" : [
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                    "STRENGTH" : [
+                        0.5
+                   ],
+                    "CRITICAL_DAMAGE" : [
+                        0.5
+                   ]
+                   } 
+                },
+                {
+                    "action" : "statForStat",
+                    "receiveStat" : "DEFENSE",
+                    "dependentStat" : "STRENGTH",
+                    "dependentAmount" : "percentage",
+                    "amountPerLevel" : [
+                        0.5,
+                        0.75
+                    ]
+
+                },
+                {
+                    "action" : "buffWeapon",
+                    "weapon" : "yeti sword",
+                    "stats" : {
+                        "DAMAGE" : [
+                            1
+                       ],
+                        "INTELLIGENCE" : [
+                            1
+                       ]
+                    } 
+                }
+            ]
+        },
+        "Blue Whale" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "statForStat",
+                    "receiveStat" : "DEFENSE",
+                    "dependentStat" : "HEALTH",
+                    "dependentAmount" : [
+                        30,
+                        30,
+                        30,
+                        25,
+                        20
+                    ],
+                    "amountPerLevel" : [
+                        0.01
+                    ]
+                },
+                {
+                    "action" : "statByPercentage",
+                    "stat" : "HEALTH",
+                    "amountPerLevel" : [
+                        0.2
+                    ] 
+                }
+            ]
+        },
+        "Dolphin" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Flying Fish" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "DEFENSE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                    "STRENGTH" : [
+                        0.8,
+                        0.8,
+                        0.8,
+                        1
+                   ],
+                    "DEFENSE" : [
+                        0.8,
+                        0.8,
+                        0.8,
+                        1
+                   ]
+                   } 
+                },
+                {
+                    "action" : "buffArmor",
+                    "armorKeyword" : "diver",
+                    "amountPerLevel" : [
+                        0.2
+                    ]
+                }
+            ]
+        },
+        "Flying Fish Mythic" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "STRENGTH" : 0.5,
+                "DEFENSE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "addStatPerLevel",
+                    "conditional" : true,
+                    "stats" : {
+                    "STRENGTH" : [
+                        0.8,
+                        0.8,
+                        0.8,
+                        1
+                   ],
+                    "DEFENSE" : [
+                        0.8,
+                        0.8,
+                        0.8,
+                        1
+                   ]
+                   } 
+                },
+                {
+                    "action" : "buffArmor",
+                    "armorKeyword" : "magma lord",
+                    "amountPerLevel" : [
+                        0.2
+                    ]
+                }
+            ]
+        },
+        "Squid" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 0.5,
+                "INTELLIGENCE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "buffWeapon",
+                    "weapon" : "ink wand",
+                    "stats" : {
+                        "DAMAGE" : [
+                            0.3,
+                            0.3,
+                            0.3,
+                            0.4
+                       ],
+                        "STRENGTH" : [
+                            0.1,
+                            0.1,
+                            0.1,
+                            0.2
+                       ]
+                    }
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Guardian" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "DEFENSE" : 0.5
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Jellyfish" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "HEALTH" : 2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Parrot" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "CRITICAL_DAMAGE" : 0.1
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        },
+        "Sheep" : {
+            "baseStats" : {
+            },
+            "statsPerLevel" : {
+                "INTELLIGENCE" : 1,
+                "ABILITY_DAMAGE" : 0.2
+            },
+            "abilities" : [
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                },
+                {
+                    "action" : "none"
+                }
+            ]
+        }
+    },
+    "Bestiary" : {
+        "island" : [
+            "zombie",
+            "skeleton",
+            "spider",
+            "cave_spider",
+            "slime",
+            "witch",
+            "enderman_private"
+        ],
+        "generic" : [
+            "unburried_zombie",
+            "old_wolf",
+            "ruin_wolf",
+            "zombie_villager",
+            "arachne_brood",
+            "arachne_keeper",
+            "dasher_spider",
+            "respawning_skeleton",
+            "random_slime",
+            "spider_jockey",
+            "splitter_spider",
+            "voracious_spider",
+            "weaver_spider",
+            "enderman",
+            "endermite",
+            "zealot_enderman",
+            "obsidian_wither",
+            "watcher",
+            "voidling_fanatic",
+            "voidling_extremist",
+            "blaze",
+            "flaming_spider",
+            "ghast",
+            "matcho",
+            "magma_cube",
+            "pigman",
+            "wither_skeleton",
+            "wither_spectre",
+            "charging_mushroom_cow",
+            "automaton",
+            "butterfly",
+            "emerald_slime",
+            "caverns_ghost",
+            "goblin",
+            "team_treasurite",
+            "ice_walker",
+            "lapis_zombie",
+            "diamond_skeleton",
+            "diamond_zombie",
+            "redstone_pigman",
+            "sludge",
+            "invisible_creeper",
+            "thyst",
+            "treasure_hoarder",
+            "worms",
+            "yog",
+            "howling_spirit",
+            "pack_spirit",
+            "soul_of_the_alpha",
+            "batty_witch",
+            "phantom_spirit",
+            "scary_jerry",
+            "wither_gourd",
+            "trick_or_treater",
+            "wraith",
+            "diamond_guy",
+            "cellar_spider",
+            "crypt_dreadlord",
+            "crypt_lurker",
+            "crypt_souleater",
+            "king_midas",
+            "lonely_spider",
+            "lost_adventurer",
+            "scared_skeleton",
+            "shadow_assassin",
+            "skeleton_grunt",
+            "skeleton_master",
+            "skeleton_soldier",
+            "skeletor",
+            "sniper_skeleton",
+            "super_archer",
+            "super_tank_zombie",
+            "crypt_tank_zombie",
+            "watcher_summon_undead",
+            "dungeon_respawning_skeleton",
+            "crypt_witherskeleton",
+            "zombie_commander",
+            "zombie_grunt",
+            "zombie_knight",
+            "zombie_soldier"
+        ],
+        "boss" : [
+            "arachne",
+            "brood_mother_spider",
+            "dragon",
+            "corrupted_protector",
+            "ashfang",
+            "barbarian_duke_x",
+            "bladesoul",
+            "mage_outlaw",
+            "magma_cube_boss",
+            "headless_horseman"
+        ]
+    },
+    "Catacombs": [
+        50,
+        125,
+        235,
+        395,
+        625,
+        955,
+        1425,
+        2095,
+        3045,
+        4385,
+        6275,
+        8940,
+        12700,
+        17960,
+        25340,
+        35640,
+        50040,
+        70040,
+        97640,
+        135640,
+        188140,
+        259640,
+        356640,
+        488640,
+        668640,
+        911640,
+        1239640,
+        1684640,
+        2284640,
+        3084640,
+        4149640,
+        5559640,
+        7459640,
+        9959640,
+        13259640,
+        17559640,
+        23159640,
+        30359640,
+        39559640,
+        51559640,
+        66559640,
+        85559640,
+        109559640,
+        139559640,
+        177559640,
+        225559640,
+        285559640,
+        360559640,
+        453559640,
+        569809640
+    ]
+}
