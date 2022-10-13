@@ -304,6 +304,8 @@ public class PlayerProfile {
         // add additive multipliers if present
         if (globalStatBoost > 0.0){
             for (Entry<String, Double> stat : miscStats.entrySet()){
+                if (stat.getKey().equals("DAMAGE"))
+                    continue;
                 miscStats.put(stat.getKey(), (statTotals.get(stat.getKey()) + petStats.get(stat.getKey())) * globalStatBoost);
                 addGlobalStat(stat.getKey(), stat.getValue());
             }
@@ -1359,21 +1361,28 @@ public class PlayerProfile {
 
             Double statPerLevel = 0.0;
             Double perLevelValue = 0.0;
+            Double statValue = 0.0;
             JSONArray perLevelAmount;
+            JSONArray statTiers;
             JSONObject currentAbility = abilities.getJSONObject(abilityOrder[i]); 
             JSONObject stats = null;
             String abilityAction = currentAbility.getString("action");
 
             // temporarily skip conditional TODO: remove for something else
-            if (currentAbility.has("conditional"))
+            /*
+             * if (currentAbility.has("conditional"))
                 continue;
+             */
             switch (abilityAction) {
                 case "addStatPerLevel" : 
                     stats = currentAbility.getJSONObject("stats");
                     for (String stat : stats.keySet()){
-                        JSONArray statTiers = stats.getJSONArray(stat);
+                        if (stat.equals("DAMAGE"))
+                            continue;
+                        statTiers = stats.getJSONArray(stat);
                         statPerLevel = statTiers.getDouble(getTierToUse(statTiers.length()));
-                        addPetStat(stat, statPerLevel * petLevel);
+                        statValue = (statPerLevel * petLevel) * (1 + globalStatBoost);
+                        addPetStat(stat, statValue);
                     }
                     break;
                 case "baseMultiplierPerLevel" :     //TODO: some might be post multi 
@@ -1391,7 +1400,10 @@ public class PlayerProfile {
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     perLevelValue = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100.0;
                     for (Entry<String, Double> playerStats : statTotals.entrySet()){
-                        addPetStat(playerStats.getKey(), playerStats.getValue() + petStats.get(playerStats.getKey()) * (perLevelValue * petLevel));
+                        if (playerStats.getKey().equals("DAMAGE"))
+                            continue;
+                        statValue = perLevelValue * petLevel;
+                        addPetStat(playerStats.getKey(), (playerStats.getValue() + petStats.get(playerStats.getKey())) * statValue);
                     }
                     break;
                 case "buffArmor" :
@@ -1402,7 +1414,7 @@ public class PlayerProfile {
                         InventoryItem armorPiece = playerGear.get(armorIndex);
                         if (armorPiece.getName().contains(armorKeyword)){
                             for (Entry<String,Double> armorStat : armorPiece.getStats().entrySet()){
-                                addPetStat(armorStat.getKey(), armorStat.getValue() * percentageIncrease);
+                                addPetStat(armorStat.getKey(), (armorStat.getValue() * percentageIncrease) * (1 + globalStatBoost));
                             }
                         }
                     }
@@ -1412,9 +1424,13 @@ public class PlayerProfile {
                     stats = currentAbility.getJSONObject("stats");
                     if (playerGear.get(WEAPON_INDEX).getName().equals(weapon)){
                         for (String stat : stats.keySet()){
-                            JSONArray statTiers = stats.getJSONArray(stat);
+                            statTiers = stats.getJSONArray(stat);
                             statPerLevel = statTiers.getDouble(getTierToUse(statTiers.length()));
-                            addPetStat(stat, statPerLevel * petLevel);
+                            if (stat.equals("DAMAGE"))
+                                addPetStat(stat, statPerLevel * petLevel);
+                            else {
+                                addPetStat(stat, (statPerLevel * petLevel) * (1 + globalStatBoost));
+                            }
                         }
                     }
                     break;
@@ -1422,12 +1438,12 @@ public class PlayerProfile {
                     int bookCount = 0;
                     for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
                         bookCount = playerGear.get(armorIndex).getPotatoBooks();
-                        addPetStat("HEALTH", 4 * bookCount);
-                        addPetStat("DEFENSE", 2 * bookCount);
+                        addPetStat("HEALTH", (4 * bookCount) * (1 + globalStatBoost));
+                        addPetStat("DEFENSE", (2 * bookCount) * (1 + globalStatBoost));
                     }
                     bookCount = playerGear.get(WEAPON_INDEX).getPotatoBooks();
-                    addPetStat("DAMAGE", 2 * bookCount);
-                    addPetStat("STRENGTH", 2 * bookCount);
+                    addPetStat("DAMAGE", (2 * bookCount) * (1 + globalStatBoost));
+                    addPetStat("STRENGTH", (2 * bookCount) * (1 + globalStatBoost));
                     break;
                 case "buffMobType" :
                     // TODO: check for mob type then add to petBaseMultiplier can have percentage amount or perlevelamount
@@ -1435,7 +1451,8 @@ public class PlayerProfile {
                 case "goldsPower" :
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     if (playerGear.get(WEAPON_INDEX).getMaterial().contains("GOLD")){
-                        addPetStat("STRENGTH", ((perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()))) * petLevel) + 50);
+                        statValue = ((perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()))) * petLevel) + 50;
+                        addPetStat("STRENGTH", statValue * (1 + globalStatBoost));
                     }
                     break;
                 case "shiningScales" :
@@ -1443,13 +1460,14 @@ public class PlayerProfile {
                     for (int goldCount = goldCollection; goldCount >= 1; goldCount /= 10){
                         ++digitCount;
                     }
-                    addPetStat("STRENGTH", 10 * digitCount);
-                    addPetStat("MAGIC_FIND", 2 * digitCount);
+                    addPetStat("STRENGTH", (10 * digitCount) * (1 + globalStatBoost));
+                    addPetStat("MAGIC_FIND", (2 * digitCount) * (1 + globalStatBoost));
                     break;
                 case "dragonsGreed" :
                     double strength = petStats.get("STRENGTH") + getStat("STRENGTH");      // add current pet strength and global strength
-                    int magicFind = (int) (petStats.get("MAGIC_FIND") + getStat("MAGIC_FIND")) / 5;      
-                    addPetStat("STRENGTH", strength * ((magicFind / 2.0) / 100.0));
+                    int magicFind = (int) (petStats.get("MAGIC_FIND") + getStat("MAGIC_FIND")) / 5;     
+                    statValue =  strength * ((magicFind / 2.0) / 100.0);
+                    addPetStat("STRENGTH", statValue * (1 + globalStatBoost));
                     break;
                 case "legendaryTreasure" :
                     addPetStat("DAMAGE", 0.1263 * (bankBalance / 1000000));
@@ -1470,13 +1488,24 @@ public class PlayerProfile {
                     //TODO: need to implement --- maybe not incredibly negligible 
                     break;
                 case "buffZombieSets" :
+                //TODO: fix so ultimate enchant wisdom not taken into account 
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
                     String acceptedArmor[] = {"revenant", "zombie", "heart", "reaper", "rotten", "skeleton grunt", "skeleton soldier", "skeleton master", "skeleton lord", "skeletor"};
                     for (InventoryItem gearPiece: playerGear){
+
+                        //reaper mask gets 2x the percentage value for some reason
+                        if (gearPiece.getName().endsWith("reaper mask")){
+                            for (Entry<String,Double> stat : gearPiece.getStats().entrySet()){
+                                addPetStat(stat.getKey(), ((stat.getValue()) * (statPerLevel * petLevel) * 2) * (1 + globalStatBoost));
+                            }
+                            continue;
+                        }
                         for (String keyword : acceptedArmor){
                             if (gearPiece.getName().contains(keyword)){
-                                addPetStat("DEFENSE", gearPiece.getStats().get("DEFENSE") * (statPerLevel * petLevel));
+                                for (Entry<String,Double> stat : gearPiece.getStats().entrySet()){
+                                    addPetStat(stat.getKey(), ((stat.getValue()) * (statPerLevel * petLevel)) * (1 + globalStatBoost));
+                                }
                             }
                         }
                     }
@@ -1491,7 +1520,8 @@ public class PlayerProfile {
                     // check if dependent Amount is a String meaning it should be handled as a percentage
                     if (currentAbility.get("dependentAmount") instanceof String){
                         statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
-                        addPetStat(receiveStat, (petStats.get(dependentStat) + statTotals.get(dependentStat)) * (statPerLevel * petLevel));
+                        statValue = (petStats.get(dependentStat) + statTotals.get(dependentStat)) * (statPerLevel * petLevel);
+                        addPetStat(receiveStat, statValue * (1 + globalStatBoost));
                     }
                     else {
                         statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
@@ -1505,26 +1535,30 @@ public class PlayerProfile {
                 case "buffCombatStats" :    // health, defense, crit damage/chance, strength, damage
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
-                    addPetStat("HEALTH", (petStats.get("HEALTH") + getStat("HEALTH")) * (statPerLevel * petLevel));
-                    addPetStat("DEFENSE", (petStats.get("DEFENSE") + getStat("DEFENSE")) * (statPerLevel * petLevel));
-                    addPetStat("STRENGTH", (petStats.get("STRENGTH") + getStat("STRENGTH")) * (statPerLevel * petLevel));
-                    addPetStat("CRITICAL_DAMAGE", (petStats.get("CRITICAL_DAMAGE") + getStat("CRITICAL_DAMAGE")) * (statPerLevel * petLevel));
-                    addPetStat("CRITICAL_CHANCE", (petStats.get("CRITICAL_CHANCE") + getStat("CRITICAL_CHANCE")) * (statPerLevel * petLevel));
+                    addPetStat("HEALTH", (petStats.get("HEALTH") + statTotals.get("HEALTH") ) * (statPerLevel * petLevel));
+                    addPetStat("DEFENSE", (petStats.get("DEFENSE") + statTotals.get("DEFENSE")) * (statPerLevel * petLevel));
+                    addPetStat("STRENGTH", (petStats.get("STRENGTH") + statTotals.get("STRENGTH")- miscStats.get("STRENGTH")) * (statPerLevel * petLevel));
+                    addPetStat("CRITICAL_DAMAGE", (petStats.get("CRITICAL_DAMAGE") + statTotals.get("CRITICAL_DAMAGE")) * (statPerLevel * petLevel));
+                    addPetStat("CRITICAL_CHANCE", (petStats.get("CRITICAL_CHANCE") + statTotals.get("CRITICAL_CHANCE")) * (statPerLevel * petLevel));
                     break;
                     
                 // currently only made to support ammonite because its the only pet that does this
                 case "statBasedOnSkill" :           
                     stats = currentAbility.getJSONObject("skills");
                     for (String stat : stats.keySet()){
+                        
                         if (stat.equals("mining")){
                             perLevelAmount = stats.getJSONArray("mining");
+                            statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
+                            addPetStat("SPEED", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
+                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
                         }
                         else {
                             perLevelAmount = stats.getJSONArray("fishing");
+                            statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
+                            addPetStat("SPEED", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
+                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
                         }
-                        statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
-                        addPetStat("SPEED", (statPerLevel * petLevel) * miningLevel);
-                        addPetStat("DEFENSE", (statPerLevel * petLevel) * miningLevel);
                     }
                     break;
                 default:
