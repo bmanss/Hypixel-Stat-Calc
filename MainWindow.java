@@ -94,8 +94,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JSpinner petLevel = new JSpinner();
     JSpinner petTier = new JSpinner();
 
-    JComboBox<String> mobTypesBox = new JComboBox<>(new String [] {"None", "Blaze", "Creeper", "Dragon", "Enderman", "Lava Sea Creature", "Magma Cube" , "Mythological", "Pigmen", "Sea Creature",
-                                                                   "Skeleton", "Slimes", "Spider", "Undead", "Withers" ,"Wolf", "Zombie"});
+    String mobTypes [] = new String []{"None", "Blaze", "Creeper", "Dragon", "Enderman", "Lava Sea Creature", "Magma Cube" , "Mythological", "Pigmen", "Sea Creature",
+                                                                   "Skeleton", "Slimes", "Spider", "Undead", "Wither" ,"Wolf", "Zombie"};
+    JComboBox<String> mobTypesBox = new JComboBox<>(mobTypes);
 
     JCheckBox enableGodPotion = new JCheckBox("God Potion");
 
@@ -228,7 +229,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petTier.setPreferredSize(new Dimension(50,25));
         petTier.setModel(new SpinnerNumberModel(1, 1, 6, 1));
         
-
+        mobTypesBox.addItemListener(this);
         //armorListPanel.setBorder(BorderFactory.createTitledBorder(""));
         armorListPanel.add(new JLabel("Armor: "),"wrap");
         armorListPanel.add(helmetBox);
@@ -355,7 +356,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         //healthInput.setPreferredSize(new Dimension(50,0));
         //statDisplayPanel.add(new JLabel("Stats: "));
         //statDisplayPanel.add(new JLabel("Add Extra: "));
-        
         
         createMaunalStatEntry();
         statDisplayPanel.add(healthLabel, "cell 0 0");
@@ -571,7 +571,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             mobHealth = 0;
             mobHealthInput.setText("0");
         }
-        firstStrikeDamageLabel.setText("First Hit: " + currentProfile.calcFinalDamage(mobTypesBox.getSelectedItem().toString(),mobHealth));
+        firstStrikeDamageLabel.setText("First Hit: " + currentProfile.calcFinalDamage(mobHealth));
         
     }
 
@@ -653,8 +653,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         else if(e.getSource() == JBrefreshProfile){
             if (currentProfile != null){
                 currentProfile.setPet(petsBox.getSelectedItem().toString(), (int) petLevel.getValue(),(int) petTier.getValue());
-                currentProfile.refreshGear();
                 addManualValues();
+                currentProfile.refreshGear();
                 displayStats(currentProfile);
                 //currentProfile.printItems();
             }
@@ -675,14 +675,18 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         if (e.getSource() == ability4){
             currentProfile.setPetAbilityStatus(3, e.getStateChange());
         }
-        
+
+        if (e.getStateChange() == ItemEvent.SELECTED && e.getSource() == mobTypesBox){
+            currentProfile.setSelectedMob(mobTypesBox.getSelectedItem().toString());
+        }
+
         if (e.getItem() == enableGodPotion && e.getStateChange() == ItemEvent.SELECTED ){
-            mainProfile.setGodPotionStats(true);
-            displayStats(mainProfile);
+            currentProfile.setGodPotionStats(true);
+            displayStats(currentProfile);
         }
         else if (e.getItem() == enableGodPotion){
-            mainProfile.setGodPotionStats(false);
-            displayStats(mainProfile);
+            currentProfile.setGodPotionStats(false);
+            displayStats(currentProfile);
         }
 
         if (e.getStateChange() == ItemEvent.SELECTED && e.getSource() == reforgePowerBox){
