@@ -29,7 +29,7 @@ public class PlayerProfile {
     final int WEAPON_INDEX = 8;
 
     int fairySouls = 0;
-    int skyBlockLevel = 158; //TODO: user input
+    int skyBlockLevel = 159; //TODO: user input
     int farmingLevel = 0;
     int miningLevel = 0;
     int combatLevel = 0;
@@ -42,7 +42,6 @@ public class PlayerProfile {
     int bestiaryLevel = 0;
     int carpentryLevel = 0;
     int magicalPower = 0;
-    double tempCritDamage = 0;
 
 
     int goldCollection = 0;              //TODO: user input
@@ -59,13 +58,14 @@ public class PlayerProfile {
     double cubismBonus = 0;
 
     int selectedMobHealth = 0;
-
     double globalStatBoost = 0.0;
     double magicalMultiiplier = 0;
     double baseMultiplier = 0;
     double petBaseMultiplier = 0;
     double weaponAdditive = 0;
     double weaponMultiplier = 1;
+    double armorAdditive = 0;
+    double armorMultiplier = 1;
     double petFirstHit = 0;
     double finalDamage = 0;
     double mobAdditiveBoost = 0;
@@ -101,6 +101,7 @@ public class PlayerProfile {
     Map<String,Double> statTotals;
     Map<String,Double> petStats = createBaseStats();
     Map<String,Double> miscStats = createBaseStats();
+    Map<String,Double> globalStatModifiers = createGlobalModifers();
     int petLevel = 1;
     int petTier = 1;
 
@@ -130,7 +131,7 @@ public class PlayerProfile {
         statTotals.put("MAGIC_FIND", 0.0);
         statTotals.put("TRUE_DEFENSE", 0.0);
         statTotals.put("MAGICAL_POWER", 0.0);
-        statTotals.put("ABILITY_DAMAGE", 0.0);
+        statTotals.put("ABILITY_DAMAGE_PERCENT", 0.0);
     }
 
     public Map<String,Double> createBaseStats(){
@@ -147,9 +148,49 @@ public class PlayerProfile {
         newStats.put("SPEED", 0.0);
         newStats.put("MAGIC_FIND", 0.0);
         newStats.put("TRUE_DEFENSE", 0.0);
-        newStats.put("MAGICAL_POWER", 0.0);
-        newStats.put("ABILITY_DAMAGE", 0.0);
+        newStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
         return newStats;
+    }
+
+    public Map<String,Double> createGlobalModifers(){
+        Map<String,Double> temp = createBaseStats();
+        Map<String,Double> globalMods = new HashMap<>();
+
+        for (Entry<String,Double> stat : temp.entrySet()){
+            if (!stat.getKey().equals("DAMAGE")) 
+                globalMods.put(stat.getKey(), 1.0);
+        }
+        return globalMods;
+    }
+
+    public void addToAllGlobalModifers(double amount){
+        for (Entry<String,Double> statModifer : globalStatModifiers.entrySet()){
+            globalStatModifiers.compute(statModifer.getKey(), (key, val) -> val + amount);
+        }
+    }
+
+    public void addToGlobalModifer(String stat, double amount){
+        globalStatModifiers.computeIfPresent(stat, (key, val) -> val + amount);
+    }
+
+    public void resetGlobalStatModifer(){
+
+        // remove all stat modifers
+        for (Entry<String,Double> stat : globalStatModifiers.entrySet()){
+            statTotals.put(stat.getKey(), statTotals.get(stat.getKey()) / stat.getValue());
+        }
+        
+        // set each to 1
+        for (Entry<String,Double> statModifer : globalStatModifiers.entrySet()){
+            globalStatModifiers.put(statModifer.getKey(), 1.0);
+        }
+
+    }
+
+    public void addStatMultipliers(){
+        for (Entry<String,Double> stat : globalStatModifiers.entrySet()){
+            statTotals.put(stat.getKey(), statTotals.get(stat.getKey()) * stat.getValue());
+        }
     }
 
     public void addItemList(Map<String, JSONObject> allItems, Map<String, JSONObject> accessoryItems ){
@@ -287,31 +328,36 @@ public class PlayerProfile {
             // get equipment slots
             currentInventory = invEquipment;
         }
-        
+
         // setItemStats() will make sure its an allowable "weapon"
         if (inventory.getList("i").getCompound(0).size() != 0)
             setItemStats(playerGear.get(playerGearIndex), inventory.getList("i").getCompound(0));
 
-        checkAdditiveMulti();
-        getWeaponEffects();
+        checkArmorForGlobals();
+        getPetStats();
+        addStatMultipliers();
     }
 
-    public void checkAdditiveMulti(){
+    public void checkArmorForGlobals(){
         //this only check for superior dragon set and adds 5% to globalStatBoost
         if (playerGear.get(HELMET_INDEX).getName().contains("superior dragon") && playerGear.get(CHESTPLATE_INDEX).getName().contains("superior dragon") &&
             playerGear.get(LEGGINGS_INDEX).getName().contains("superior dragon") && playerGear.get(BOOTS_INDEX).getName().contains("superior dragon")){
-                globalStatBoost += 0.05;
+                addToAllGlobalModifers(0.05);
+                //globalStatBoost += 0.05;
             }
 
         // this check reforges for renowned and adds 1% to globalStatBoost
         for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
             if (playerGear.get(armorIndex).getReforge().equals("renowned")){
-                globalStatBoost += 0.01;
+                addToAllGlobalModifers(0.01);
+                //globalStatBoost += 0.01;
             }
         }
 
+        //TODO: do not have to do now i believe
         // add additive multipliers if present
-        if (globalStatBoost > 0.0){
+        /*
+         * if (globalStatBoost > 0.0){
             for (Entry<String, Double> stat : miscStats.entrySet()){
                 if (stat.getKey().equals("DAMAGE"))
                     continue;
@@ -319,6 +365,8 @@ public class PlayerProfile {
                 addGlobalStat(stat.getKey(), stat.getValue());
             }
         }
+         */
+
     }
 
     public void removeAdditiveMulti(){
@@ -551,7 +599,8 @@ public class PlayerProfile {
             if (currentTalismanID.contains("HAT_CRAB"))
                 currentTalismanID = "PARTY_HAT_CRAB";
 
-            Rarity talismanRarity = Rarity.COMMON;          // defualt to common if reference item does not specify
+            // defualt to common if reference item does not specify
+            Rarity talismanRarity = Rarity.COMMON;
 
              // if an item reference exist check for a rarity and any stats
              if (talismanReference != null){
@@ -729,9 +778,8 @@ public class PlayerProfile {
         // make sure item has a reforge and its in the hypixel values json
         if(!equippedItem.getReforge().equals("") && reforgeValues.has(equippedItem.getReforge())){
             reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforge());
-            
 
-            // if rarity does not exists i.e it is special/very special default to mythic rarity
+            // if rarity does not exists i.e. it is special/very special default to mythic rarity
             if (reforgeValues.has(itemRarity)){
                 reforgeValues = reforgeValues.getJSONObject(itemRarity);
             }
@@ -765,14 +813,24 @@ public class PlayerProfile {
             }
         }
 
-        // add item base stats for all other items (some reference stats are lower case -_-)
+        // add item base stats for all other items (some reference stats are lower case for whatever reason -_- )
         else {
-            for (String stat : equippedItem.getStats().keySet()){
-                JSONObject referenceStats = itemReference.getJSONObject("stats");
-                if (referenceStats.has(stat))
-                    equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * starMultiplier);
-                else if (referenceStats.has(stat.toLowerCase()))
-                    equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat.toLowerCase()) * starMultiplier);
+            JSONObject referenceStats = null;
+            if (itemReference.has("stats")){
+                referenceStats = itemReference.getJSONObject("stats");
+                for (String stat : equippedItem.getStats().keySet()){
+                    
+                    if (referenceStats.has(stat))
+                        equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * starMultiplier);
+                    else if (referenceStats.has(stat.toLowerCase()))
+                        equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat.toLowerCase()) * starMultiplier);
+                }
+            }
+            // check for special cases here like Daedalus axe which gets its damage from taming level
+            else {
+                if (equippedItem.getName().equals("daedalus axe")){
+                    equippedItem.setStat("DAMAGE", 4 * tamingLevel);
+                }
             }
         }
 
@@ -996,9 +1054,9 @@ public class PlayerProfile {
     }
 
     void skyBlockLevelBoost(){
-        addGlobalStat("HEALTH", (skyBlockLevel / 10) * 5 ); // extra 5 health for 10 level milestone
-        addGlobalStat("STRENGTH", (skyBlockLevel / 5));    // add 1 strength per 5 level milestone
-        addGlobalStat("HEALTH", skyBlockLevel * 5 );        // 5 health per level
+        addGlobalStat("HEALTH", (skyBlockLevel / 10) * 5 );  // extra 5 health for 10 level milestone
+        addGlobalStat("STRENGTH", (skyBlockLevel / 5));      // add 1 strength per 5 level milestone
+        addGlobalStat("HEALTH", skyBlockLevel * 5 );         // 5 health per level
     }
 
     void getSkillStatsBoost(){
@@ -1131,6 +1189,8 @@ public class PlayerProfile {
         int modifier = 1;
         if (!status)
             modifier = -1;
+
+        resetGlobalStatModifer();
 
         addGlobalStat("HEALTH", 100 * modifier);
         addGlobalStat("STRENGTH", 98.75 * modifier);
@@ -1299,9 +1359,11 @@ public class PlayerProfile {
                 readItemStats(playerItem);
             }
         }
-        removeAdditiveMulti();
+        resetGlobalStatModifer();
+        checkArmorForGlobals();
         getPetStats();
-        getWeaponEffects();
+        addStatMultipliers();
+        //getWeaponEffects();
     }
 
     public void setPowerStone(String powerStone){
@@ -1350,7 +1412,8 @@ public class PlayerProfile {
 
         // if no pet is selected return
         if (petName.equals(" ")){
-            checkAdditiveMulti();
+            getArmorEffects();
+            getWeaponEffects();
             return;
         }
 
@@ -1382,9 +1445,9 @@ public class PlayerProfile {
             addPetStat(stat, leveledStats.getDouble(stat) * petLevel);
         }
         
-        checkAdditiveMulti();
+        getArmorEffects();
+        getWeaponEffects();
 
-        // TODO: Conditional stuff
         for (int i = 0 ; i < abilities.length(); ++i){
             if (enabledPetAbilities[abilityOrder[i]] == 2)
                 continue;
@@ -1514,7 +1577,12 @@ public class PlayerProfile {
                     String receiveStat = currentAbility.getString("stat");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
-                    addPetStat(receiveStat, (petStats.get(receiveStat) + (statTotals.get(receiveStat)) - miscStats.get(receiveStat)) * (statPerLevel * petLevel));
+                    addToGlobalModifer(receiveStat, statPerLevel * petLevel);
+                    System.out.println(globalStatModifiers);
+                    //statValue = (petStats.get(receiveStat) + (statTotals.get(receiveStat)) - miscStats.get(receiveStat)) * (statPerLevel * petLevel);
+                    if (petName.equals("Griffin"))
+                        statValue = (petStats.get(receiveStat) + (statTotals.get(receiveStat)) - miscStats.get(receiveStat)) * ((statPerLevel * petLevel) + .01);
+                    //addPetStat(receiveStat, statValue);
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1549,32 +1617,34 @@ public class PlayerProfile {
                     receiveStat = currentAbility.getString("receiveStat");
                     String dependentStat = currentAbility.getString("dependentStat");
                     double dependentAmount = 0.0;
+                    double dependentTotal = 0.0;
                     JSONArray dependentValues = null;
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
 
                     // check if dependent Amount is a String meaning it should be handled as a percentage
                     if (currentAbility.get("dependentAmount") instanceof String){
                         statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
-                        statValue = (petStats.get(dependentStat) + statTotals.get(dependentStat)) * (statPerLevel * petLevel);
-                        addPetStat(receiveStat, statValue * (1 + globalStatBoost));
+                        dependentTotal = (petStats.get(dependentStat) + statTotals.get(dependentStat)) * globalStatModifiers.get(dependentStat);
+                        statValue = dependentTotal * (statPerLevel * petLevel);
+                        addPetStat(receiveStat, statValue);
                     }
                     else {
                         statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
                         dependentValues = currentAbility.getJSONArray("dependentAmount");
                         dependentAmount = dependentValues.getDouble(getTierToUse(dependentValues.length()));
-                        double totalAmount = ((petStats.get(dependentStat) + statTotals.get(dependentStat)) / dependentAmount) * (statPerLevel * petLevel);
-                        addPetStat(receiveStat, totalAmount * (1 + globalStatBoost));
+                        dependentTotal = (petStats.get(dependentStat) + statTotals.get(dependentStat)) * globalStatModifiers.get(dependentStat);
+                        addPetStat(receiveStat, (dependentTotal / dependentAmount) * (statPerLevel * petLevel));
                     }
 
                     break;
                 case "buffCombatStats" :    // health, defense, crit damage/chance, strength, damage
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
-                    addPetStat("HEALTH", (petStats.get("HEALTH") + statTotals.get("HEALTH") ) * (statPerLevel * petLevel));
-                    addPetStat("DEFENSE", (petStats.get("DEFENSE") + statTotals.get("DEFENSE")) * (statPerLevel * petLevel));
-                    addPetStat("STRENGTH", (petStats.get("STRENGTH") + statTotals.get("STRENGTH")- miscStats.get("STRENGTH")) * (statPerLevel * petLevel));
-                    addPetStat("CRITICAL_DAMAGE", (petStats.get("CRITICAL_DAMAGE") + statTotals.get("CRITICAL_DAMAGE")) * (statPerLevel * petLevel));
-                    addPetStat("CRITICAL_CHANCE", (petStats.get("CRITICAL_CHANCE") + statTotals.get("CRITICAL_CHANCE")) * (statPerLevel * petLevel));
+                    addToGlobalModifer("HEALTH", (statPerLevel * petLevel) * globalStatModifiers.get("HEALTH"));
+                    addToGlobalModifer("DEFENSE", (statPerLevel * petLevel)* globalStatModifiers.get("DEFENSE"));
+                    addToGlobalModifer("STRENGTH", (statPerLevel * petLevel)* globalStatModifiers.get("STRENGTH"));
+                    addToGlobalModifer("CRITICAL_DAMAGE", (statPerLevel * petLevel)* globalStatModifiers.get("CRITICAL_DAMAGE"));
+                    addToGlobalModifer("CRITICAL_CHANCE", (statPerLevel * petLevel)* globalStatModifiers.get("CRITICAL_CHANCE"));
                     break;
                     
                 // currently only made to support ammonite because its the only pet that does this
@@ -1658,11 +1728,95 @@ public class PlayerProfile {
             baseMultiplier += smiteBonus; 
         else if (selectedMob.equals("Creeper") || selectedMob.equals("Magma Cube") || selectedMob.equals("Slimes"))
             baseMultiplier += cubismBonus;
+        else if (selectedMob.equals("Sea Creature") || selectedMob.equals("Lava Sea Creature"))
+            baseMultiplier += impalingBonus;
 
 
-            // TODO: Magma Lord armor set is base multi additive
             // TODO: mobtype is multiplicative of final i.e. final * 1.xx
-        return (int) ((5 + damage) * (1 + (strength / 100.0)) * (1 + (critDamage / 100.0)) * (1 + (baseMultiplier / 100.0)) * (mobMultiBoost * weaponMultiplier));
+        return (int) ((5 + damage) * (1 + (strength / 100.0)) * (1 + (critDamage / 100.0)) * (1 + ((baseMultiplier + armorAdditive) / 100.0)) * (mobMultiBoost * weaponMultiplier * armorMultiplier));
+    }
+
+    public void getArmorEffects(){
+        InventoryItem helmet = playerGear.get(HELMET_INDEX);
+        InventoryItem chestplate = playerGear.get(CHESTPLATE_INDEX);
+        InventoryItem leggings = playerGear.get(LEGGINGS_INDEX);
+        InventoryItem boots = playerGear.get(BOOTS_INDEX);
+        armorMultiplier = 1;
+        armorAdditive = 0;
+        switch (helmet.getName()){
+            case "lantern helmet" : 
+                helmet.setStat("HEALTH", 4 * farmingLevel);
+                helmet.setStat("DEFENSE", 2 * farmingLevel);
+                break;
+            case "taurus helmet" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 10;
+                break;
+            case "magma lord helmet" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 30;
+                break;
+            case "thunder helmet" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 20;
+                break;
+            case "crown of greed" : 
+            //TODO: check accuracy
+                armorMultiplier += 0.25;;
+                break;
+            case "warden helmet" : 
+            //TODO: implement needs to be done after all speed calcs. Remove from here add to some post calc spot
+                break;
+            case "dungeon helmets" : 
+            //TODO: implement
+                break;
+        }
+        switch (chestplate.getName()){
+            case "flaming chestplate" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 10;
+                break;
+            case "magma lord chestplate" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 30;
+                break;
+            case "thunder chestplate" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 20;
+                break;
+        }
+        switch (leggings.getName()){
+            case "moogma leggings" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 10;
+                break;
+            case "magma lord leggings" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 30;
+                break;
+            case "thunder leggings" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 20;
+                break;
+        }
+        switch (boots.getName()){
+            case "rancher's boots" : 
+                boots.setStat("DEFENSE", 2 * farmingLevel);
+                boots.setStat("SPEED", 4 * farmingLevel);
+                break;
+            case "farmer boots" : 
+                boots.setStat("DEFENSE", 2 * farmingLevel);
+                boots.setStat("SPEED", 4 * farmingLevel);
+                break;
+            case "magma lord boots" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 30;
+                break;
+            case "thunder boots" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 20;
+                break;
+        }
     }
 
     public void getWeaponEffects(){
@@ -1767,6 +1921,14 @@ public class PlayerProfile {
                     addGlobalStat("STRENGTH", tempStrength);
                 }
                 break;
+            case "sword of revelations" : 
+                if (selectedMob.equals("Mythological"))
+                    weaponMultiplier += 200;
+                break;
+            case "daedalus axe" : 
+                if (selectedMob.equals("Mythological"))
+                    weaponMultiplier += 200;
+                break;
         }
     }
 
@@ -1779,8 +1941,6 @@ public class PlayerProfile {
         smiteBonus = 0;
         baneBonus = 0;
         cubismBonus = 0;
-
-        //addStat("CRITICAL_DAMAGE", -tempCritDamage);
 
         // add combat multiplier
         if (combatLevel > 50 )
@@ -1796,6 +1956,8 @@ public class PlayerProfile {
             JSONObject enchantPath = hypixelValue.getJSONObject("Enchantments").getJSONObject(enchantType);
             // loop through enchants
             for (Entry<String,String> enchant : playerGear.get(WEAPON_INDEX).getEnchantments().entrySet()){
+                if (!enchantPath.has(enchant.getKey()))
+                    continue;
                 double maxPercentage = 0;
                 String enchantName = enchant.getKey();
                 String enchantLevel = enchant.getValue();
@@ -1824,6 +1986,9 @@ public class PlayerProfile {
                         break;
                     case "cubism" : 
                         cubismBonus = enchantValue;
+                        break;
+                    case "impaling" : 
+                        impalingBonus = enchantValue;
                         break;
                     case "giant_killer" : 
                         double enchantPercentage = (mobHealth - statTotals.get("HEALTH")) / statTotals.get("HEALTH") * enchantValue;
@@ -1858,7 +2023,7 @@ public class PlayerProfile {
                         baseMultiplier += enchantPercentage;
                         break;
                     case "prosecute" : 
-                        // TODO: since I do not currentl track current health this works otherwise i need to (currentH / maxH) 0.1 * enchantValue * 1000;
+                        // TODO: since I do not currently track current health this works otherwise i need to (currentH / maxH) 0.1 * enchantValue * 1000;
                         enchantPercentage = 0.1 * enchantValue * 1000;
                         baseMultiplier += enchantPercentage;
                         break;
