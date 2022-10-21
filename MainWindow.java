@@ -561,7 +561,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         magicFindLabel.setText("Magic Find: " + decimalFormatter.format(profile.getStat("MAGIC_FIND")  ));
         trueDefenseLabel.setText("True Defense: " + decimalFormatter.format(profile.getStat("TRUE_DEFENSE")  ));
         magicalPowerLabel.setText("Magical Power: " + (int) profile.getStat("MAGICAL_POWER"));
-        abilityDamageLabel.setText("Ability Damage: " + profile.getStat("ABILITY_DAMAGE")  );
+        abilityDamageLabel.setText("Ability Damage: " + profile.getStat("ABILITY_DAMAGE_PERCENT")  );
         //manaLabel.setText("Mana: " + decimalFormatter.format(profile.getStat("INTELLIGENCE") + 100)); 
 
         // TODO: maybe add dialog popup for wrong health format
@@ -616,6 +616,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
 
         if (e.getSource() == JBloadProfile){
+            mobTypesBox.setSelectedItem("None");
+            petsBox.setSelectedItem(" ");
+            petLevel.setValue(1);
+            petTier.setValue(1);
             if (enableGodPotion.isSelected()){
                 mainProfile.setGodPotionStats(false);
                 enableGodPotion.setSelected(false);
