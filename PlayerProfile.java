@@ -61,7 +61,7 @@ public class PlayerProfile {
     double globalStatBoost = 0.0;
     double magicalMultiiplier = 0;
     double baseMultiplier = 0;
-    double petBaseMultiplier = 0;
+    double petBaseAdditive = 0;
     double weaponAdditive = 0;
     double weaponMultiplier = 1;
     double armorAdditive = 0;
@@ -74,6 +74,8 @@ public class PlayerProfile {
     double abilityScaling = 0;
     double tempDamage = 0;
     double tempStrength = 0;
+    double petMultiplier = 1;
+
 
     int mainProfileIndex = 0;
 
@@ -1400,11 +1402,11 @@ public class PlayerProfile {
         for (Entry<String, Double> petStatTotals : petStats.entrySet()){
             addGlobalStat(petStatTotals.getKey(), -petStatTotals.getValue());
         }
-        
+
         mobAdditiveBoost = 0;
         mobMultiBoost = 1;
 
-        petBaseMultiplier = 0;
+        petBaseAdditive = 0;
         petFirstHit = 0;
         petStats = createBaseStats();
 
@@ -1474,13 +1476,20 @@ public class PlayerProfile {
                             continue;
                         statTiers = stats.getJSONArray(stat);
                         statPerLevel = statTiers.getDouble(getTierToUse(statTiers.length()));
-                        statValue = (statPerLevel * petLevel) * (1 + globalStatBoost);
+                        statValue = statPerLevel * petLevel;
                         addPetStat(stat, statValue);
                     }
                     break;
                 case "baseMultiplierPerLevel" :     //TODO: some might be post multi 
+                    String type = currentAbility.getString("type");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
-                    petBaseMultiplier = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) * petLevel;
+                    //This works on tiger
+                    if (type.equals("additive"))
+                        petBaseAdditive = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) * petLevel;
+                    else {
+                        petMultiplier = 1 + ((perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100) * petLevel);
+                    }
+
                     break;
                 case "firstHitBuff" : 
                     Map<String,String> weaponEnchants = playerGear.get(WEAPON_INDEX).getEnchantments();
@@ -1492,12 +1501,7 @@ public class PlayerProfile {
                 case "allStats" : 
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     perLevelValue = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100.0;
-                    for (Entry<String, Double> playerStats : statTotals.entrySet()){
-                        if (playerStats.getKey().equals("DAMAGE"))
-                            continue;
-                        statValue = perLevelValue * petLevel;
-                        addPetStat(playerStats.getKey(), (playerStats.getValue() + petStats.get(playerStats.getKey())) * statValue);
-                    }
+                    addToAllGlobalModifers(perLevelValue * petLevel);
                     break;
                 case "buffArmor" :
                     String armorKeyword = currentAbility.getString("armorKeyword");
@@ -1507,7 +1511,7 @@ public class PlayerProfile {
                         InventoryItem armorPiece = playerGear.get(armorIndex);
                         if (armorPiece.getName().contains(armorKeyword)){
                             for (Entry<String,Double> armorStat : armorPiece.getStats().entrySet()){
-                                addPetStat(armorStat.getKey(), (armorStat.getValue() * percentageIncrease) * (1 + globalStatBoost));
+                                addPetStat(armorStat.getKey(), (armorStat.getValue() * percentageIncrease));
                             }
                         }
                     }
@@ -1519,11 +1523,7 @@ public class PlayerProfile {
                         for (String stat : stats.keySet()){
                             statTiers = stats.getJSONArray(stat);
                             statPerLevel = statTiers.getDouble(getTierToUse(statTiers.length()));
-                            if (stat.equals("DAMAGE"))
-                                addPetStat(stat, statPerLevel * petLevel);
-                            else {
-                                addPetStat(stat, (statPerLevel * petLevel) * (1 + globalStatBoost));
-                            }
+                            addPetStat(stat, statPerLevel * petLevel);
                         }
                     }
                     break;
@@ -1531,12 +1531,12 @@ public class PlayerProfile {
                     int bookCount = 0;
                     for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
                         bookCount = playerGear.get(armorIndex).getPotatoBooks();
-                        addPetStat("HEALTH", (4 * bookCount) * (1 + globalStatBoost));
-                        addPetStat("DEFENSE", (2 * bookCount) * (1 + globalStatBoost));
+                        addPetStat("HEALTH", (4 * bookCount));
+                        addPetStat("DEFENSE", (2 * bookCount));
                     }
                     bookCount = playerGear.get(WEAPON_INDEX).getPotatoBooks();
-                    addPetStat("DAMAGE", (2 * bookCount) * (1 + globalStatBoost));
-                    addPetStat("STRENGTH", (2 * bookCount) * (1 + globalStatBoost));
+                    addPetStat("DAMAGE", (2 * bookCount));
+                    addPetStat("STRENGTH", (2 * bookCount));
                     break;
                 case "buffMobType" :        // pets add multiplicative boost
                     String mobType = currentAbility.getString("mobType");
@@ -1558,16 +1558,19 @@ public class PlayerProfile {
                     for (int goldCount = goldCollection; goldCount >= 1; goldCount /= 10){
                         ++digitCount;
                     }
-                    addPetStat("STRENGTH", (10 * digitCount) * (1 + globalStatBoost));
-                    addPetStat("MAGIC_FIND", (2 * digitCount) * (1 + globalStatBoost));
+                    addPetStat("STRENGTH", (10 * digitCount));
+                    addPetStat("MAGIC_FIND", (2 * digitCount));
                     break;
                 case "dragonsGreed" :
-                    double strength = petStats.get("STRENGTH") + getStat("STRENGTH");      // add current pet strength and global strength
-                    int magicFind = (int) (petStats.get("MAGIC_FIND") + getStat("MAGIC_FIND")) / 5;     
-                    statValue =  strength * ((magicFind / 2.0) / 100.0);
-                    addPetStat("STRENGTH", statValue * (1 + globalStatBoost));
+                    //double strength = (petStats.get("STRENGTH") + statTotals.get("STRENGTH")) * globalStatModifiers.get("STRENGTH"); 
+                    int magicFind = (int) ((petStats.get("MAGIC_FIND") + statTotals.get("MAGIC_FIND")) * globalStatModifiers.get("MAGIC_FIND")) / 5;     
+                    perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
+                    statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
+                    statValue = ((statPerLevel * petLevel) + 0.25) * magicFind;
+                    addToGlobalModifer("STRENGTH", statValue * globalStatModifiers.get("STRENGTH"));
                     break;
                 case "legendaryTreasure" :
+                    //TODO: adds percentage to damage calc not damage stat 
                     addPetStat("DAMAGE", 0.1263 * (bankBalance / 1000000));
                     break;
                 case "petAbility" :
@@ -1577,12 +1580,10 @@ public class PlayerProfile {
                     String receiveStat = currentAbility.getString("stat");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
-                    addToGlobalModifer(receiveStat, statPerLevel * petLevel);
-                    System.out.println(globalStatModifiers);
-                    //statValue = (petStats.get(receiveStat) + (statTotals.get(receiveStat)) - miscStats.get(receiveStat)) * (statPerLevel * petLevel);
+                    statValue = statPerLevel * petLevel;
                     if (petName.equals("Griffin"))
-                        statValue = (petStats.get(receiveStat) + (statTotals.get(receiveStat)) - miscStats.get(receiveStat)) * ((statPerLevel * petLevel) + .01);
-                    //addPetStat(receiveStat, statValue);
+                        statValue += .01;
+                    addToGlobalModifer(receiveStat, statValue * globalStatModifiers.get(receiveStat));
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1600,14 +1601,14 @@ public class PlayerProfile {
                         //reaper mask gets 2x the percentage value for some reason
                         if (gearPiece.getName().endsWith("reaper mask")){
                             for (Entry<String,Double> stat : gearPiece.getStats().entrySet()){
-                                addPetStat(stat.getKey(), ((stat.getValue()) * (statPerLevel * petLevel) * 2) * (1 + globalStatBoost));
+                                addPetStat(stat.getKey(), (stat.getValue()) * (statPerLevel * petLevel) * 2);
                             }
                             continue;
                         }
                         for (String keyword : acceptedArmor){
                             if (gearPiece.getName().contains(keyword)){
                                 for (Entry<String,Double> stat : gearPiece.getStats().entrySet()){
-                                    addPetStat(stat.getKey(), ((stat.getValue()) * (statPerLevel * petLevel)) * (1 + globalStatBoost));
+                                    addPetStat(stat.getKey(), (stat.getValue()) * (statPerLevel * petLevel));
                                 }
                             }
                         }
@@ -1731,9 +1732,8 @@ public class PlayerProfile {
         else if (selectedMob.equals("Sea Creature") || selectedMob.equals("Lava Sea Creature"))
             baseMultiplier += impalingBonus;
 
-
             // TODO: mobtype is multiplicative of final i.e. final * 1.xx
-        return (int) ((5 + damage) * (1 + (strength / 100.0)) * (1 + (critDamage / 100.0)) * (1 + ((baseMultiplier + armorAdditive) / 100.0)) * (mobMultiBoost * weaponMultiplier * armorMultiplier));
+        return (int) ((5 + damage) * (1 + (strength / 100.0)) * (1 + (critDamage / 100.0)) * (1 + (baseMultiplier / 100.0)) * (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier));
     }
 
     public void getArmorEffects(){
@@ -1931,10 +1931,14 @@ public class PlayerProfile {
                 break;
         }
     }
-
+    /**
+     * 
+     * @param mobHealth
+     * @return Total base multiplier across all area including enchants pet/armor/weapon bonuses
+     */
      double calcBaseMultiplier(int mobHealth){
         int combatMultiplier = 0;
-        double baseMultiplier = petBaseMultiplier + weaponAdditive;
+        double baseMultiplier = petBaseAdditive + weaponAdditive + armorAdditive;
         enderSlayerBonus = 0;
         impalingBonus = 0;
         dragonBonus = 0;
