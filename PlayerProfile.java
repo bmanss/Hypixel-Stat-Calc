@@ -74,7 +74,11 @@ public class PlayerProfile {
     double abilityScaling = 0;
     double tempDamage = 0;
     double tempStrength = 0;
+    double tempcritDamage = 0;
+    double tempDefense = 0;
+    double tempHealth = 0;
     double petMultiplier = 1;
+    double critEffectiveness = 1;
 
 
     int mainProfileIndex = 0;
@@ -335,40 +339,8 @@ public class PlayerProfile {
         if (inventory.getList("i").getCompound(0).size() != 0)
             setItemStats(playerGear.get(playerGearIndex), inventory.getList("i").getCompound(0));
 
-        checkArmorForGlobals();
         getPetStats();
         addStatMultipliers();
-    }
-
-    public void checkArmorForGlobals(){
-        //this only check for superior dragon set and adds 5% to globalStatBoost
-        if (playerGear.get(HELMET_INDEX).getName().contains("superior dragon") && playerGear.get(CHESTPLATE_INDEX).getName().contains("superior dragon") &&
-            playerGear.get(LEGGINGS_INDEX).getName().contains("superior dragon") && playerGear.get(BOOTS_INDEX).getName().contains("superior dragon")){
-                addToAllGlobalModifers(0.05);
-                //globalStatBoost += 0.05;
-            }
-
-        // this check reforges for renowned and adds 1% to globalStatBoost
-        for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
-            if (playerGear.get(armorIndex).getReforge().equals("renowned")){
-                addToAllGlobalModifers(0.01);
-                //globalStatBoost += 0.01;
-            }
-        }
-
-        //TODO: do not have to do now i believe
-        // add additive multipliers if present
-        /*
-         * if (globalStatBoost > 0.0){
-            for (Entry<String, Double> stat : miscStats.entrySet()){
-                if (stat.getKey().equals("DAMAGE"))
-                    continue;
-                miscStats.put(stat.getKey(), (statTotals.get(stat.getKey()) + petStats.get(stat.getKey())) * globalStatBoost);
-                addGlobalStat(stat.getKey(), stat.getValue());
-            }
-        }
-         */
-
     }
 
     public void removeAdditiveMulti(){
@@ -1362,10 +1334,8 @@ public class PlayerProfile {
             }
         }
         resetGlobalStatModifer();
-        checkArmorForGlobals();
         getPetStats();
         addStatMultipliers();
-        //getWeaponEffects();
     }
 
     public void setPowerStone(String powerStone){
@@ -1414,8 +1384,7 @@ public class PlayerProfile {
 
         // if no pet is selected return
         if (petName.equals(" ")){
-            getArmorEffects();
-            getWeaponEffects();
+            addGearEffects();
             return;
         }
 
@@ -1447,8 +1416,8 @@ public class PlayerProfile {
             addPetStat(stat, leveledStats.getDouble(stat) * petLevel);
         }
         
-        getArmorEffects();
-        getWeaponEffects();
+        // get armor and weapon effects after all base pet stats are set
+        addGearEffects();
 
         for (int i = 0 ; i < abilities.length(); ++i){
             if (enabledPetAbilities[abilityOrder[i]] == 2)
@@ -1713,6 +1682,12 @@ public class PlayerProfile {
             }
     }
 
+    public void addGearEffects(){
+        setTempStats(false);
+        getArmorEffects();
+        getWeaponEffects();
+        setTempStats(true);
+    }
     public int calcFinalDamage(int mobHealth){
         baseMultiplier = calcBaseMultiplier(mobHealth);
         Double strength = statTotals.get("STRENGTH");
@@ -1733,7 +1708,8 @@ public class PlayerProfile {
             baseMultiplier += impalingBonus;
 
             // TODO: mobtype is multiplicative of final i.e. final * 1.xx
-        return (int) ((5 + damage) * (1 + (strength / 100.0)) * (1 + (critDamage / 100.0)) * (1 + (baseMultiplier / 100.0)) * (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier));
+        return (int) ((5 + damage) * (1 + (strength  / 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * 
+                     (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier));
     }
 
     public void getArmorEffects(){
@@ -1741,12 +1717,29 @@ public class PlayerProfile {
         InventoryItem chestplate = playerGear.get(CHESTPLATE_INDEX);
         InventoryItem leggings = playerGear.get(LEGGINGS_INDEX);
         InventoryItem boots = playerGear.get(BOOTS_INDEX);
+
+        InventoryItem necklace = playerGear.get(NECKLACE_INDEX);
+        InventoryItem cloak = playerGear.get(CLOAK_INDEX);
+        InventoryItem belt = playerGear.get(BELT_INDEX);
+        InventoryItem gauntlet = playerGear.get(GAUNTLET_INDEX);
+
         armorMultiplier = 1;
         armorAdditive = 0;
+        critEffectiveness = 1;
+
+        // this checks reforges for renowned and adds 1% to globalStatBoost
+        for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
+            if (playerGear.get(armorIndex).getReforge().equals("renowned")){
+                addToAllGlobalModifers(0.01);
+                //globalStatBoost += 0.01;
+            }
+        }
+
+        // All individual piece bonuses
         switch (helmet.getName()){
             case "lantern helmet" : 
-                helmet.setStat("HEALTH", 4 * farmingLevel);
-                helmet.setStat("DEFENSE", 2 * farmingLevel);
+                tempHealth += 4 * farmingLevel;
+                tempDefense += 2 * farmingLevel;
                 break;
             case "taurus helmet" : 
                 if (selectedMob.equals("Lava Sea Creature"))
@@ -1817,21 +1810,106 @@ public class PlayerProfile {
                     armorAdditive += 20;
                 break;
         }
+        switch (necklace.getName()){
+            case "thunderbolt necklace" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 10;
+                break;
+        }
+        switch (cloak.getName()){
+            case "dragonfade cloak" : 
+                if (selectedMob.equals("Dragon"))
+                    mobMultiBoost += 0.01;
+                break;
+        }
+        // placeholder
+        switch (belt.getName()){
+        }
+        switch (gauntlet.getName()){
+            case "magma lord gauntlet" : 
+                if (selectedMob.equals("Lava Sea Creature"))
+                    armorAdditive += 10;
+                break;
+            case "dragonfuse glove" : 
+                if (playerGear.get(WEAPON_INDEX).getName().equals("aspect of the dragon")){
+                    tempStrength += 50;
+                    tempDamage += 35;
+                }
+                break;
+            case "demonslayer gauntlet" : 
+                if (selectedMob.equals("Blaze"))
+                    armorAdditive += 10;
+                break;
+        }
+
+        /*
+         * all set bonuses and effects below
+         */
+
+        // mastif
+        if (checkArmorSet("mastiff",4)){
+            tempHealth = (statTotals.get("CRITICAL_DAMAGE") * globalStatModifiers.get("CRITICAL_DAMAGE") + tempHealth )* 50;
+            critEffectiveness -= 0.5;
+        }
+        // reaper slayer set
+        else if (checkArmorSet("reaper", 3)){
+            if (selectedMob.equals("Zombie"))
+                armorAdditive += 100;
+        }
+        // check for superior dragon set
+        else if (checkArmorSet("superior dragon", 4)){
+            addToAllGlobalModifers(0.05);
+        }
+        // lapis armor
+        else if (checkArmorSet("lapis armor", 4)){
+            tempHealth += 60;
+        }
+        // crimson isle rampart `
+        else if (checkArmorSet("rampart", 4)){
+            tempHealth += 50;
+            tempStrength += 20;
+            tempcritDamage += 15;
+        }
+
+
+    }
+
+    public Boolean checkArmorSet(String keyword, int requiredAmount){
+        for (int armorIndex = 0; armorIndex < 4 && armorIndex < requiredAmount; ++armorIndex){
+            String armorName = playerGear.get(armorIndex).getName();
+            if (!armorName.contains(keyword))
+                return false;
+        }
+        return true;
+    }
+
+    public void setTempStats(Boolean status){
+        int modifier = 1;
+        if (!status) modifier = -1;
+
+        addGlobalStat("HEALTH", tempHealth * modifier);
+        addGlobalStat("STRENGTH", tempStrength * modifier);
+        addGlobalStat("CRITICAL_DAMAGE", tempcritDamage * modifier);
+        addGlobalStat("DAMAGE", tempDamage * modifier);
+        addGlobalStat("DEFENSE", tempDefense * modifier);
+
+        if (!status){
+            tempHealth = 0.0;
+            tempStrength = 0.0;
+            tempcritDamage = 0.0;
+            tempcritDamage = 0.0;
+            tempDefense = 0.0;
+        }
     }
 
     public void getWeaponEffects(){
-        addGlobalStat("DAMAGE", -tempDamage);
-        addGlobalStat("STRENGTH", -tempStrength);
-        tempDamage = 0;
-        tempStrength = 0;
         weaponAdditive = 0;
         weaponMultiplier = 1;
 
         switch(playerGear.get(WEAPON_INDEX).getName()){
             case "undead sword" : 
-                if (selectedMob.equals("Zombie") || selectedMob.equals("Wither") || selectedMob.equals("Skeleton") || selectedMob.equals("Pigmen")){
+                if (selectedMob.equals("Zombie") || selectedMob.equals("Wither") || selectedMob.equals("Skeleton") || selectedMob.equals("Pigmen"))
                     weaponMultiplier += 1;
-                }
                 break;
             case "spider sword" : 
                 if (selectedMob.equals("Spider"))
@@ -1910,24 +1988,22 @@ public class PlayerProfile {
                     weaponMultiplier = 2.0;
                 break;
             case "shaman sword" : 
-                tempDamage = statTotals.get("HEALTH") / 50;
-                addGlobalStat("DAMAGE", tempDamage);
+                tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 break;
             case "pooch sword" : 
-                tempDamage = statTotals.get("HEALTH") / 50;
-                addGlobalStat("DAMAGE", tempDamage);
+            //TODO: fix global stat boost interaction 
+                tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 if (selectedMob.equals("Wolf")){
                     tempStrength = 150;
-                    addGlobalStat("STRENGTH", tempStrength);
                 }
                 break;
             case "sword of revelations" : 
                 if (selectedMob.equals("Mythological"))
-                    weaponMultiplier += 200;
+                    weaponMultiplier += 2.0;
                 break;
             case "daedalus axe" : 
                 if (selectedMob.equals("Mythological"))
-                    weaponMultiplier += 200;
+                    weaponMultiplier += 2.0;
                 break;
         }
     }
