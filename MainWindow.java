@@ -21,7 +21,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
     PlayerProfile mainProfile = null;
     PlayerProfile customProfile = new PlayerProfile();
-    PlayerProfile currentProfile = new PlayerProfile();
+    PlayerProfile currentProfile = null;
 
     ToolTipListener toolTipListener = new ToolTipListener();
 
@@ -144,7 +144,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JFrame mainWindow;
     ItemTooltipPanel overlay = new ItemTooltipPanel();
     MainWindow(){
-
+        this.setTitle("Hypixel Stat Calculator");
         mainWindow = this;
         this.addMouseListener(toolTipListener);
         this.setLayout(new GridBagLayout());
@@ -170,16 +170,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     }
 
     public void initComponents(){
-        /*
-         *  helmetBox.setEditable(true);
-            helmetBox.addItemListener(new ItemListener(){
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (e.getStateChange() == ItemEvent.SELECTED)
-                System.out.println(e.getItem());
-            }
-        }); 
-         */
+        enableGodPotion.setEnabled(false);
+        JBrefreshProfile.setEnabled(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         armorListPanel.setLayout(new MigLayout());
         damagePanel.setLayout(new MigLayout("", "","[]20[]"));
@@ -402,7 +394,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     }
 
     public void createMaunalStatEntry(){
-        Map<String,Double> stats = currentProfile.getAllStats();
+        Map<String,Double> stats = customProfile.getAllStats();
         int columnIndex = 0;
         for (Entry<String,Double> statList : stats.entrySet()){
             String column = "cell 0 " + Integer.toString(columnIndex) + "";
@@ -592,6 +584,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
         reforgePowerBox.setModel(new DefaultComboBoxModel<String>(allStones.toArray(new String [allStones.size()])));
         reforgePowerBox.getModel().setSelectedItem(currentProfile.getPowerStone());
+  
     }
 
     public void createPetOptions(){
@@ -621,6 +614,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
 
         if (e.getSource() == JBloadProfile){
+            enableGodPotion.setSelected(false);
             mobTypesBox.setSelectedItem("None");
             petsBox.setSelectedItem(" ");
             petLevel.setValue(1);
@@ -641,6 +635,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             mainProfile.setPlayerApi(playerApi);
             mainProfile.setCustomValues(hypixelCustomValues);
             mainProfile.setSkillsApiMilestones(skillsApiInfo);
+            enableGodPotion.setEnabled(true);
+            JBrefreshProfile.setEnabled(true);
             try {
                 mainProfile.parsePlayerProfile();
             } catch (JSONException | IOException e1) {
@@ -650,13 +646,15 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             displayStats(mainProfile);
         }
         else if(e.getSource() == JBcustomProfile){
+            customProfile = new PlayerProfile();
+            enableGodPotion.setEnabled(true);
+            enableGodPotion.setSelected(false);
+            JBrefreshProfile.setEnabled(true);
             currentProfile = customProfile;
             customProfile.addItemList(allItems,accessoryItems);
-            try {
-                customProfile.parsePlayerProfile();
-            } catch (JSONException | IOException e1) {
-                e1.printStackTrace();
-            }
+            customProfile.setCustomValues(hypixelCustomValues);
+            setActiveItems();
+            currentProfile.initCustomProfile();
             displayStats(customProfile);
         }
         else if(e.getSource() == JBrefreshProfile){
@@ -689,11 +687,11 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             currentProfile.setSelectedMob(mobTypesBox.getSelectedItem().toString());
         }
 
-        if (e.getItem() == enableGodPotion && e.getStateChange() == ItemEvent.SELECTED ){
+        if (e.getItem() == enableGodPotion && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
             currentProfile.setGodPotionStats(true);
             displayStats(currentProfile);
         }
-        else if (e.getItem() == enableGodPotion){
+        else if (e.getItem() == enableGodPotion && currentProfile !=null){
             currentProfile.setGodPotionStats(false);
             displayStats(currentProfile);
         }
