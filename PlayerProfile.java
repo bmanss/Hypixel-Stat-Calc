@@ -42,6 +42,8 @@ public class PlayerProfile {
     int bestiaryLevel = 0;
     int carpentryLevel = 0;
     int magicalPower = 0;
+    int weaponDamage = 0;
+    int mageDamage = 0;
 
 
     int goldCollection = 0;              //TODO: user input
@@ -71,10 +73,11 @@ public class PlayerProfile {
     double mobAdditiveBoost = 0;
     double mobMultiBoost = 1;
     double weaponAbilityDamage = 0;
-    double abilityScaling = 0;
+    double playerAbilityDamage = 0;
     double tempDamage = 0;
     double tempStrength = 0;
     double tempcritDamage = 0;
+    double tempSpeed = 0;
     double tempDefense = 0;
     double tempHealth = 0;
     double petMultiplier = 1;
@@ -327,7 +330,7 @@ public class PlayerProfile {
         for (int i = 0 ; i < 2; ++i){
             for (int apiIndex = 0; apiIndex < 4; ++apiIndex){
                 if (currentInventory.getList("i").getCompound(apiIndex).size() != 0)
-                    setItemStats(playerGear.get(playerGearIndex), currentInventory.getList("i").getCompound(apiIndex));
+                    setArmorFromApi(playerGear.get(playerGearIndex), currentInventory.getList("i").getCompound(apiIndex));
                 ++playerGearIndex;
             }
 
@@ -337,10 +340,11 @@ public class PlayerProfile {
 
         // setItemStats() will make sure its an allowable "weapon"
         if (inventory.getList("i").getCompound(0).size() != 0)
-            setItemStats(playerGear.get(playerGearIndex), inventory.getList("i").getCompound(0));
+            setArmorFromApi(playerGear.get(playerGearIndex), inventory.getList("i").getCompound(0));
 
         getPetStats();
         addStatMultipliers();
+        calcDamage(selectedMobHealth);
     }
 
     public void removeAdditiveMulti(){
@@ -418,80 +422,43 @@ public class PlayerProfile {
         }
         inventoryItem.setReforge(reforge);
     }
-
-    void setItemStats(InventoryItem inventoryItem, NBTCompound armorSlot){
+    /**
+     * Reads in necessary information on a player's armor piece from the inventory API.
+     * @param inventoryItem
+     * @param armorSlot
+     */
+    void setArmorFromApi(InventoryItem inventoryItem, NBTCompound armorSlot){
         JSONObject itemReference = null;
         String itemCategory = "";
         String reforge = "";
-
         JSONObject hypixelEnchants = hypixelValue.getJSONObject("Enchantments");
-
         ArrayList<String> enchantPool = new ArrayList<>();
-
         NBTCompound extraAttributes = armorSlot.getCompound("tag.ExtraAttributes");
         NBTCompound enchantments = extraAttributes.getCompound("enchantments");
 
-        //String itemID = armorSlot.getString("tag.ExtraAttributes.id");
+        // get item's name along with any reforge that gets removed later
         String itemName = armorSlot.getCompound("tag.display").
                                     getString("Name").replaceAll("§[a-zA-Z0-9]|[^a-zA-Z0-9 ']", "").toLowerCase().trim();
-            
 
-        // set reforge and item name
+        // set reforge and remove it from the item's name if it exist
         if (extraAttributes.containsKey("modifier")){
             itemName = itemName.replace(extraAttributes.getString("modifier") + " ", "").toLowerCase();
             reforge = extraAttributes.getString("modifier");
-        }
+        }          
         
+        // after item's name has been parsed make sure its in the available item list if not return from function
         if (!allItems.containsKey(itemName)) return;
 
-        inventoryItem.setName(itemName);
-
+        // set item reference from list of available items
         itemReference = allItems.get(itemName);  
 
-        if (itemReference.has("material"))
-            inventoryItem.setMaterial(itemReference.getString("material"));
+        // set item's name
+        inventoryItem.setName(itemName);
 
         // check if dungeon tiered item and set the item's quality
         if (extraAttributes.containsKey("item_tier"))
             inventoryItem.setDungeonTier(extraAttributes.getInt("item_tier", 0),extraAttributes.getInt("baseStatBoostPercentage", 0) / 100.0 + 1);
-
-
-        // set item's category and its category for which reforges to pool from
-        itemCategory = itemReference.getString("category");
-        inventoryItem.setCategory(itemCategory);
-
         
-        if (itemCategory.equals("SWORD") || itemCategory.equals("BOW")){
-            inventoryItem.setReforge(reforge);
-            setWeaponModifierPool(inventoryItem);
-        }
-        else {
-            inventoryItem.setReforge(reforge);
-        }
-
-        // add weapon enchants to list of selectable enchants
-        if (itemCategory.equals("BOW") || itemCategory.equals("SWORD") ){
-            JSONObject weaponEnchants = hypixelEnchants.getJSONObject(itemCategory.toLowerCase());
-            for (String enchant : weaponEnchants.keySet()){
-                enchantPool.add(enchant);
-            }
-            Collections.sort(enchantPool);
-            inventoryItem.setEnchantPool(enchantPool);
-        }
-
-        // set recombob
-        if (extraAttributes.containsKey("rarity_upgrades"))
-            inventoryItem.setRecombobulated();
-
-        // store enchantments on the item
-        if (enchantments != null){
-            for (Entry<String, Object> newEnchant: enchantments.entrySet()){
-                String enchantName = newEnchant.getKey().toString().toLowerCase();
-                if (inventoryItem.getEnchantPool() != null && inventoryItem.getEnchantPool().contains(enchantName))
-                    inventoryItem.addEnchant(enchantName, newEnchant.getValue().toString());
-            }
-        }
-
         // add hot potato books
         if (extraAttributes.containsKey("hot_potato_count"))
             inventoryItem.setPotatoBooks(extraAttributes.getInt("hot_potato_count", 0));
@@ -502,16 +469,63 @@ public class PlayerProfile {
         else if (extraAttributes.containsKey("dungeon_item_level"))
             inventoryItem.setStars(extraAttributes.getInt("dungeon_item_level", 0));
 
+        // set item's category and its category for which reforges to pool from
+        itemCategory = itemReference.getString("category");
+        inventoryItem.setCategory(itemCategory);
+
+        // add weapon enchants/reforges to list of selectables on tooltip
+        if (!inventoryItem.getName().equals("")){
+            JSONObject weaponEnchants = null;
+            if (itemCategory.equals("SWORD")){
+                weaponEnchants = hypixelEnchants.getJSONObject("sword");
+                inventoryItem.setReforgePool(swordReforges, "sword");
+            }
+            else if (itemCategory.equals("BOW")){
+                weaponEnchants = hypixelEnchants.getJSONObject("bow");
+                inventoryItem.setReforgePool(bowReforges, "bow");
+            }
+            if (weaponEnchants != null){
+                for (String enchant : weaponEnchants.keySet()){
+                    enchantPool.add(enchant);
+                }
+                Collections.sort(enchantPool);
+                inventoryItem.setEnchantPool(enchantPool);
+            }
+            inventoryItem.setReforge(reforge);
+        }
+
+        // store enchantments on the item if they're in the master JSON of hypixel values
+        if (enchantments != null){
+        for (Entry<String, Object> newEnchant: enchantments.entrySet()){
+            String enchantName = newEnchant.getKey().toString().toLowerCase();
+                if (inventoryItem.getEnchantPool() != null && inventoryItem.getEnchantPool().contains(enchantName))
+                    inventoryItem.addEnchant(enchantName, newEnchant.getValue().toString());
+            }
+        }
+
+        // set item material, currently only to check if its gold for a pet ability
+        if (itemReference.has("material"))
+            inventoryItem.setMaterial(itemReference.getString("material"));
+
+        // check for the item's rarity if one is not specified default to common
         if (itemReference.has("tier"))
             inventoryItem.setRarity(itemReference.get("tier").toString());
         else {
             inventoryItem.setRarity("COMMON");
         }
+
+        // set recombob
+        if (extraAttributes.containsKey("rarity_upgrades"))
+            inventoryItem.setRecombobulated();
         
+        // if item is a dungeon item
         if (itemReference.has("dungeon_item"))
             inventoryItem.setDungeonItem();
 
+        // apply values from stored attributes and item reference 
         applyArmorStats(inventoryItem, itemReference);
+
+        // read the stats from the item into global stats
         readItemStats(inventoryItem);
     }
     
@@ -729,12 +743,7 @@ public class PlayerProfile {
     }
 
     /**
-     * Applys the values of the base stats from the reference items (obtained from the Api of the list of all items) to the Object itself
-     * Also finds the reforge values of the specified rarity from the custom JSON of hypixel values
-     * Also adds all relevant values from enchantments
-     * These values are stored to later be added to the total
-     * This is to make it easier to change individual armor pieces and total stat values
-     * Because you can directly subtract the armor's values and add the new ones
+     * Applys the numerical values associated with its attributes along with the values in the item reference.
      */
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
@@ -748,6 +757,9 @@ public class PlayerProfile {
             equippedItem.setRarity("COMMON");
         }
         itemRarity = equippedItem.getRarity();
+
+        if (itemReference.has("ability_damage_scaling"))
+            equippedItem.setStat("ABILITY_DAMAGE_PERCENT", itemReference.getDouble("ability_damage_scaling"));
 
         // make sure item has a reforge and its in the hypixel values json
         if(!equippedItem.getReforge().equals("") && reforgeValues.has(equippedItem.getReforge())){
@@ -1077,6 +1089,7 @@ public class PlayerProfile {
                 healthBonus += 1;
         }
 
+        playerAbilityDamage = enchantingLevel * 0.5;
         addGlobalStat("HEALTH", (catacombsLevel * 2) + carpentryLevel + (bestiaryLevel * 2) + healthBonus);
         addGlobalStat("INTELLIGENCE",intelligenceBonus);
         addGlobalStat("STRENGTH", strengthBonus);
@@ -1324,7 +1337,7 @@ public class PlayerProfile {
                     continue;
                 }
                 if (playerItem == playerGear.get(WEAPON_INDEX)){
-                    setWeaponModifierPool(playerItem);
+                    //setWeaponModifierPool(playerItem);
                     //TODO: enchant pool prob have to change how to get it
                 }
                 removeItemStats(playerItem);
@@ -1336,6 +1349,7 @@ public class PlayerProfile {
         resetGlobalStatModifer();
         getPetStats();
         addStatMultipliers();
+        calcDamage(selectedMobHealth);
     }
 
     public void setPowerStone(String powerStone){
@@ -1652,6 +1666,9 @@ public class PlayerProfile {
     public void setSelectedMob(String mobType){
         selectedMob = mobType;
     }
+    public void setMobHealth(int mobHealth){
+        selectedMobHealth = mobHealth;
+    }
 
     /**
      * Enables or disables an ability. Only called when ability checkbox states changes
@@ -1688,28 +1705,25 @@ public class PlayerProfile {
         getWeaponEffects();
         setTempStats(true);
     }
-    public int calcFinalDamage(int mobHealth){
+    public void calcDamage(int mobHealth){
         baseMultiplier = calcBaseMultiplier(mobHealth);
+        Double abilityDamage = 1 + (playerAbilityDamage / 100);
+        Double postMultiplier = mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier; 
         Double strength = statTotals.get("STRENGTH");
         Double critDamage = statTotals.get("CRITICAL_DAMAGE");
         Double damage = statTotals.get("DAMAGE");
+        Double weaponAbilityDamage = playerGear.get(WEAPON_INDEX).getStats().get("WEAPON_ABILITY_DAMAGE");
+        Double abilityDamagePcercent = playerGear.get(WEAPON_INDEX).getStats().get("ABILITY_DAMAGE_PERCENT");
 
-        if (selectedMob.equals("Enderman"))
-            baseMultiplier += enderSlayerBonus;
-        else if (selectedMob.equals("Spider"))
-            baseMultiplier += baneBonus;
-        else if (selectedMob.equals("Dragon"))
-            baseMultiplier += dragonBonus;
-        else if (selectedMob.equals("Zombie") || selectedMob.equals("Skeleton") || selectedMob.equals("Pigmen") || selectedMob.equals("Withers"))
-            baseMultiplier += smiteBonus; 
-        else if (selectedMob.equals("Creeper") || selectedMob.equals("Magma Cube") || selectedMob.equals("Slimes"))
-            baseMultiplier += cubismBonus;
-        else if (selectedMob.equals("Sea Creature") || selectedMob.equals("Lava Sea Creature"))
-            baseMultiplier += impalingBonus;
+        weaponDamage = (int) ((5 + damage) * (1 + (strength  / 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier));
+        mageDamage =  (int) (weaponAbilityDamage * (1 + ((statTotals.get("INTELLIGENCE") / 100.0) * abilityDamagePcercent)) * (1 + (baseMultiplier / 100.0)) * abilityDamage * postMultiplier);
+    }
 
-            // TODO: mobtype is multiplicative of final i.e. final * 1.xx
-        return (int) ((5 + damage) * (1 + (strength  / 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * 
-                     (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier));
+    public int getWeaponDamage (){
+        return weaponDamage;
+    }
+    public int getMageDamage (){
+        return mageDamage;
     }
 
     public void getArmorEffects(){
@@ -1794,12 +1808,12 @@ public class PlayerProfile {
         }
         switch (boots.getName()){
             case "rancher's boots" : 
-                boots.setStat("DEFENSE", 2 * farmingLevel);
-                boots.setStat("SPEED", 4 * farmingLevel);
+                tempSpeed += 4 * farmingLevel;
+                tempDefense += 2 * farmingLevel;
                 break;
             case "farmer boots" : 
-                boots.setStat("DEFENSE", 2 * farmingLevel);
-                boots.setStat("SPEED", 4 * farmingLevel);
+                tempSpeed += 4 * farmingLevel;
+                tempDefense += 2 * farmingLevel;
                 break;
             case "magma lord boots" : 
                 if (selectedMob.equals("Lava Sea Creature"))
@@ -1856,20 +1870,36 @@ public class PlayerProfile {
             if (selectedMob.equals("Zombie"))
                 armorAdditive += 100;
         }
-        // check for superior dragon set
+        // superior dragon set
         else if (checkArmorSet("superior dragon", 4)){
             addToAllGlobalModifers(0.05);
+        }
+        // strong dragon
+        else if (checkArmorSet("strong dragon", 4)){
+            if (playerGear.get(WEAPON_INDEX).getName().equals("aspect of the end"));
+                tempDamage += 75;
         }
         // lapis armor
         else if (checkArmorSet("lapis armor", 4)){
             tempHealth += 60;
         }
-        // crimson isle rampart `
+        // crimson isle rampart
         else if (checkArmorSet("rampart", 4)){
             tempHealth += 50;
             tempStrength += 20;
             tempcritDamage += 15;
         }
+        // tuxedos
+        else if (checkArmorSet("cheap tuxedo", 3)){
+            armorAdditive += 50;
+        }
+        else if (checkArmorSet("fancy tuxedo", 3)){
+            armorAdditive += 100;
+        }
+        else if (checkArmorSet("elegant tuxedo", 3)){
+            armorAdditive += 150;
+        }
+        
 
 
     }
@@ -1892,8 +1922,10 @@ public class PlayerProfile {
         addGlobalStat("CRITICAL_DAMAGE", tempcritDamage * modifier);
         addGlobalStat("DAMAGE", tempDamage * modifier);
         addGlobalStat("DEFENSE", tempDefense * modifier);
+        addGlobalStat("SPEED", tempSpeed * modifier);
 
         if (!status){
+            tempSpeed = 0.0;
             tempHealth = 0.0;
             tempStrength = 0.0;
             tempcritDamage = 0.0;
@@ -1991,7 +2023,7 @@ public class PlayerProfile {
                 tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 break;
             case "pooch sword" : 
-            //TODO: fix global stat boost interaction 
+            //TODO: Strength not affected by global boost 
                 tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 if (selectedMob.equals("Wolf")){
                     tempStrength = 150;
@@ -2053,22 +2085,28 @@ public class PlayerProfile {
                         baseMultiplier += enchantValue;
                         break; 
                     case "smite" : 
-                        smiteBonus = enchantValue;
+                        if (selectedMob.equals("Zombie") || selectedMob.equals("Skeleton") || selectedMob.equals("Pigmen") || selectedMob.equals("Withers"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "ender_slayer" : 
-                        enderSlayerBonus = enchantValue;
+                        if (selectedMob.equals("Enderman"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "bane_of_arthropods" : 
-                        baneBonus = enchantValue;
+                        if (selectedMob.equals("Spider"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "dragon_hunter" : 
-                        dragonBonus = enchantValue;
+                        if (selectedMob.equals("Dragon"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "cubism" : 
-                        cubismBonus = enchantValue;
+                        if (selectedMob.equals("Creeper") || selectedMob.equals("Magma Cube") || selectedMob.equals("Slimes"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "impaling" : 
-                        impalingBonus = enchantValue;
+                        if (selectedMob.equals("Sea Creature") || selectedMob.equals("Lava Sea Creature"))
+                            baseMultiplier += enchantValue;
                         break;
                     case "giant_killer" : 
                         double enchantPercentage = (mobHealth - statTotals.get("HEALTH")) / statTotals.get("HEALTH") * enchantValue;
