@@ -41,7 +41,7 @@ public class PlayerProfile {
     int tamingLevel = 0;
     int bestiaryLevel = 0;
     int carpentryLevel = 0;
-    int magicalPower = 0;
+    double magicalPower = 0;
     int weaponDamage = 0;
     int mageDamage = 0;
 
@@ -87,7 +87,7 @@ public class PlayerProfile {
     int mainProfileIndex = 0;
 
     String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b";
-    String selectedPowerStone = "";
+    String selectedPowerStone = "None";
     String selectedMob = "None";
     String petName = " ";
 
@@ -250,6 +250,10 @@ public class PlayerProfile {
         for (int gearSlots = 1; gearSlots <= 9; ++gearSlots){
             playerGear.add(new InventoryItem());
         }
+    }
+
+    public void initCustomProfile(){
+        calcDamage(0);
     }
 
     public void parsePlayerProfile() throws JSONException, IOException{
@@ -1219,13 +1223,14 @@ public class PlayerProfile {
     }
 
     // returns the magical multiplier required for power stones calculations 
-    double getMagicalMultiplier(int magicalPower){
+    double getMagicalMultiplier(Double magicalPower){
         return 29.97 * Math.pow(Math.log(0.0019 * magicalPower + 1) , 1.2);
     }
 
     void addPowerStoneStats(){
         JSONObject baseValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("base");
         JSONObject uniqueValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("unique");
+        magicalMultiiplier = getMagicalMultiplier(statTotals.get("MAGICAL_POWER"));
 
         for (String stat : baseValues.keySet()){
             powerStoneStats.add(stat);
