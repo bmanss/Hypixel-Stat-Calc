@@ -57,6 +57,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JLabel manaLabel = new JLabel("Mana: ");
 
     JLabel firstStrikeDamageLabel = new JLabel("First Hit: ");
+    JLabel abilityHitLabel = new JLabel("Ability Hit: ");
 
     JTextField mobHealthInput = new JTextField();
     JTextField healthInput = new JTextField();
@@ -380,7 +381,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         damagePanel.add(mobTypesBox);
         damagePanel.add(new JLabel("Health: "), "split 2");
         damagePanel.add(mobHealthInput,"wrap");
-        damagePanel.add(firstStrikeDamageLabel);
+        damagePanel.add(firstStrikeDamageLabel,"wrap");
+        damagePanel.add(abilityHitLabel);
 
         changefont(statDisplayPanel, baseFont);
         gridContraints.weightx = 0;
@@ -561,17 +563,20 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         magicFindLabel.setText("Magic Find: " + decimalFormatter.format(profile.getStat("MAGIC_FIND")  ));
         trueDefenseLabel.setText("True Defense: " + decimalFormatter.format(profile.getStat("TRUE_DEFENSE")  ));
         magicalPowerLabel.setText("Magical Power: " + (int) profile.getStat("MAGICAL_POWER"));
-        abilityDamageLabel.setText("Ability Damage: " + profile.getStat("ABILITY_DAMAGE_PERCENT")  );
+        abilityDamageLabel.setText("Ability Damage: " + profile.getStat("ABILITY_DAMAGE_PERCENT"));
         //manaLabel.setText("Mana: " + decimalFormatter.format(profile.getStat("INTELLIGENCE") + 100)); 
 
         // TODO: maybe add dialog popup for wrong health format
         try {
             mobHealth = Integer.parseInt(mobHealthInput.getText());
+            currentProfile.setMobHealth(mobHealth);
         } catch (NumberFormatException e) {
             mobHealth = 0;
+            currentProfile.setMobHealth(mobHealth);
             mobHealthInput.setText("0");
         }
-        firstStrikeDamageLabel.setText("First Hit: " + currentProfile.calcFinalDamage(mobHealth));
+        firstStrikeDamageLabel.setText("First Hit: " + currentProfile.getWeaponDamage());
+        abilityHitLabel.setText("Ability Hit: " + currentProfile.getMageDamage());
         
     }
 
