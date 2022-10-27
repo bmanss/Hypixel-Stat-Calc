@@ -49,6 +49,7 @@ public class InventoryItem {
         itemStats.put("FEROCITY", 0.0);
         itemStats.put("TRUE_DEFENSE", 0.0);
         itemStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
+        itemStats.put("WEAPON_ABILITY_DAMAGE", 0.0);
     }
 
     public void setReforgePool(ArrayList<String> pool, String category){
