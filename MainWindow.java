@@ -123,7 +123,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
     GridBagConstraints gridContraints = new GridBagConstraints();
 
-    JPanel panel = new JPanel(new MigLayout());
     JPanel buttonPanel = new JPanel();
     JPanel armorListPanel = new JPanel();
     JPanel statDisplayPanel = new JPanel();
@@ -140,7 +139,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     PopupFactory popFactory;
     Popup itemPopup;
     boolean popupIsVisible = false;
-
+    JLayeredPane layeredPane = new JLayeredPane();
+    JOptionPane option = new JOptionPane();
     JFrame mainWindow;
     ItemTooltipPanel overlay = new ItemTooltipPanel();
     MainWindow(){
@@ -329,7 +329,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 50))); 
 
-        JBloadProfile.setFocusPainted(false);
+        JBloadProfile.setFocusPainted(true);
         JBloadProfile.setMaximumSize(new Dimension(130,50));
         JBloadProfile.setAlignmentX(Component.CENTER_ALIGNMENT);
         JBloadProfile.addActionListener(this);
@@ -511,6 +511,13 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                             
                     allItems.put(referenceName, refrenceItem);
                 }
+            }
+            else {
+                String referenceName = itemList.getJSONObject(i).getString("name").toLowerCase();
+                JSONObject refrenceItem = itemList.getJSONObject(i);
+                allItems.put(referenceName, refrenceItem);
+                if (refrenceItem.has("stats"))
+                    weaponOption.add(referenceName);
             }
         }
         
