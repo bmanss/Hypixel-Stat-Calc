@@ -2078,8 +2078,8 @@
                 },
                 {
                     "action" : "baseMultiplierPerLevel",
-                    "conditional" : true,
-                    "amount" : [
+                    "type" : "additive",
+                    "amountPerLevel" : [
                         1
                     ] 
                 }
@@ -2125,7 +2125,7 @@
                 },
                 {
                     "action" : "baseMultiplierPerLevel",
-                    "conditional" : true,
+                    "type" : "additive",
                     "amountPerLevel" : [
                         1.5
                     ] 
@@ -2293,7 +2293,10 @@
                     "action" : "shiningScales"
                 },
                 {
-                    "action" : "dragonsGreed"
+                    "action" : "dragonsGreed",
+                    "amountPerLevel" : [
+                        0.0025
+                    ]
                 },
                 {
                     "action" : "legendaryTreasure"

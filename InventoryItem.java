@@ -13,9 +13,9 @@ public class InventoryItem {
     private int starLevel = 0;
     private int potatoBooks = 0;
     private int statTier = 0;
-    private double itemQuality = 0.0;
+    private double itemQuality = 1.0;
     private boolean hasDungeonTiers = false;
-    private boolean dungeonItem = false;
+    private boolean tieredItem = false;
     private boolean recombobulated = false;
     private boolean hasChanged = false;
     private Map<String,Double> itemStats;
@@ -50,6 +50,7 @@ public class InventoryItem {
         itemStats.put("TRUE_DEFENSE", 0.0);
         itemStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
         itemStats.put("WEAPON_ABILITY_DAMAGE", 0.0);
+        itemStats.put("ABILITY_DAMAGE_SCALING", 0.0);
     }
 
     public void setReforgePool(ArrayList<String> pool, String category){
@@ -96,8 +97,8 @@ public class InventoryItem {
         toolTip.setRecombobulated(recombobulated);
     }
 
-    public void setDungeonItem(){
-        dungeonItem = true;
+    public void setTieredItem(){
+        tieredItem = true;
     }
 
     public void setStars(int stars){
@@ -163,8 +164,8 @@ public class InventoryItem {
         return hasDungeonTiers;
     }
 
-    public boolean getDungeonStatus(){
-        return dungeonItem;
+    public boolean isTiered(){
+        return tieredItem;
     }
 
     public int getStars(){

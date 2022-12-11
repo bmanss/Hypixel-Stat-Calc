@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.*;
 import javax.swing.text.*;
-
 import net.miginfocom.swing.MigLayout;
 
 public class ItemTooltipPanel extends JFrame implements ActionListener{
@@ -35,7 +34,6 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
     JComboBox<String> reforgeList = new JComboBox<>();
 
     Map <String, String> addedEnchants = new HashMap<>();
-
     ItemTooltipPanel(){
         setFocusableWindowState(false);
         setUndecorated(true);
