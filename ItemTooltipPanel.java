@@ -5,9 +5,12 @@ import java.util.Map;
 import java.util.Map.Entry;
 import javax.swing.*;
 import javax.swing.text.*;
+
+import org.json.JSONObject;
+
 import net.miginfocom.swing.MigLayout;
 
-public class ItemTooltipPanel extends JFrame implements ActionListener{
+public class ItemTooltipPanel extends JLayeredPane implements ActionListener, ItemListener{
     StyleContext style = StyleContext.getDefaultStyleContext();
     AttributeSet attr = style.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, new Color(22, 60, 156));
 
@@ -21,6 +24,8 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
 
     Font baseFont = new Font("Arial",Font.BOLD,15);
 
+    String enchantCategory = "";
+
     JTextPane enchantDisplay = new JTextPane();
 
     JButton button_Add = new JButton("Add");
@@ -30,17 +35,20 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
     JComboBox<String> enchantsList = new JComboBox<>();
 
     // enchant Level TODO: build levels from json
-    JComboBox<String> enchantLevel= new JComboBox<>(new String [] {"1","2","3","4","5"});
+    JComboBox<String> enchantLevel= new JComboBox<>(new String [] {"1"});
     JComboBox<String> reforgeList = new JComboBox<>();
 
     Map <String, String> addedEnchants = new HashMap<>();
-    ItemTooltipPanel(){
-        setFocusableWindowState(false);
-        setUndecorated(true);
-        this.getContentPane().setBackground(new Color(99,96,96));
-        setAlwaysOnTop(true);
 
+    JSONObject allEnchantLevels;
+
+    ItemTooltipPanel(){
+        setSize(300, 300);
+        setOpaque(true);
+        setVisible(false);
+        setBackground(new Color(99,96,96));
         enchantDisplay.setText("");
+        enchantDisplay.setEditable(false);
         
         setLayout(new MigLayout());
         recombob.setOpaque(false);
@@ -58,6 +66,8 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
         button_Clear.addActionListener(this);
         button_Remove.addActionListener(this);
 
+        enchantsList.addItemListener(this);
+
         add(recombob,"wrap");
         add(Label_Reforge,"split");
         add(reforgeList,"gap 14px, wrap");
@@ -72,31 +82,50 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
         add(button_Remove);
         add(button_Clear,"wrap");
         add(enchantDisplay);
-        pack();
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void setEnchantReference(JSONObject allEnchantLevels, String enchantCategory){
+        this.enchantCategory = enchantCategory;
+        this.allEnchantLevels = allEnchantLevels;
     }
 
     public void setStars(int stars){
         starsCount.setSelectedIndex(stars); 
+        this.revalidate();
+        this.repaint();
     }
 
     public void setBooks(int books){
         bookCount.setSelectedIndex(books); 
+        
     }
 
     public void setRecombobulated(boolean recombobulated){
         recombob.setSelected(recombobulated);
+        
     }
 
     public void setSelectedReforge(String selectedReforge){
         reforgeList.getModel().setSelectedItem(selectedReforge);
+        
     }
 
     public void setReforgeList(String [] reforgePool){
         reforgeList.setModel(new DefaultComboBoxModel<>(reforgePool));
+        
     }
 
     public void setEnchantList(String [] enchantPool){
         enchantsList.setModel(new DefaultComboBoxModel<>(enchantPool));
+        if (!enchantCategory.equals(""))
+            updateEnchantLevel();
+    }
+
+    public void resetEnchantDisplay(){
+        enchantDisplay.setText("");
+        addedEnchants = new HashMap<>();
     }
 
     public void addSelectedEnchant(String enchant, String level){
@@ -112,6 +141,7 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
     }
 
     void updateEnchantDisplay(){
+        enchantDisplay.setEditable(true);
         int wrapCount = 0; 
         enchantDisplay.setCharacterAttributes(attr, false);
         enchantDisplay.setText("");
@@ -123,9 +153,7 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
                 wrapCount = 0;
             }
         }
-
-        // update size of frame to fit and display the new enchants 
-        pack();
+        enchantDisplay.setEditable(false);
     }
 
     public String getReforge(){
@@ -165,5 +193,22 @@ public class ItemTooltipPanel extends JFrame implements ActionListener{
                 updateEnchantDisplay();
             }
         }
+    }
+
+    public void updateEnchantLevel(){
+        JSONObject enchantDirectory = allEnchantLevels.getJSONObject("armor");
+        if (!enchantDirectory.has(enchantsList.getSelectedItem().toString()))
+            enchantDirectory = allEnchantLevels.getJSONObject(enchantCategory.toLowerCase());
+
+        String newLevels [] = new String[enchantDirectory.getJSONObject(enchantsList.getSelectedItem().toString()).length()];
+        for (int index = 0; index < newLevels.length; ++index){
+            newLevels[index] = String.valueOf(index + 1);
+        }
+        enchantLevel.setModel(new DefaultComboBoxModel<>(newLevels));
+    }
+
+    @Override
+    public void itemStateChanged(ItemEvent e) {
+        updateEnchantLevel();
     }
 }
