@@ -8,8 +8,8 @@ public class InventoryItem {
     private String itemName = "";
     private String material = "";       //mainly used to check if material is gold for golden dragon ability
     private String reforge = "";
-    private String category = "";
-    private String reforgeCategory = "";
+    private String category = "";       // specific category such as chesplate or boot
+    private String reforgeCategory = "";    // broad category such as armor or equipment
     private int starLevel = 0;
     private int potatoBooks = 0;
     private int statTier = 0;
@@ -22,6 +22,7 @@ public class InventoryItem {
     private Map<String,String> enchantments;
 
     private ArrayList<String> enchantPool;
+    private ArrayList<String> reforgePool;
 
     ItemTooltipPanel toolTip = new ItemTooltipPanel();
 
@@ -55,6 +56,7 @@ public class InventoryItem {
 
     public void setReforgePool(ArrayList<String> pool, String category){
         reforgeCategory = category;
+        reforgePool = pool;
         toolTip.setReforgeList(pool.toArray(new String[pool.size()]));
     }
 
@@ -92,9 +94,9 @@ public class InventoryItem {
         this.reforge = reforge;
     }
 
-    public void setRecombobulated(){
-        recombobulated = true;
-        toolTip.setRecombobulated(recombobulated);
+    public void setRecombobulated(boolean status){
+        recombobulated = status;
+        toolTip.setRecombobulated(status);
     }
 
     public void setTieredItem(){
@@ -126,6 +128,10 @@ public class InventoryItem {
 
     public ArrayList<String> getEnchantPool(){
         return enchantPool;
+    }
+
+    public ArrayList<String> getReforgePool(){
+        return reforgePool;
     }
 
     public String getReforgeCategory(){
@@ -228,6 +234,19 @@ public class InventoryItem {
         for (Entry<String, Double> stat : itemStats.entrySet()){
             itemStats.put(stat.getKey(), 0.0);
         }
+    }
+
+    public void resetModifiers(ArrayList<String> newEnchants, ArrayList<String> newReforges){
+        setStars(0);
+        setPotatoBooks(0);
+        setEnchantPool(newEnchants);
+        toolTip.resetEnchantDisplay();
+        toolTip.setReforgeList(newReforges.toArray(new String[newReforges.size()]));
+        setReforge("");
+        statTier = 0;
+        itemQuality = 1;
+        material = "";  
+        setRecombobulated(false);
     }
 
     public boolean hasChanged(){
