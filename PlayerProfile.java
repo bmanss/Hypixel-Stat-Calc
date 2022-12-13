@@ -28,6 +28,8 @@ public class PlayerProfile {
     final int GAUNTLET_INDEX = 7;
     final int WEAPON_INDEX = 8;
 
+    boolean godPotionEnabled = false;
+
     int fairySouls = 0;
     int skyBlockLevel = 159; //TODO: user input
     int farmingLevel = 0;
@@ -89,6 +91,7 @@ public class PlayerProfile {
     String selectedPowerStone = "None";
     String selectedMob = "None";
     String petName = " ";
+
     // magic weapons that do not get base multiplier boost 
     String excludedMagicWeapons [] = {"aspect of the dragons","golem sword"}; 
 
@@ -96,6 +99,8 @@ public class PlayerProfile {
     ArrayList<String> equipmentReforges = new ArrayList<>(Arrays.asList(""));
     ArrayList<String> bowReforges = new ArrayList<>(Arrays.asList(""));
     ArrayList<String> swordReforges = new ArrayList<>(Arrays.asList(""));
+    ArrayList<String> swordEnchants = new ArrayList<>(Arrays.asList());
+    ArrayList<String> bowEnchants = new ArrayList<>(Arrays.asList());
 
     ArrayList<InventoryItem> playerGear;
     ArrayList<String> playerTalismans;
@@ -119,7 +124,8 @@ public class PlayerProfile {
     JSONObject playerProfile;
     JSONObject hypixelValue;
     JSONObject skillsApiInfo;
-    
+    JSONObject hypixelEnchants;
+
     Map<String, JSONObject> allItems;
     Map<String, JSONObject> accessoryItems;
 
@@ -212,12 +218,19 @@ public class PlayerProfile {
         this.skillsApiInfo = skillsApiInfo;
     }
 
+    /**
+     * Set available reforge and enchant pools from Hypixel JSON
+     * @param hypixelValue Json object of reforges and enchants.
+     */
     public void setCustomValues(JSONObject hypixelValue){
         this.hypixelValue = hypixelValue;
         JSONArray armorReforgeList = hypixelValue.getJSONObject("Reforge").getJSONObject("armor").names();
         JSONArray equipmentReforgeList = hypixelValue.getJSONObject("Reforge").getJSONObject("equipment").names();
         JSONArray swordReforgeList = hypixelValue.getJSONObject("Reforge").getJSONObject("sword").names();
         JSONArray bowReforgeList = hypixelValue.getJSONObject("Reforge").getJSONObject("bow").names();
+        JSONArray bowEnchantList = hypixelValue.getJSONObject("Enchantments").getJSONObject("bow").names();
+        JSONArray swordEnchantList = hypixelValue.getJSONObject("Enchantments").getJSONObject("sword").names();
+        hypixelEnchants = hypixelValue.getJSONObject("Enchantments");
 
         for (int i = 0; i < armorReforgeList.length(); i++){
             armorReforges.add(armorReforgeList.get(i).toString());
@@ -231,6 +244,14 @@ public class PlayerProfile {
         for (int i = 0; i < bowReforgeList.length(); i++){
             bowReforges.add(bowReforgeList.get(i).toString());
         }
+        for (int i = 0; i < bowEnchantList.length(); i++){
+            bowEnchants.add(bowEnchantList.get(i).toString());
+        }
+        for (int i = 0; i < swordEnchantList.length(); i++){
+            swordEnchants.add(swordEnchantList.get(i).toString());
+        }
+
+
         // remove reforges exclusive to a certain gear type to treat armorReforges as a list of all compatible reforges TODO:
         armorReforges.remove("loving");
         armorReforges.remove("ridiculous");
@@ -239,7 +260,19 @@ public class PlayerProfile {
         Collections.sort(equipmentReforges);
         Collections.sort(swordReforges);
         Collections.sort(bowReforges);
+        Collections.sort(bowEnchants);
+        Collections.sort(swordEnchants);
+
+        // add reference to enchants in tooltip for dynamic levels
+        playerGear.get(0).toolTip.setEnchantReference(hypixelEnchants, "boots");
+        playerGear.get(1).toolTip.setEnchantReference(hypixelEnchants, "leggings");
+        playerGear.get(2).toolTip.setEnchantReference(hypixelEnchants, "chestplate");
+        playerGear.get(3).toolTip.setEnchantReference(hypixelEnchants, "helmet");
+        playerGear.get(8).toolTip.setEnchantReference(hypixelEnchants, "sword");
+
+
         setItemPools();
+
     }
 
     public void setPlayerApi(JSONObject playerApi){
@@ -362,10 +395,12 @@ public class PlayerProfile {
         }
     }
 
+    /**
+     * Set Initial pools for gear slots.
+     */
     public void setItemPools(){
         // TODO: get special reforges in somehow (list is already sorted)
         // weapon is not set because it depends on the selected item
-        JSONObject hypixelEnchants = hypixelValue.getJSONObject("Enchantments");
         JSONObject globalArmorEnchants = hypixelEnchants.getJSONObject("armor");
         JSONObject categoryEnchants = null;
         ArrayList<String> enchantPool;
@@ -411,18 +446,19 @@ public class PlayerProfile {
             playerGear.get(8).setReforgePool(emptyReforge, "sword");
     }
 
-    void setWeaponModifierPool(InventoryItem inventoryItem){
+    void setWeaponModifierPool(InventoryItem inventoryItem, String reforge){
         if (inventoryItem.getName().equals(""))
             return;
 
         JSONObject itemReference = allItems.get(inventoryItem.getName());
-        String itemCategory = itemReference.getString("category");
-        String reforge = inventoryItem.getReforge();                                    // get reforge in case the user changed it 
-        
+        String itemCategory = itemReference.getString("category");                                 // get reforge in case the user changed it 
+
         if (itemCategory.equals("SWORD")){
+            inventoryItem.setEnchantPool(swordEnchants);
             inventoryItem.setReforgePool(swordReforges, "sword");
         }
         else if (itemCategory.equals("BOW")){
+            inventoryItem.setEnchantPool(bowEnchants);
             inventoryItem.setReforgePool(bowReforges, "bow");
         }
         inventoryItem.setReforge(reforge);
@@ -436,11 +472,9 @@ public class PlayerProfile {
         JSONObject itemReference = null;
         String itemCategory = "";
         String reforge = "";
-        JSONObject hypixelEnchants = hypixelValue.getJSONObject("Enchantments");
-        ArrayList<String> enchantPool = new ArrayList<>();
         NBTCompound extraAttributes = armorSlot.getCompound("tag.ExtraAttributes");
         NBTCompound enchantments = extraAttributes.getCompound("enchantments");
-
+        
         // get item's name along with any reforge that gets removed later
         String itemName = armorSlot.getCompound("tag.display").
                                     getString("Name").replaceAll("§[a-zA-Z0-9]|[^a-zA-Z0-9 ']", "").toLowerCase().trim();
@@ -482,25 +516,7 @@ public class PlayerProfile {
 
 
         // add weapon enchants/reforges to list of selectables on tooltip
-        if (!inventoryItem.getName().equals("")){
-            JSONObject weaponEnchants = null;
-            if (itemCategory.equals("SWORD")){
-                weaponEnchants = hypixelEnchants.getJSONObject("sword");
-                inventoryItem.setReforgePool(swordReforges, "sword");
-            }
-            else if (itemCategory.equals("BOW")){
-                weaponEnchants = hypixelEnchants.getJSONObject("bow");
-                inventoryItem.setReforgePool(bowReforges, "bow");
-            }
-            if (weaponEnchants != null){
-                for (String enchant : weaponEnchants.keySet()){
-                    enchantPool.add(enchant);
-                }
-                Collections.sort(enchantPool);
-                inventoryItem.setEnchantPool(enchantPool);
-            }
-            inventoryItem.setReforge(reforge);
-        }
+        setWeaponModifierPool(inventoryItem,reforge);
 
         // store enchantments on the item if they're in the master JSON of hypixel values
         if (enchantments != null){
@@ -511,10 +527,6 @@ public class PlayerProfile {
             }
         }
 
-        // set item material, currently only to check if its gold for a pet ability
-        if (itemReference.has("material"))
-            inventoryItem.setMaterial(itemReference.getString("material"));
-
         // check for the item's rarity if one is not specified default to common
         if (itemReference.has("tier"))
             inventoryItem.setRarity(itemReference.get("tier").toString());
@@ -524,7 +536,7 @@ public class PlayerProfile {
 
         // set recombob
         if (extraAttributes.containsKey("rarity_upgrades"))
-            inventoryItem.setRecombobulated();
+            inventoryItem.setRecombobulated(true);
         
         // if item is a dungeon item
         if (itemReference.has("dungeon_item"))
@@ -769,6 +781,10 @@ public class PlayerProfile {
         if (itemReference.has("ability_damage_scaling"))
             equippedItem.setStat("ABILITY_DAMAGE_SCALING", itemReference.getDouble("ability_damage_scaling"));
 
+        // set item material, currently only to check if its gold for a pet ability
+        if (itemReference.has("material"))
+            equippedItem.setMaterial(itemReference.getString("material"));
+
         // make sure item has a reforge and its in the hypixel values json
         if(!equippedItem.getReforge().equals("") && reforgeValues.has(equippedItem.getReforge())){
             reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforge());
@@ -861,11 +877,17 @@ public class PlayerProfile {
                     case "protection" : 
                         equippedItem.setStat("DEFENSE", enchantValue);
                         break;
+                    //TODO: remove to static stats since it's unaffected by other things
                     case "ultimate_wisdom" : 
                         equippedItem.setStat("INTELLIGENCE", enchantValue);
                         break;
                     case "critical" : 
                         equippedItem.setStat("CRITICAL_DAMAGE", enchantValue);
+                        break;
+                    //TODO: UI element to show this
+                    case "overload" : 
+                        equippedItem.setStat("CRITICAL_DAMAGE", Double.parseDouble(enchant.getValue()));
+                        equippedItem.setStat("CRITICAL_CHANCE",  Double.parseDouble(enchant.getValue()));
                         break;
                 }
             }
@@ -1185,6 +1207,7 @@ public class PlayerProfile {
      * adds totals benefits from potion to stat totals
      */
     void setGodPotionStats(boolean status){
+        godPotionEnabled = status;
         int modifier = 1;
         if (!status)
             modifier = -1;
@@ -1226,7 +1249,28 @@ public class PlayerProfile {
         if (accessoryBag.has("selected_power"))
             selectedPowerStone = accessoryBag.getString("selected_power");
         for (String tuningStat : tuningSlot0.keySet()){
-            addGlobalStat(tuningStat.toUpperCase(), tuningSlot0.getDouble(tuningStat));
+            Double tuningValue = 0.0;
+            switch(tuningStat){
+                case "critical_chance":
+                    tuningValue = tuningSlot0.getDouble(tuningStat) * 0.2;
+                    break;
+                case "health":
+                    tuningValue = tuningSlot0.getDouble(tuningStat) * 5;
+                    break;
+                case "intelligence":
+                    tuningValue = tuningSlot0.getDouble(tuningStat) * 2;
+                    break;
+                case "attack_speed":
+                    tuningValue = tuningSlot0.getDouble(tuningStat) * 0.3;
+                    break;
+                case "speed":
+                    tuningValue = tuningSlot0.getDouble(tuningStat) * 1.5;
+                    break;
+                default:
+                    tuningValue = tuningSlot0.getDouble(tuningStat);
+                    break;
+            }
+            addGlobalStat(tuningStat.toUpperCase(), tuningValue);
         }
     }
 
@@ -1563,7 +1607,7 @@ public class PlayerProfile {
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
                     statValue = ((statPerLevel * petLevel) + 0.25) * magicFind;
-                    addToGlobalModifer("STRENGTH", statValue * globalStatModifiers.get("STRENGTH"));
+                    addToGlobalModifer("STRENGTH", statValue);
                     break;
                 case "legendaryTreasure" :
                     //TODO: adds percentage to damage calc not damage stat 
@@ -1572,14 +1616,22 @@ public class PlayerProfile {
                 case "petAbility" :
                     //TODO: need to implement --- probably wont do
                     break;
+                /*
+                 * Blue Whale 'additive'
+                 * Griffin 'multiplicative'
+                 */
                 case "statByPercentage" :
                     String receiveStat = currentAbility.getString("stat");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
                     statValue = statPerLevel * petLevel;
-                    if (petName.equals("Griffin"))
+                    if (petName.equals("Griffin")){
                         statValue += .01;
-                    addToGlobalModifer(receiveStat, statValue * globalStatModifiers.get(receiveStat));
+                        addToGlobalModifer(receiveStat, statValue * globalStatModifiers.get(receiveStat));
+                    }
+                    else {
+                        addToGlobalModifer(receiveStat, statValue);
+                    }
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1634,6 +1686,9 @@ public class PlayerProfile {
                     }
 
                     break;
+                /*
+                 * Mithril golem 'multiplicative' 
+                 */
                 case "buffCombatStats" :    // health, defense, crit damage/chance, strength, damage
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
@@ -2085,6 +2140,10 @@ public class PlayerProfile {
         }
         baseMultiplier += combatMultiplier;
 
+        // check for archery potion base addition
+        if (godPotionEnabled && playerGear.get(WEAPON_INDEX).getCategory().equals("BOW"))
+            baseMultiplier += 80;
+            
         // check weapon enchantments for multipliers
         if (!playerGear.get(WEAPON_INDEX).getName().equals("") && !playerGear.get(WEAPON_INDEX).getEnchantments().isEmpty()){
             String enchantType = playerGear.get(WEAPON_INDEX).getReforgeCategory();
@@ -2106,6 +2165,9 @@ public class PlayerProfile {
                         baseMultiplier += enchantValue;
                         break;
                     case "triple_strike" : 
+                        baseMultiplier += enchantValue;
+                        break; 
+                    case "power" : 
                         baseMultiplier += enchantValue;
                         break; 
                     case "smite" : 
