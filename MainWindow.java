@@ -128,6 +128,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JPanel statDisplayPanel = new JPanel();
     JPanel bordercontainer = new JPanel();
     JPanel damagePanel = new JPanel();
+    JLayeredPane armorDisplayBase = new JLayeredPane();
 
     ItemTooltipPanel openToolTip = new ItemTooltipPanel();
 
@@ -139,8 +140,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     PopupFactory popFactory;
     Popup itemPopup;
     boolean popupIsVisible = false;
-    JLayeredPane layeredPane = new JLayeredPane();
-    JOptionPane option = new JOptionPane();
     JFrame mainWindow;
     ItemTooltipPanel overlay = new ItemTooltipPanel();
     MainWindow(){
@@ -156,7 +155,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         this.setLocationRelativeTo(null);
         this.setVisible(true);
         this.setResizable(true);
-       
     }
     //add(Box.createRigidArea(new Dimension(0, 50)));       for space between buttons
     //add(Box.createVerticalGlue());                        for huge spaces
@@ -174,12 +172,24 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         JBrefreshProfile.setEnabled(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         armorListPanel.setLayout(new MigLayout());
+        armorDisplayBase.setLayout(null);
+        armorDisplayBase.setOpaque(true);
+        armorDisplayBase.setBackground(new Color(99,96,96));
+        armorListPanel.setBounds(this.getX(), this.getY(), this.getWidth() / 3 , this.getHeight());
+        statDisplayPanel.setBounds(this.getX() + 400, this.getY(), this.getWidth() / 2 , this.getHeight());
+
+        overlay.setBounds(mainWindow.getX(), this.getY(), overlay.getWidth() , overlay.getHeight());
+        armorDisplayBase.add(overlay, JLayeredPane.PALETTE_LAYER);
+        armorDisplayBase.add(armorListPanel, JLayeredPane.DEFAULT_LAYER);
+        armorDisplayBase.add(statDisplayPanel, JLayeredPane.DEFAULT_LAYER);
+
+        
         damagePanel.setLayout(new MigLayout("", "","[]20[]"));
 
         bordercontainer.setPreferredSize(new Dimension(400,500));
         bordercontainer.setMinimumSize(new Dimension(400,500));
         bordercontainer.setLayout(new BorderLayout());
-        bordercontainer.add(armorListPanel,BorderLayout.CENTER);
+        bordercontainer.add(armorDisplayBase,BorderLayout.CENTER);
         //bordercontainer.add(checkboxPanel,BorderLayout.CENTER);
 
         helmetBox.setMaximumSize(new Dimension(200,25));
@@ -281,7 +291,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         armorListPanel.add(ability4,"wrap");
         ability4.setSelected(true);
         armorListPanel.add(enableGodPotion);
-        
         int armorIndex = 3;
         int equipIndex = 0;
 
@@ -318,13 +327,16 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         buttonPanel.setBackground(Color.gray);
         armorListPanel.setBackground(new Color(177,177,177));
-        
+        armorDisplayBase.setBackground(new Color(177,177,177));
+
         buttonPanel.setPreferredSize(new Dimension(200,500));
         armorListPanel.setPreferredSize(new Dimension(250,500));
+        armorDisplayBase.setPreferredSize(new Dimension(250,500));
         statDisplayPanel.setPreferredSize(new Dimension(10,500));
 
         buttonPanel.setMinimumSize(new Dimension(200,500));
         armorListPanel.setMinimumSize(new Dimension(200,500));
+        armorDisplayBase.setMinimumSize(new Dimension(200,500));
         statDisplayPanel.setMinimumSize(new Dimension(200,500));
 
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 50))); 
@@ -381,10 +393,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         gridContraints.weighty = 1;
         gridContraints.fill = GridBagConstraints.BOTH;
         add(buttonPanel,gridContraints);
-        gridContraints.weightx = 0;
+        gridContraints.weightx = 1;
         add(bordercontainer,gridContraints);
         gridContraints.weightx = 1;
-        add(statDisplayPanel,gridContraints);
+        //add(statDisplayPanel,gridContraints);
         validate();
 
         damagePanel.setPreferredSize(new Dimension(damagePanel.getX() + (statDisplayPanel.getWidth() - 150),200));
@@ -706,8 +718,16 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         if (e.getStateChange() == ItemEvent.SELECTED && e.getSource() == reforgePowerBox){
             currentProfile.setPowerStone(e.getItem().toString());
         }
+        // change item name and reset modifiers *stats are updated on refresh
         else if (e.getStateChange() == ItemEvent.SELECTED &&  itemBoxComponents.containsKey(e.getSource())){
-            currentProfile.changeItemName(itemBoxComponents.get(e.getSource()), e.getItem().toString());
+            int itemIndex = itemBoxComponents.get(e.getSource());
+            InventoryItem gearPiece = currentProfile.getItem(itemIndex);
+            if (gearPiece.getName() != e.getItem().toString()){
+                currentProfile.changeItemName(itemIndex, e.getItem().toString());
+                currentProfile.setWeaponModifierPool(gearPiece,"");
+                gearPiece.resetModifiers(gearPiece.getEnchantPool(), gearPiece.getReforgePool());
+            }
+
         }
     }
 
@@ -728,12 +748,15 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         @Override
         public void mouseEntered(java.awt.event.MouseEvent e) {
             if (e.getComponent() instanceof JLabel && currentProfile != null){
-                Point p = e.getComponent().getLocationOnScreen();
+                Point p = e.getComponent().getLocation();
                 if (overlay.isVisible()){
                     overlay.setVisible(false);
                 }
+                armorDisplayBase.remove(overlay);
                 overlay = currentProfile.getItem(extrasComponents.get(e.getComponent())).getToolTip();
-                overlay.setBounds(p.x + 100 ,p.y - 50, overlay.getWidth(), overlay.getHeight());
+                overlay.addMouseListener(toolTipListener);
+                armorDisplayBase.add(overlay, JLayeredPane.PALETTE_LAYER);
+                overlay.setBounds(p.x + 100 ,p.y, overlay.getWidth(), overlay.getHeight());
                 overlay.setVisible(true);
             }
 
