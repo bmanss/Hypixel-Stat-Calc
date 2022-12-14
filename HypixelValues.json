@@ -3663,6 +3663,55 @@
             "headless_horseman"
         ]
     },
+    "Accessories" : {
+        "tiered" : [
+            "PERSONAL_COMPACTOR_", 
+            "PERSONAL_DELETOR_",
+            "POWER_", 
+            "POTION_AFFINITY_", 
+            "SPEED_", 
+            "PARTY_HAT_", 
+            "BAT_", 
+            "BAT_PERSON_", 
+            "FEATHER_", 
+            "HEALING_", 
+            "SEA_CREATURE_",
+            "TITANIUM_",
+            "ZOMBIE_", 
+            "INTIMIDATION_", 
+            "CANDY_", 
+            "BINGO_", 
+            "BEASTMASTER_", 
+            "SHARK_TOOTH_NECKLACE", 
+            "JERRY_TALISMAN_", 
+            "WOLF_", 
+            "_HOOF", 
+            "RED_CLAW_", 
+            "HUNTER_", 
+            "SOULFLOW_", 
+            "ODGERS_", 
+            "CAMPFIRE_", 
+            "WEDDING_RING_",
+            "SCARF_", 
+            "TREASURE_", 
+            "MASTER_SKULL_TIER_", 
+            "WITHER_", 
+            "ENDER_", 
+            "KUUDRA_CORE", 
+            "PIGGY_", 
+            "SPIDER_",
+            "GIFT_",
+            "GLACIAL_"
+        ],
+        "dynamic" :[
+            "POWER",
+            "NEW_YEAR_CAKE_BAG",
+            "BLOOD_GOD_CREST",
+            "BEASTMASTER",
+            "PULSE"
+        ]
+            
+    },
     "Catacombs": [
         50,
         125,
