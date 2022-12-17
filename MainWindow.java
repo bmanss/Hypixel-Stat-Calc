@@ -8,6 +8,8 @@ import java.util.Map.Entry;
 import java.util.zip.GZIPInputStream;
 
 import javax.swing.*;
+import javax.swing.border.Border;
+import javax.swing.border.LineBorder;
 import javax.swing.event.MouseInputListener;
 
 import net.miginfocom.swing.MigLayout;
@@ -129,9 +131,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JPanel bordercontainer = new JPanel();
     JPanel damagePanel = new JPanel();
     JLayeredPane armorDisplayBase = new JLayeredPane();
-
-    ItemTooltipPanel openToolTip = new ItemTooltipPanel();
-
     Map<Component,String> manualValues = new LinkedHashMap<>();
     Map<Component,Integer> extrasComponents = new HashMap<>(); 
     Map<JComboBox<String>,Integer> itemBoxComponents = new HashMap<>(); 
@@ -142,6 +141,15 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     boolean popupIsVisible = false;
     JFrame mainWindow;
     ItemTooltipPanel overlay = new ItemTooltipPanel();
+    
+    // menu bar stuff
+    JMenuBar menuBar = new JMenuBar();
+    JMenu settingsMenu = new JMenu("Settings");
+    JMenuItem profileName = new JMenuItem("Profile Name");
+    JMenuItem apiKey = new JMenuItem("Api Key");
+    Border border = new LineBorder(Color.black, 1, false);
+    JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
+
     MainWindow(){
         this.setTitle("Hypixel Stat Calculator");
         mainWindow = this;
@@ -159,22 +167,36 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     //add(Box.createRigidArea(new Dimension(0, 50)));       for space between buttons
     //add(Box.createVerticalGlue());                        for huge spaces
 
-    public class Panel extends JPanel{
-        Panel(){
-            this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-            this.setBackground(Color.gray);
-            this.setPreferredSize(new Dimension(200,500));
-        }
-    }
-
     public void initComponents(){
+
+        // set up menu bar components
+        sep.setBackground(Color.lightGray);
+        menuBar.setPreferredSize(new Dimension(30,30));
+        settingsMenu.setPreferredSize(new Dimension(102,0));
+        profileName.setPreferredSize(new Dimension(100,30));
+        apiKey.setPreferredSize(new Dimension(100,30));
+
+        menuBar.setBackground(new Color(218,221,227));
+        profileName.setBackground(new Color(218,221,227));
+        apiKey.setBackground(new Color(218,221,227));
+
+        settingsMenu.setBorderPainted(false);
+        apiKey.setBorderPainted(false);
+
+        settingsMenu.add(profileName);
+        settingsMenu.add(sep);
+        settingsMenu.add(apiKey);
+        menuBar.setBorder(border);
+        menuBar.add(settingsMenu);
+        setJMenuBar(menuBar);
+
         enableGodPotion.setEnabled(false);
         JBrefreshProfile.setEnabled(false);
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         armorListPanel.setLayout(new MigLayout());
         armorDisplayBase.setLayout(null);
         armorDisplayBase.setOpaque(true);
-        armorDisplayBase.setBackground(new Color(99,96,96));
+
         armorListPanel.setBounds(this.getX(), this.getY(), this.getWidth() / 3 , this.getHeight());
         statDisplayPanel.setBounds(this.getX() + 400, this.getY(), this.getWidth() / 2 , this.getHeight());
 
@@ -190,7 +212,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         bordercontainer.setMinimumSize(new Dimension(400,500));
         bordercontainer.setLayout(new BorderLayout());
         bordercontainer.add(armorDisplayBase,BorderLayout.CENTER);
-        //bordercontainer.add(checkboxPanel,BorderLayout.CENTER);
 
         helmetBox.setMaximumSize(new Dimension(200,25));
         helmetBox.setPreferredSize(new Dimension(200,25));
@@ -405,6 +426,13 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         buttonPanel.add(JBrefreshProfile);
     }
 
+    public void resetAbilityStatus(){
+        ability1.setSelected(true);
+        ability2.setSelected(true);
+        ability3.setSelected(true);
+        ability4.setSelected(true);
+    }
+
     public void createMaunalStatEntry(){
         Map<String,Double> stats = customProfile.getAllStats();
         int columnIndex = 0;
@@ -418,8 +446,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             ++columnIndex;
         }
     }
-
-    //TODO: have magical power respond also add option to change power
     public void addManualValues(){
         for (Entry<Component,String> extraValues : manualValues.entrySet()){
             JSpinner spinner = (JSpinner) extraValues.getKey();
@@ -633,6 +659,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
 
         if (e.getSource() == JBloadProfile){
+            resetAbilityStatus();
             enableGodPotion.setSelected(false);
             mobTypesBox.setSelectedItem("None");
             petsBox.setSelectedItem(" ");
@@ -666,6 +693,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
         else if(e.getSource() == JBcustomProfile){
             customProfile = new PlayerProfile();
+            resetAbilityStatus();
             enableGodPotion.setEnabled(true);
             enableGodPotion.setSelected(false);
             JBrefreshProfile.setEnabled(true);
