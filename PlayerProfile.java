@@ -31,7 +31,7 @@ public class PlayerProfile {
     boolean godPotionEnabled = false;
 
     int fairySouls = 0;
-    int skyBlockLevel = 159; //TODO: user input
+    int skyBlockLevel = 160; //TODO: user input
     int farmingLevel = 0;
     int miningLevel = 0;
     int combatLevel = 0;
@@ -50,14 +50,13 @@ public class PlayerProfile {
 
     int goldCollection = 0;              //TODO: user input
     long bankBalance = 100000000 * 10;        //TODO: user input
-
-    // 1 is enabled, 2 is disabled
     int enabledPetAbilities [] = {1,1,1,1};
 
     double enderSlayerBonus = 0;
     double impalingBonus = 0;
     double dragonBonus = 0;
     double smiteBonus = 0;
+    // 1 is enabled, 2 
     double baneBonus = 0;
     double cubismBonus = 0;
 
@@ -81,6 +80,8 @@ public class PlayerProfile {
     double tempSpeed = 0;
     double tempDefense = 0;
     double tempHealth = 0;
+    double tempIntelligence = 0;
+    double strengthOnHit = 0;
     double petMultiplier = 1;
     double critEffectiveness = 1;
 
@@ -252,7 +253,7 @@ public class PlayerProfile {
         }
 
 
-        // remove reforges exclusive to a certain gear type to treat armorReforges as a list of all compatible reforges TODO:
+        // TODO: remove reforges exclusive to a certain gear type to treat armorReforges as a list of all compatible reforges
         armorReforges.remove("loving");
         armorReforges.remove("ridiculous");
 
@@ -548,16 +549,23 @@ public class PlayerProfile {
         // read the stats from the item into global stats
         readItemStats(inventoryItem);
     }
+
+    ArrayList<String> jArrayToList(JSONArray jArray){
+        ArrayList<String> newList = new ArrayList<>();
+        for (int i = 0; i < jArray.length(); i++){
+            newList.add(jArray.get(i).toString());
+        }
+        return newList;
+    }
     
     void parseTalismanBag() throws JSONException, IOException{
-        //TODO: Shady talisman tiers and cat/lynx and bait/spiked atrocity
-        ArrayList<String> tieredTalismanKeys = new ArrayList<>(Arrays.asList("PERSONAL_COMPACTOR_", "PERSONAL_DELETOR_","POWER_", "POTION_AFFINITY_", "SPEED_", 
-                                                                                    "PARTY_HAT_", "BAT_", "BAT_PERSON_", "FEATHER_", "HEALING_", "SEA_CREATURE_","TITANIUM_",
-                                                                                    "ZOMBIE_", "INTIMIDATION_", "CANDY_", "BINGO_", "BEASTMASTER_", "SHARK_TOOTH_NECKLACE", "JERRY_TALISMAN_", 
-                                                                                    "WOLF_", "_HOOF", "RED_CLAW_", "HUNTER_", "SOULFLOW_", "ODGERS_", "CAMPFIRE_", "WEDDING_RING_",
-                                                                                    "SCARF_", "TREASURE_", "MASTER_SKULL_TIER_", "WITHER_", "ENDER_", "KUUDRA_CORE", "PIGGY_", "SPIDER_","GIFT_"));
 
-        String needLoreStats [] = {"POWER","NEW_YEAR_CAKE_BAG","BLOOD_GOD_CREST","BEASTMASTER", "PULSE"};
+        //TODO: Shady talisman tiers and cat/lynx and bait/spiked atrocity
+        JSONArray tieredList = hypixelValue.getJSONObject("Accessories").getJSONArray("tiered");
+        JSONArray dynamicList = hypixelValue.getJSONObject("Accessories").getJSONArray("dynamic");
+    
+        ArrayList<String> tieredTalismanKeys = jArrayToList(tieredList);
+        ArrayList<String> needLoreStats = jArrayToList(dynamicList);
 
         // this array is reserved for talisman that share the same keyword for a tiered talisman set but are not a part of the set 
         ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW"));
@@ -623,7 +631,7 @@ public class PlayerProfile {
                     for (String stat : talismanStats.keySet()){
                         Double statValue = talismanStats.getDouble(stat);
                         if (stat.equals("WALK_SPEED")) stat = "SPEED";
-                        addGlobalStat(stat, statValue);
+                            addGlobalStat(stat, statValue);
                     }
                 }
             }
@@ -765,6 +773,7 @@ public class PlayerProfile {
     /**
      * Applys the numerical values associated with its attributes along with the values in the item reference.
      */
+    //TODO: SPEED -> WALK_SPEED
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
         JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge").getJSONObject(equippedItem.getReforgeCategory());
@@ -833,6 +842,7 @@ public class PlayerProfile {
             if (itemReference.has("stats")){
                 referenceStats = itemReference.getJSONObject("stats");
                 for (String stat : equippedItem.getStats().keySet()){
+                    System.out.println(stat);
                     if (referenceStats.has(stat))
                         equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * starMultiplier);
                     else if (referenceStats.has(stat.toLowerCase()))
@@ -876,10 +886,6 @@ public class PlayerProfile {
                         break;
                     case "protection" : 
                         equippedItem.setStat("DEFENSE", enchantValue);
-                        break;
-                    //TODO: remove to static stats since it's unaffected by other things
-                    case "ultimate_wisdom" : 
-                        equippedItem.setStat("INTELLIGENCE", enchantValue);
                         break;
                     case "critical" : 
                         equippedItem.setStat("CRITICAL_DAMAGE", enchantValue);
@@ -1263,7 +1269,7 @@ public class PlayerProfile {
                 case "attack_speed":
                     tuningValue = tuningSlot0.getDouble(tuningStat) * 0.3;
                     break;
-                case "speed":
+                case "SPEED":
                     tuningValue = tuningSlot0.getDouble(tuningStat) * 1.5;
                     break;
                 default:
@@ -1374,8 +1380,6 @@ public class PlayerProfile {
      *  If an item has a blank name  ("") the values will be stripped from the item and the global stats.
      */
     public void refreshGear(){
-        //TODO: check for magical power change or powerstone change
-        // TODO: remove enchants and other modifiers from an item set to nothing
 
         if (selectedPowerStone.equals("None"))
             removePowerStoneStats();
@@ -1392,10 +1396,6 @@ public class PlayerProfile {
                     removeItemStats(playerItem);
                     playerItem.resetStats();
                     continue;
-                }
-                if (playerItem == playerGear.get(WEAPON_INDEX)){
-                    //setWeaponModifierPool(playerItem);
-                    //TODO: enchant pool prob have to change how to get it
                 }
                 removeItemStats(playerItem);
                 playerItem.resetStats();
@@ -1503,11 +1503,6 @@ public class PlayerProfile {
             JSONObject stats = null;
             String abilityAction = currentAbility.getString("action");
 
-            // temporarily skip conditional TODO: remove for something else
-            /*
-             * if (currentAbility.has("conditional"))
-                continue;
-             */
             switch (abilityAction) {
                 case "addStatPerLevel" : 
                     stats = currentAbility.getJSONObject("stats");
@@ -1767,25 +1762,35 @@ public class PlayerProfile {
             }
     }
 
+    /**
+     * Find all additional armor/weapon effects.
+     */
     public void addGearEffects(){
-        setTempStats(false);
-        getArmorEffects();
-        getWeaponEffects();
-        setTempStats(true);
+        setTempStats(false);     // remove temp stats 
+        getArmorEffects();              // gather armor effects, add any temp stats
+        getWeaponEffects();             // gather weapon effects, add any temp stats
+        setTempStats(true);     // add temp stats
+    }
+
+    /**
+     * Get all effects that are unaffected by other modifiers or require all modifier calculations to be completed.
+     */
+    public void getPostEffects(){
+
     }
     public void calcDamage(int mobHealth){
         double baseMultiplier = calcBaseMultiplier(mobHealth, false);
         double magicBaseMultiplier = calcBaseMultiplier(mobHealth, true);
         Double abilityDamage = 1 + (statTotals.get("ABILITY_DAMAGE_PERCENT") / 100);
         Double postMultiplier = mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier; 
-        Double strength = statTotals.get("STRENGTH");
+        Double strength = statTotals.get("STRENGTH") + strengthOnHit;
         Double critDamage = statTotals.get("CRITICAL_DAMAGE");
         Double damage = statTotals.get("DAMAGE");
         Double weaponAbilityDamage = playerGear.get(WEAPON_INDEX).getStats().get("WEAPON_ABILITY_DAMAGE");
         Double abilityDamagePcercent = playerGear.get(WEAPON_INDEX).getStats().get("ABILITY_DAMAGE_SCALING");
         if (abilityDamagePcercent == 0)
             abilityDamagePcercent = 1.0;
-        weaponDamage = (int) ((5 + damage) * (1 + (strength  / 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier));
+        weaponDamage = (int) ((5 + damage) * (1 + (strength/ 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier));
         mageDamage =  (int) (weaponAbilityDamage * (1 + ((statTotals.get("INTELLIGENCE") / 100.0) * abilityDamagePcercent)) * (1 + (magicBaseMultiplier / 100.0)) * abilityDamage * postMultiplier);
     }   
 
@@ -1811,14 +1816,21 @@ public class PlayerProfile {
         armorAdditive = 0;
         critEffectiveness = 1;
 
-        // this checks reforges for renowned and adds 1% to globalStatBoost
         for (int armorIndex = 0; armorIndex < 4; ++armorIndex){
+
+            // check reforges for renowned and adds 1% to globalStatBoost
             if (playerGear.get(armorIndex).getReforge().equals("renowned")){
                 addToAllGlobalModifers(0.01);
-                //globalStatBoost += 0.01;
+            }
+
+            // add max ultimate wisdom amount to temp stat
+            else if (playerGear.get(armorIndex).getEnchantments().containsKey("ultimate_wisdom")){
+                String wisdomLevel = playerGear.get(armorIndex).getEnchantments().get("ultimate_wisdom");
+                tempIntelligence += hypixelEnchants.getJSONObject("armor").getJSONObject("ultimate_wisdom").getDouble(wisdomLevel);
             }
         }
 
+    
         // All individual piece bonuses
         switch (helmet.getName()){
             case "lantern helmet" : 
@@ -1993,6 +2005,7 @@ public class PlayerProfile {
         addGlobalStat("DAMAGE", tempDamage * modifier);
         addGlobalStat("DEFENSE", tempDefense * modifier);
         addGlobalStat("SPEED", tempSpeed * modifier);
+        addGlobalStat("INTELLIGENCE", tempIntelligence * modifier);
 
         if (!status){
             tempSpeed = 0.0;
@@ -2001,6 +2014,8 @@ public class PlayerProfile {
             tempcritDamage = 0.0;
             tempcritDamage = 0.0;
             tempDefense = 0.0;
+            tempIntelligence = 0.0;
+            strengthOnHit = 0;
         }
     }
 
@@ -2093,10 +2108,9 @@ public class PlayerProfile {
                 tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 break;
             case "pooch sword" : 
-            //TODO: Strength not affected by global boost 
                 tempDamage = (statTotals.get("HEALTH") * globalStatModifiers.get("HEALTH") + tempHealth) / 50;
                 if (selectedMob.equals("Wolf")){
-                    tempStrength = 150;
+                    strengthOnHit = 161;
                 }
                 break;
             case "sword of revelations" : 
@@ -2143,7 +2157,7 @@ public class PlayerProfile {
         // check for archery potion base addition
         if (godPotionEnabled && playerGear.get(WEAPON_INDEX).getCategory().equals("BOW"))
             baseMultiplier += 80;
-            
+
         // check weapon enchantments for multipliers
         if (!playerGear.get(WEAPON_INDEX).getName().equals("") && !playerGear.get(WEAPON_INDEX).getEnchantments().isEmpty()){
             String enchantType = playerGear.get(WEAPON_INDEX).getReforgeCategory();
