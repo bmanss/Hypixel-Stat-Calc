@@ -1988,7 +1988,7 @@
         },
         "itchy" : {
             "base" : {
-                "SPEED" : 1.2,
+                "SPEED" : 0.6,
                 "STRENGTH" : 7.2,
                 "CRITICAL_DAMAGE" : 8.4,
                 "ATTACK_SPEED" : 2.15
