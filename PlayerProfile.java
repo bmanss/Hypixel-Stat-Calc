@@ -144,7 +144,7 @@ public class PlayerProfile {
         statTotals.put("CRITICAL_DAMAGE", 50.0);
         statTotals.put("ATTACK_SPEED", 0.0);
         statTotals.put("FEROCITY", 0.0);
-        statTotals.put("SPEED", 100.0);
+        statTotals.put("WALK_SPEED", 100.0);
         statTotals.put("MAGIC_FIND", 0.0);
         statTotals.put("TRUE_DEFENSE", 0.0);
         statTotals.put("MAGICAL_POWER", 0.0);
@@ -162,7 +162,7 @@ public class PlayerProfile {
         newStats.put("CRITICAL_DAMAGE", 0.0);
         newStats.put("ATTACK_SPEED", 0.0);
         newStats.put("FEROCITY", 0.0);
-        newStats.put("SPEED", 0.0);
+        newStats.put("WALK_SPEED", 0.0);
         newStats.put("MAGIC_FIND", 0.0);
         newStats.put("TRUE_DEFENSE", 0.0);
         newStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
@@ -630,8 +630,7 @@ public class PlayerProfile {
                     JSONObject talismanStats = talismanReference.getJSONObject("stats");
                     for (String stat : talismanStats.keySet()){
                         Double statValue = talismanStats.getDouble(stat);
-                        if (stat.equals("WALK_SPEED")) stat = "SPEED";
-                            addGlobalStat(stat, statValue);
+                        addGlobalStat(stat, statValue);
                     }
                 }
             }
@@ -773,7 +772,6 @@ public class PlayerProfile {
     /**
      * Applys the numerical values associated with its attributes along with the values in the item reference.
      */
-    //TODO: SPEED -> WALK_SPEED
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
         JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge").getJSONObject(equippedItem.getReforgeCategory());
@@ -842,7 +840,6 @@ public class PlayerProfile {
             if (itemReference.has("stats")){
                 referenceStats = itemReference.getJSONObject("stats");
                 for (String stat : equippedItem.getStats().keySet()){
-                    System.out.println(stat);
                     if (referenceStats.has(stat))
                         equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * starMultiplier);
                     else if (referenceStats.has(stat.toLowerCase()))
@@ -981,7 +978,7 @@ public class PlayerProfile {
                         case 9: 
                             addGlobalStat("HEALTH", 5);
                         case 8:
-                            addGlobalStat("SPEED", 1);
+                            addGlobalStat("WALK_SPEED", 1);
                         case 7:
                             addGlobalStat("CRITICAL_DAMAGE", 2);
                         case 6:
@@ -991,11 +988,11 @@ public class PlayerProfile {
                         case 4:
                             addGlobalStat("HEALTH", 2);
                         case 3:
-                            addGlobalStat("SPEED", 1);
+                            addGlobalStat("WALK_SPEED", 1);
                         case 2: 
                             addGlobalStat("HEALTH", 2);
                         case 1:
-                            addGlobalStat("SPEED", 1);
+                            addGlobalStat("WALK_SPEED", 1);
                         default:
                             break;  
                     }
@@ -1162,7 +1159,7 @@ public class PlayerProfile {
         addGlobalStat("HEALTH", healthBonus);
         addGlobalStat("STRENGTH", strengthBonus);
         addGlobalStat("DEFENSE", defenseBonus);
-        addGlobalStat("SPEED", speedBonus);
+        addGlobalStat("WALK_SPEED", speedBonus);
     }
 
     int getBestiaryLevel(){
@@ -1223,7 +1220,7 @@ public class PlayerProfile {
         addGlobalStat("HEALTH", 100 * modifier);
         addGlobalStat("STRENGTH", 98.75 * modifier);
         addGlobalStat("DEFENSE", 66 * modifier);
-        addGlobalStat("SPEED", 228 * modifier);
+        addGlobalStat("WALK_SPEED", 228 * modifier);
         addGlobalStat("INTELLIGENCE", 100 * modifier);
         addGlobalStat("CRITICAL_CHANCE", 25 * modifier);
         addGlobalStat("CRITICAL_DAMAGE", 80 * modifier);
@@ -1269,7 +1266,7 @@ public class PlayerProfile {
                 case "attack_speed":
                     tuningValue = tuningSlot0.getDouble(tuningStat) * 0.3;
                     break;
-                case "SPEED":
+                case "walk_speed":
                     tuningValue = tuningSlot0.getDouble(tuningStat) * 1.5;
                     break;
                 default:
@@ -1702,13 +1699,13 @@ public class PlayerProfile {
                         if (stat.equals("mining")){
                             perLevelAmount = stats.getJSONArray("mining");
                             statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
-                            addPetStat("SPEED", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
+                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
                             addPetStat("DEFENSE", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
                         }
                         else {
                             perLevelAmount = stats.getJSONArray("fishing");
                             statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
-                            addPetStat("SPEED", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
+                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
                             addPetStat("DEFENSE", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
                         }
                     }
@@ -2004,7 +2001,7 @@ public class PlayerProfile {
         addGlobalStat("CRITICAL_DAMAGE", tempcritDamage * modifier);
         addGlobalStat("DAMAGE", tempDamage * modifier);
         addGlobalStat("DEFENSE", tempDefense * modifier);
-        addGlobalStat("SPEED", tempSpeed * modifier);
+        addGlobalStat("WALK_SPEED", tempSpeed * modifier);
         addGlobalStat("INTELLIGENCE", tempIntelligence * modifier);
 
         if (!status){

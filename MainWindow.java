@@ -594,7 +594,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         intelligenceLabel.setText("Intelligence: " + decimalFormatter.format(profile.getStat("INTELLIGENCE")  )); 
         critChanceLabel.setText("Crit Chance: " + decimalFormatter.format(profile.getStat("CRITICAL_CHANCE")  ));
         critDamageLabel.setText("Crit Damage: " + decimalFormatter.format(profile.getStat("CRITICAL_DAMAGE")  ));
-        SpeedLabel.setText("Speed: " + decimalFormatter.format(profile.getStat("SPEED")  ));
+        SpeedLabel.setText("Speed: " + decimalFormatter.format(profile.getStat("WALK_SPEED")  ));
         attackSpeedLabel.setText("Attack Speed: " + decimalFormatter.format(profile.getStat("ATTACK_SPEED")  ));
         ferocityLabel.setText("Ferocity: " + decimalFormatter.format(profile.getStat("FEROCITY")  ));
         damageLabel.setText("Damage: " + decimalFormatter.format(profile.getStat("DAMAGE")  ));
