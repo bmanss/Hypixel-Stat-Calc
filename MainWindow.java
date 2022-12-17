@@ -550,6 +550,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                     allItems.put(referenceName, refrenceItem);
                 }
             }
+            // TODO: fix items like white gift box showing in weapon slot
             else {
                 String referenceName = itemList.getJSONObject(i).getString("name").toLowerCase();
                 JSONObject refrenceItem = itemList.getJSONObject(i);
