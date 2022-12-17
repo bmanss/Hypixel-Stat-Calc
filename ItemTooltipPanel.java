@@ -33,8 +33,6 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
     JButton button_Remove = new JButton("Remove");
 
     JComboBox<String> enchantsList = new JComboBox<>();
-
-    // enchant Level TODO: build levels from json
     JComboBox<String> enchantLevel= new JComboBox<>(new String [] {"1"});
     JComboBox<String> reforgeList = new JComboBox<>();
 
