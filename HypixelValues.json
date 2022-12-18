@@ -1925,7 +1925,7 @@
                 "CRITICAL_DAMAGE" : -2.4
             },
             "unique" :{
-                "ABILITY_DAMAGE" : 5
+                "ABILITY_DAMAGE_PERCENT" : 5
             }
         },
         "demonic" : {
@@ -2029,7 +2029,7 @@
                 "INTELLIGENCE" : 36
             },
             "unique" :{
-                "ABILITY_DAMAGE" : 3
+                "ABILITY_DAMAGE_PERCENT" : 3
             }
         },
         "silky" : {
@@ -3543,7 +3543,7 @@
             },
             "statsPerLevel" : {
                 "INTELLIGENCE" : 1,
-                "ABILITY_DAMAGE" : 0.2
+                "ABILITY_DAMAGE_PERCENT" : 0.2
             },
             "abilities" : [
                 {
