@@ -84,11 +84,12 @@ public class PlayerProfile {
     double strengthOnHit = 0;
     double petMultiplier = 1;
     double critEffectiveness = 1;
+    double abilityBoost = 1;
 
 
     int mainProfileIndex = 0;
 
-    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b";
+    String UUID = "";
     String selectedPowerStone = "None";
     String selectedMob = "None";
     String petName = " ";
@@ -276,8 +277,9 @@ public class PlayerProfile {
 
     }
 
-    public void setPlayerApi(JSONObject playerApi){
+    public void setPlayerApi(JSONObject playerApi, String UUID){
         this.playerApi = playerApi;
+        this.UUID = UUID;
     }
 
     void initInventorySlots(){
@@ -567,8 +569,9 @@ public class PlayerProfile {
         ArrayList<String> tieredTalismanKeys = jArrayToList(tieredList);
         ArrayList<String> needLoreStats = jArrayToList(dynamicList);
 
-        // this array is reserved for talisman that share the same keyword for a tiered talisman set but are not a part of the set 
-        ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW"));
+        // this array is reserved for talisman that share the same keyword for a tiered talisman set but are not a part of a tiered set 
+        ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW","MASTER_SKULL_TIER_1","MASTER_SKULL_TIER_2","MASTER_SKULL_TIER_3","MASTER_SKULL_TIER_4",
+                                                                                "MASTER_SKULL_TIER_5","MASTER_SKULL_TIER_6","MASTER_SKULL_TIER_7"));
         Map<String,String> loreStatsToRead = new HashMap<>();
 
         enum Rarity {
@@ -674,13 +677,16 @@ public class PlayerProfile {
         // filter dupes/tiered talisman out (will take highest base rarity talisman out of the tiered ones) 
         for (String accessory : tieredTalismanKeys){
             ArrayList<String> dupes = (ArrayList<String>) heldTalisman.keySet().stream()
-                                                                      .filter(a->a.contains(accessory) && !(blackListedTalisman.contains(a)) && a.lastIndexOf("_") == accessory.lastIndexOf("_"))
+                                                                      .filter(acc->acc.contains(accessory) && !(blackListedTalisman.contains(acc)) && acc.lastIndexOf("_") == accessory.lastIndexOf("_"))
                                                                       .collect(Collectors.toList());
+
             // if dupes are detected remove lowest rarity ones                                                
             if (dupes.size() > 1){
                 String highestTalisman = dupes.get(0);
                 for (int index = 1; index < dupes.size(); ++index){
-                   if (Rarity.valueOf(accessoryItems.get(dupes.get(index)).get("tier").toString()).ordinal() <= Rarity.valueOf(accessoryItems.get(highestTalisman).get("tier").toString()).ordinal()){
+                   if (accessoryItems.get(dupes.get(index)).has("tier") && Rarity.valueOf(accessoryItems.get(dupes.get(index)).get("tier").toString()).ordinal() 
+                            <= Rarity.valueOf(accessoryItems.get(highestTalisman).get("tier").toString()).ordinal()){
+
                         heldTalisman.keySet().remove(dupes.get(index));
                    }
                     else{
@@ -761,6 +767,8 @@ public class PlayerProfile {
         // read each line in the split string looking for a stat and try to add it (if the line contains a "+" denoting a possible value)
         for (String newStat : statsSplit){
                 if (newStat.contains("+")){
+                    if (newStat.toUpperCase().equals("SPEED"))
+                        newStat = "WALK_SPEED";
                     statName = newStat.substring(0, newStat.indexOf("+") - 1).replaceAll(" ", "_").toUpperCase();
                     statValue = Double.parseDouble(newStat.substring(newStat.indexOf("+") + 1, newStat.length()));
                     addGlobalStat(statName, statValue);
@@ -859,6 +867,9 @@ public class PlayerProfile {
 
         if (equippedItem.getReforge().equals("withered"))
             equippedItem.setStat("STRENGTH", catacombsLevel);
+
+        if (equippedItem.getReforge().equals("loving"))
+            abilityBoost = 1.05;
 
         if (!equippedItem.getEnchantments().isEmpty()){
             JSONObject HypixelEnchantValues = hypixelValue.getJSONObject("Enchantments").getJSONObject(equippedItem.getReforgeCategory());
@@ -1358,6 +1369,8 @@ public class PlayerProfile {
      * Removes the InventoryItem's stats from the global total.
      */
     public void removeItemStats(InventoryItem item){
+        if (item.getReforge().equals("loving"))
+            abilityBoost = 1;
         for (Entry<String, Double> stat : item.getStats().entrySet()){
             statTotals.computeIfPresent(stat.getKey(), (key, val) -> val - stat.getValue());
         }
@@ -1788,7 +1801,7 @@ public class PlayerProfile {
         if (abilityDamagePcercent == 0)
             abilityDamagePcercent = 1.0;
         weaponDamage = (int) ((5 + damage) * (1 + (strength/ 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier));
-        mageDamage =  (int) (weaponAbilityDamage * (1 + ((statTotals.get("INTELLIGENCE") / 100.0) * abilityDamagePcercent)) * (1 + (magicBaseMultiplier / 100.0)) * abilityDamage * postMultiplier);
+        mageDamage =  (int) ((weaponAbilityDamage * abilityBoost) * (1 + ((statTotals.get("INTELLIGENCE") / 100.0) * abilityDamagePcercent)) * (1 + (magicBaseMultiplier / 100.0)) * abilityDamage * postMultiplier);
     }   
 
     public int getWeaponDamage (){
@@ -2173,10 +2186,12 @@ public class PlayerProfile {
                             baseMultiplier += enchantValue;
                         break;
                     case "first_strike" : 
-                        baseMultiplier += enchantValue;
+                        if (!isMagic)
+                            baseMultiplier += enchantValue;
                         break;
                     case "triple_strike" : 
-                        baseMultiplier += enchantValue;
+                        if (!isMagic)
+                            baseMultiplier += enchantValue;
                         break; 
                     case "power" : 
                         baseMultiplier += enchantValue;
