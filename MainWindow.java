@@ -27,6 +27,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
     ToolTipListener toolTipListener = new ToolTipListener();
 
+    boolean validDependencies = false;
+
     double totalHealth = 100.0;
     double totalStrength = 0.0;
     double totalDefense = 0.0;
@@ -706,51 +708,45 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petsBox.setModel(new DefaultComboBoxModel<>(petNames.toArray(new String [petNames.size()])));
     }
 
-    public void loadDefaultState(){
-        if (hypixelItems == null){
-            try {
-                hypixelItems = readFromApi(itemListUrl,true);
-                sortItemList();
-                loadHypixelValues();
-                createPetOptions();
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
+    public void loadDefaultState() throws JSONException, IOException{
+
+        // try and load dependencies
+        if (!validDependencies){
+            hypixelItems = readFromApi(itemListUrl,true);
+            sortItemList();
+            loadHypixelValues();
         }
 
+        createPetOptions();
         resetAbilityStatus();
-        enableGodPotion.setSelected(false);
         mobTypesBox.setSelectedItem("None");
         petsBox.setSelectedItem(" ");
         petLevel.setValue(1);
         petTier.setValue(1);
-        if (enableGodPotion.isSelected()){
-            currentProfile.setGodPotionStats(false);
-            enableGodPotion.setSelected(false);
-        }
-        enableGodPotion.setEnabled(true);
+        if (!enableGodPotion.isEnabled())
+            enableGodPotion.setEnabled(true);
+            
         JBrefreshProfile.setEnabled(true);
-        setActiveItems();
-        displayStats(currentProfile);
+        enableGodPotion.setSelected(false);
+        validDependencies = true;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {  
 
-        // try and load dependencies
-        if (hypixelItems == null){
-            try {
-                hypixelItems = readFromApi(itemListUrl,true);
-                sortItemList();
-                loadHypixelValues();
-                createPetOptions();
-            } catch (IOException e1) {
-                e1.printStackTrace();
+        // try to load item list and hypixel master JSON dependencies
+        try {
+            loadDefaultState();
+        } catch (JSONException | IOException e2) {
+            if (!apiResponseCode.equals("OK"))
+                JOptionPane.showMessageDialog(mainWindow, "Unable to retrieve Items from API.", "Error", JOptionPane.ERROR_MESSAGE);
+            else {
+                JOptionPane.showMessageDialog(mainWindow, "Unable to read HypixelValues.json.", "Error", JOptionPane.ERROR_MESSAGE);
             }
+            return;
         }
 
-        if (e.getSource() == JBloadProfile){
-
+        if (e.getSource() == JBloadProfile && validDependencies){
             // if player profile or api key is invalid display proper message and return from action call
             try {
                 playerApi = readFromApi(skyblockPlayerAPI,true);
@@ -765,34 +761,25 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 }
                 return;
             }
-            resetAbilityStatus();
-            enableGodPotion.setSelected(false);
-            mobTypesBox.setSelectedItem("None");
-            petsBox.setSelectedItem(" ");
-            petLevel.setValue(1);
-            petTier.setValue(1);
-            if (enableGodPotion.isSelected()){
-                currentProfile.setGodPotionStats(false);
-                enableGodPotion.setSelected(false);
-            }
+
             mainProfile = new PlayerProfile();
             currentProfile = mainProfile;
             mainProfile.addItemList(allItems,accessoryItems);
-            
             mainProfile.setPlayerApi(playerApi,UUID);
             mainProfile.setCustomValues(hypixelCustomValues);
             mainProfile.setSkillsApiMilestones(skillsApiInfo);
-            enableGodPotion.setEnabled(true);
-            JBrefreshProfile.setEnabled(true);
             try {
                 mainProfile.parsePlayerProfile();
+                setActiveItems();
+                displayStats(currentProfile);
             } catch (JSONException | IOException e1) {
-                e1.printStackTrace();
+                enableGodPotion.setEnabled(false);
+                JBrefreshProfile.setEnabled(false);
+                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Check profile API settings.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
             }
-            setActiveItems();
-            displayStats(mainProfile);
         }
-        else if(e.getSource() == JBcustomProfile){
+        else if(e.getSource() == JBcustomProfile && validDependencies){
             customProfile = new PlayerProfile();
             resetAbilityStatus();
             enableGodPotion.setEnabled(true);
