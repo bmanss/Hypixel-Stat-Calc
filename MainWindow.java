@@ -106,18 +106,21 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     Map<String,JSONObject> allItems = new LinkedHashMap<String, JSONObject>();
     Map<String,JSONObject> accessoryItems = new LinkedHashMap<String, JSONObject>();
 
-    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b";
-    //String UUID = "e560cf43450e4b81b28ac2ce012757e5"; //theholychickn
+    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b"; // me
+    //String UUID = "f0ae77503b2347df86e7f053a3b39e86"; //ak1004nk
     String API_KEY = "1ae8df22-ce2f-492c-830d-0a529676bce6";
 
+    final String mojangProfileAPI = "https://api.mojang.com/users/profiles/minecraft/";
     String itemListUrl = "https://api.hypixel.net/resources/skyblock/items";
     String skyblockPlayerAPI = "https://api.hypixel.net/skyblock/profiles?key=" + API_KEY + "&uuid=" + UUID;
     String skillsApi = "https://api.hypixel.net/resources/skyblock/skills";
+    String apiResponseCode = "";
 
     JSONObject skillsApiInfo = null;
     JSONObject playerApi = null;
     JSONObject hypixelCustomValues = null;
     JSONObject hypixelItems = null;
+    
 
     JButton JBloadProfile = new JButton("load Profile");
     JButton JBcustomProfile = new JButton("Custom Profile");
@@ -131,6 +134,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JPanel bordercontainer = new JPanel();
     JPanel damagePanel = new JPanel();
     JLayeredPane armorDisplayBase = new JLayeredPane();
+
     Map<Component,String> manualValues = new LinkedHashMap<>();
     Map<Component,Integer> extrasComponents = new HashMap<>(); 
     Map<JComboBox<String>,Integer> itemBoxComponents = new HashMap<>(); 
@@ -145,8 +149,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     // menu bar stuff
     JMenuBar menuBar = new JMenuBar();
     JMenu settingsMenu = new JMenu("Settings");
-    JMenuItem profileName = new JMenuItem("Profile Name");
-    JMenuItem apiKey = new JMenuItem("Api Key");
+    JMenuItem setProfileMI = new JMenuItem("Profile Name");
+    JMenuItem apiKeyMI = new JMenuItem("Api Key");
     Border border = new LineBorder(Color.black, 1, false);
     JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
 
@@ -167,25 +171,54 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     //add(Box.createRigidArea(new Dimension(0, 50)));       for space between buttons
     //add(Box.createVerticalGlue());                        for huge spaces
 
-    public void initComponents(){
+    public void initComponents(){ 
 
         // set up menu bar components
         sep.setBackground(Color.lightGray);
         menuBar.setPreferredSize(new Dimension(30,30));
         settingsMenu.setPreferredSize(new Dimension(102,0));
-        profileName.setPreferredSize(new Dimension(100,30));
-        apiKey.setPreferredSize(new Dimension(100,30));
+        setProfileMI.setPreferredSize(new Dimension(100,30));
+        apiKeyMI.setPreferredSize(new Dimension(100,30));
 
         menuBar.setBackground(new Color(218,221,227));
-        profileName.setBackground(new Color(218,221,227));
-        apiKey.setBackground(new Color(218,221,227));
+        setProfileMI.setBackground(new Color(218,221,227));
+
+        // create action listener for setting profile name or UUID
+        setProfileMI.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                String profileIdentifier = JOptionPane.showInputDialog(mainWindow, "Enter Profile Name or UUID: ", "Set Profile" ,JOptionPane.PLAIN_MESSAGE);
+                if (profileIdentifier != null){
+                    if (profileIdentifier.length() <= 13 ){
+                            try {
+                                profileIdentifier = fetchUUID(profileIdentifier);
+                            } catch (JSONException e1) {
+                                System.out.println("hu");
+                            }
+                    }
+                    UUID = profileIdentifier;
+                    skyblockPlayerAPI = "https://api.hypixel.net/skyblock/profiles?key=" + API_KEY + "&uuid=" + UUID;
+                }
+            }
+        });
+        // create action listener for setting API key
+        apiKeyMI.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                String key = JOptionPane.showInputDialog(mainWindow, "Enter API Key: ", "Set API Key" ,JOptionPane.PLAIN_MESSAGE);
+                if (key != null){
+                    API_KEY = key;
+                    skyblockPlayerAPI = "https://api.hypixel.net/skyblock/profiles?key=" + API_KEY + "&uuid=" + UUID;
+                }
+            }
+            
+        });
+        apiKeyMI.setBackground(new Color(218,221,227));
 
         settingsMenu.setBorderPainted(false);
-        apiKey.setBorderPainted(false);
+        apiKeyMI.setBorderPainted(false);
 
-        settingsMenu.add(profileName);
+        settingsMenu.add(setProfileMI);
         settingsMenu.add(sep);
-        settingsMenu.add(apiKey);
+        settingsMenu.add(apiKeyMI);
         menuBar.setBorder(border);
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
@@ -479,19 +512,48 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         hypixelCustomValues = new JSONObject(readerContents.toString());
     } 
 
-    public JSONObject readFromApi(String APIurl) throws JSONException, IOException{
+    public JSONObject readFromApi(String APIurl, Boolean isGzip) throws JSONException, IOException{
         URL url = new URL(APIurl);
 
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+        InputStream apiContentsStream = null;
         urlConnection.setRequestMethod("GET");
-        urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
-
-        InputStream apiContentsStream = new GZIPInputStream(urlConnection.getInputStream());
+        if (isGzip){
+            urlConnection.setRequestProperty("Accept-Encoding", "gzip, deflate");
+            apiResponseCode = urlConnection.getResponseMessage();
+            apiContentsStream = new GZIPInputStream(urlConnection.getInputStream());
+        }
+        else {
+            apiContentsStream = urlConnection.getInputStream();
+        }
+        
         InputStreamReader contentsReader= new InputStreamReader(apiContentsStream);
         BufferedReader ContentsBuffer = new BufferedReader(contentsReader);
 
         urlConnection.connect();
-        return new JSONObject(ContentsBuffer.readLine());
+        try {
+            return new JSONObject(ContentsBuffer.readLine());
+        } catch (Exception e) {
+            apiResponseCode = urlConnection.getResponseMessage();
+            return null;
+        }
+    }
+
+    /**
+     * Attempt to fetch UUID from Mojang's API.
+     * @param profileName Player's ingame name.
+     * @return Valid UUID or NULL if profile name is not valid,
+     */
+    public String fetchUUID(String profileName){
+        JSONObject apiResponse = null;
+
+        // if profile name is not valid return null 
+        try {
+            apiResponse = readFromApi(mojangProfileAPI + profileName,false);
+            return apiResponse.getString("id");
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void sortItemList(){
@@ -644,13 +706,41 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petsBox.setModel(new DefaultComboBoxModel<>(petNames.toArray(new String [petNames.size()])));
     }
 
+    public void loadDefaultState(){
+        if (hypixelItems == null){
+            try {
+                hypixelItems = readFromApi(itemListUrl,true);
+                sortItemList();
+                loadHypixelValues();
+                createPetOptions();
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        }
+
+        resetAbilityStatus();
+        enableGodPotion.setSelected(false);
+        mobTypesBox.setSelectedItem("None");
+        petsBox.setSelectedItem(" ");
+        petLevel.setValue(1);
+        petTier.setValue(1);
+        if (enableGodPotion.isSelected()){
+            currentProfile.setGodPotionStats(false);
+            enableGodPotion.setSelected(false);
+        }
+        enableGodPotion.setEnabled(true);
+        JBrefreshProfile.setEnabled(true);
+        setActiveItems();
+        displayStats(currentProfile);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {  
 
         // try and load dependencies
         if (hypixelItems == null){
             try {
-                hypixelItems = readFromApi(itemListUrl);
+                hypixelItems = readFromApi(itemListUrl,true);
                 sortItemList();
                 loadHypixelValues();
                 createPetOptions();
@@ -660,6 +750,21 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
 
         if (e.getSource() == JBloadProfile){
+
+            // if player profile or api key is invalid display proper message and return from action call
+            try {
+                playerApi = readFromApi(skyblockPlayerAPI,true);
+                skillsApiInfo = readFromApi(skillsApi,true);
+            } catch (Exception e3) {
+                if (apiResponseCode.equals("Forbidden"))
+                    JOptionPane.showMessageDialog(mainWindow, "Invalid API Key.", "Error", JOptionPane.ERROR_MESSAGE);
+                else if (apiResponseCode.equals("Unprocessable Entity"))
+                    JOptionPane.showMessageDialog(mainWindow, "Invalid Profile.", "Error", JOptionPane.ERROR_MESSAGE);
+                else {
+                    JOptionPane.showMessageDialog(mainWindow, "Unable to load profile.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                return;
+            }
             resetAbilityStatus();
             enableGodPotion.setSelected(false);
             mobTypesBox.setSelectedItem("None");
@@ -667,19 +772,14 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             petLevel.setValue(1);
             petTier.setValue(1);
             if (enableGodPotion.isSelected()){
-                mainProfile.setGodPotionStats(false);
+                currentProfile.setGodPotionStats(false);
                 enableGodPotion.setSelected(false);
             }
             mainProfile = new PlayerProfile();
             currentProfile = mainProfile;
             mainProfile.addItemList(allItems,accessoryItems);
-            try {
-                playerApi = readFromApi(skyblockPlayerAPI);
-                skillsApiInfo = readFromApi(skillsApi);
-            } catch (Exception e3) {
-
-            }
-            mainProfile.setPlayerApi(playerApi);
+            
+            mainProfile.setPlayerApi(playerApi,UUID);
             mainProfile.setCustomValues(hypixelCustomValues);
             mainProfile.setSkillsApiMilestones(skillsApiInfo);
             enableGodPotion.setEnabled(true);
