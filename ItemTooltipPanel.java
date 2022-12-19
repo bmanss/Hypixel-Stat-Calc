@@ -127,11 +127,23 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
     }
 
     public void addSelectedEnchant(String enchant, String level){
+        if (addedEnchants.containsKey("ultimate_one_for_all")){
+            return;
+        }
+        else if (enchant.equals("ultimate_one_for_all")){
+            addedEnchants.clear();
+            addedEnchants.put(enchant, level);
+            updateEnchantDisplay();
+            return;
+        }
 
         // make sure sharpness, bane of arthropods and smite cannot be on the same weapon
         if (enchant.equals("sharpness") && (addedEnchants.containsKey("bane_of_arthropods") || addedEnchants.containsKey("smite")))
             return;
-        else if ((enchant.equals("bane_of_arthropods") || enchant.equals("smite")) && addedEnchants.containsKey("sharpness"))
+        if ((enchant.equals("bane_of_arthropods") || enchant.equals("smite")) && addedEnchants.containsKey("sharpness"))
+            return;
+        if ((enchant.equals("bane_of_arthropods") && addedEnchants.containsKey("smite")) ||
+            enchant.equals("smite") && addedEnchants.containsKey("bane_of_arthropods"))
             return;
          
         addedEnchants.put(enchant, level);

@@ -92,7 +92,8 @@ public class PlayerProfile {
     String UUID = "";
     String selectedPowerStone = "None";
     String selectedMob = "None";
-    String petName = " ";
+    String petName = "None";
+    String petItem = "None";
 
     // magic weapons that do not get base multiplier boost 
     String excludedMagicWeapons [] = {"aspect of the dragons","golem sword"}; 
@@ -354,7 +355,6 @@ public class PlayerProfile {
                     getJSONObject("inv_contents").
                     getString("data"));
 
-        //TODO:  allow this to be skipped if an error occurs 
         JSONObject collections = playerApi.getJSONArray("profiles").
                     getJSONObject(mainProfileIndex).
                     getJSONObject("members").
@@ -1427,7 +1427,8 @@ public class PlayerProfile {
         return selectedPowerStone;
     }
 
-    public void setPet(String petName, int petLevel, int petTier){
+    public void setPet(String petName, String petItem ,int petLevel, int petTier){
+        this.petItem = petItem;
         this.petName = petName;
         this.petLevel = petLevel;
         this.petTier = petTier;
@@ -1464,7 +1465,7 @@ public class PlayerProfile {
         //TODO: not adding base pet stats is causing error
 
         // if no pet is selected return
-        if (petName.equals(" ")){
+        if (petName.equals("None")){
             addGearEffects();
             return;
         }
@@ -1473,6 +1474,7 @@ public class PlayerProfile {
         JSONObject petValues = hypixelValue.getJSONObject("Pets").getJSONObject(petName);
         JSONObject baseStats = petValues.getJSONObject("baseStats");
         JSONObject leveledStats = petValues.getJSONObject("statsPerLevel");
+        JSONObject petItems =  hypixelValue.getJSONObject("Pet items");
         JSONArray abilities = petValues.getJSONArray("abilities");
         int abilityOrder [] = new int [abilities.length()];
 
@@ -1496,7 +1498,37 @@ public class PlayerProfile {
         for (String stat : leveledStats.keySet()){
             addPetStat(stat, leveledStats.getDouble(stat) * petLevel);
         }
-        
+
+        // add petitem effects
+        if (!petItem.equals("None")){
+            JSONObject petItemEffects = petItems.getJSONObject(petItem);
+            String itemEffect = petItemEffects.getString("effect");
+
+            // process items with additive effect
+            if (itemEffect.equals("additive")){
+                JSONObject itemStats = petItemEffects.getJSONObject("stats");
+                for (String stat : itemStats.keySet()){
+                    addPetStat(stat, itemStats.getDouble(stat));
+                }
+            }
+            // process items with multiplicative effect
+            else if (itemEffect.equals("multiplicative")){
+                JSONArray itemStats = petItemEffects.getJSONArray("stats");
+                Double amount = petItemEffects.getDouble("amount");
+                if (itemStats.get(0).equals("all")){
+                    for (Entry<String,Double> stat : petStats.entrySet()){
+                        addPetStat(stat.getKey(), stat.getValue() * amount);
+                    }
+                }
+                else {
+                    for (var stat : itemStats){
+                        addPetStat(stat.toString(), petStats.get(stat) * amount);
+                    }
+                }
+            }
+        }
+        System.out.println(petStats);
+
         // get armor and weapon effects after all base pet stats are set
         addGearEffects();
 
@@ -2194,6 +2226,9 @@ public class PlayerProfile {
                             baseMultiplier += enchantValue;
                         break; 
                     case "power" : 
+                        baseMultiplier += enchantValue;
+                        break; 
+                    case "ultimate_one_for_all" : 
                         baseMultiplier += enchantValue;
                         break; 
                     case "smite" : 

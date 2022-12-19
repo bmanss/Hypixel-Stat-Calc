@@ -95,6 +95,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JComboBox<String> beltBox = new JComboBox<>();
     JComboBox<String> gauntletBox = new JComboBox<>();
     JComboBox<String> petsBox = new JComboBox<>();
+    JComboBox<String> petsItemBox = new JComboBox<>();
 
     JSpinner petLevel = new JSpinner();
     JSpinner petTier = new JSpinner();
@@ -227,6 +228,18 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         enableGodPotion.setEnabled(false);
         JBrefreshProfile.setEnabled(false);
+        JBrefreshProfile.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                if (currentProfile != null){
+                    currentProfile.setPet(petsBox.getSelectedItem().toString(), petsItemBox.getSelectedItem().toString() ,(int) petLevel.getValue(),(int) petTier.getValue());
+                    addManualValues();
+                    currentProfile.refreshGear();
+                    displayStats(currentProfile);
+                    //currentProfile.printItems();
+                }
+            }
+        });
+
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.Y_AXIS));
         armorListPanel.setLayout(new MigLayout());
         armorDisplayBase.setLayout(null);
@@ -280,6 +293,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         petsBox.setMaximumSize(new Dimension(200,25));
         petsBox.setPreferredSize(new Dimension(200,25));
+
+        petsItemBox.setMaximumSize(new Dimension(200,25));
+        petsItemBox.setPreferredSize(new Dimension(200,25));
        
 
         petLevel.setPreferredSize(new Dimension(50,25));
@@ -337,6 +353,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         armorListPanel.add(petsBox);
         armorListPanel.add(petLevel, "split 2");
         armorListPanel.add(petTier,"wrap");
+        armorListPanel.add(petsItemBox,"wrap");
         armorListPanel.add(ability1, "split 2");
         ability1.setSelected(true);
         armorListPanel.add(ability2,"wrap");
@@ -410,7 +427,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         JBrefreshProfile.setFocusPainted(false);
         JBrefreshProfile.setMaximumSize(new Dimension(130,50));
         JBrefreshProfile.setAlignmentX(Component.CENTER_ALIGNMENT);
-        JBrefreshProfile.addActionListener(this);
 
         statDisplayPanel.setBackground(new Color(177,177,177));
         statDisplayPanel.setLayout(new MigLayout());
@@ -699,14 +715,25 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
     public void createPetOptions(){
         ArrayList<String> petNames = new ArrayList<>();
+        ArrayList<String> petItems = new ArrayList<>();
+
         JSONObject petList = hypixelCustomValues.getJSONObject("Pets");
+        JSONObject petItemList = hypixelCustomValues.getJSONObject("Pet items");
+
         for (Object pet : petList.names()){
             petNames.add(pet.toString());
         }
-        petNames.add(" ");
+        for (Object petItem : petItemList.names()){
+            petItems.add(petItem.toString());
+        }
         Collections.sort(petNames);
+        Collections.sort(petItems);
+        petNames.add(0,"None");
+        petItems.add(0, "None");
+        petsItemBox.setModel(new DefaultComboBoxModel<>(petItems.toArray(new String [petItems.size()])));
         petsBox.setModel(new DefaultComboBoxModel<>(petNames.toArray(new String [petNames.size()])));
     }
+
 
     public void loadDefaultState() throws JSONException, IOException{
 
@@ -791,15 +818,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             setActiveItems();
             currentProfile.initCustomProfile();
             displayStats(customProfile);
-        }
-        else if(e.getSource() == JBrefreshProfile){
-            if (currentProfile != null){
-                currentProfile.setPet(petsBox.getSelectedItem().toString(), (int) petLevel.getValue(),(int) petTier.getValue());
-                addManualValues();
-                currentProfile.refreshGear();
-                displayStats(currentProfile);
-                //currentProfile.printItems();
-            }
         }
     }
 
