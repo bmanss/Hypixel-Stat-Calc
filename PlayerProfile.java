@@ -454,17 +454,27 @@ public class PlayerProfile {
             return;
 
         JSONObject itemReference = allItems.get(inventoryItem.getName());
-        String itemCategory = itemReference.getString("category");                                 // get reforge in case the user changed it 
-
-        if (itemCategory.equals("SWORD")){
-            inventoryItem.setEnchantPool(swordEnchants);
-            inventoryItem.setReforgePool(swordReforges, "sword");
+        String itemCategory = "";                                // get reforge in case the user changed it 
+        if (itemReference.has("category")){
+            if (inventoryItem.getToolTip().isDisabled())
+                inventoryItem.getToolTip().enableModifiers();
+                
+            itemCategory = itemReference.getString("category"); 
+            if (itemCategory.equals("SWORD")){
+                inventoryItem.setEnchantPool(swordEnchants);
+                inventoryItem.setReforgePool(swordReforges, "sword");
+            }
+            else if (itemCategory.equals("BOW")){
+                inventoryItem.setEnchantPool(bowEnchants);
+                inventoryItem.setReforgePool(bowReforges, "bow");
+            }
+            inventoryItem.setReforge(reforge);
         }
-        else if (itemCategory.equals("BOW")){
-            inventoryItem.setEnchantPool(bowEnchants);
-            inventoryItem.setReforgePool(bowReforges, "bow");
+        else {
+            inventoryItem.getToolTip().disableModifiers();
+            inventoryItem.setEnchantPool(null);
+            inventoryItem.setReforgePool(null, "");
         }
-        inventoryItem.setReforge(reforge);
     }
     /**
      * Reads in necessary information on a player's armor piece from the inventory API.
@@ -782,9 +792,15 @@ public class PlayerProfile {
      */
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
-        JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge").getJSONObject(equippedItem.getReforgeCategory());
+        JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge");
         int potatoBooks = equippedItem.getPotatoBooks();
         double starMultiplier = 1.0 + (0.02 * equippedItem.getStars());
+
+        if (equippedItem.getReforgeCategory() != null)
+            reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforgeCategory());
+        else {
+            reforgeValues = null;
+        }
 
         if (itemReference.has("tier"))
             equippedItem.setRarity(itemReference.get("tier").toString());
@@ -801,7 +817,7 @@ public class PlayerProfile {
             equippedItem.setMaterial(itemReference.getString("material"));
 
         // make sure item has a reforge and its in the hypixel values json
-        if(!equippedItem.getReforge().equals("") && reforgeValues.has(equippedItem.getReforge())){
+        if(reforgeValues != null && !equippedItem.getReforge().equals("")){
             reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforge());
 
             // if rarity does not exists i.e. it is special/very special default to mythic rarity
@@ -816,17 +832,18 @@ public class PlayerProfile {
             for (String reforgeStat : reforgeValues.keySet()){     
                 equippedItem.setStat(reforgeStat, reforgeValues.getDouble(reforgeStat));
             }
+
+            if (potatoBooks != 0){
+                if (equippedItem.getReforgeCategory().equals("armor")){
+                    equippedItem.setStat("HEALTH", 4 * potatoBooks);
+                    equippedItem.setStat("DEFENSE", 2 * potatoBooks);
+                }
+                else{
+                    equippedItem.setStat("DAMAGE", 2 * potatoBooks);
+                    equippedItem.setStat("STRENGTH", 2 * potatoBooks);
+                }
+            } 
         }
-        if (potatoBooks != 0){
-            if (equippedItem.getReforgeCategory().equals("armor")){
-                equippedItem.setStat("HEALTH", 4 * potatoBooks);
-                equippedItem.setStat("DEFENSE", 2 * potatoBooks);
-            }
-            else{
-                equippedItem.setStat("DAMAGE", 2 * potatoBooks);
-                equippedItem.setStat("STRENGTH", 2 * potatoBooks);
-            }
-        } 
 
         // add item base stats for tiered dungeon items
         if (itemReference.has("tiered_stats")){

@@ -55,9 +55,16 @@ public class InventoryItem {
     }
 
     public void setReforgePool(ArrayList<String> pool, String category){
-        reforgeCategory = category;
-        reforgePool = pool;
-        toolTip.setReforgeList(pool.toArray(new String[pool.size()]));
+        if (pool != null){
+            reforgeCategory = category;
+            reforgePool = pool;
+            toolTip.setReforgeList(pool.toArray(new String[pool.size()]));
+        }
+        else {
+            reforgeCategory = null;
+            reforgePool = null;
+            toolTip.setReforgeList(null);
+        }
     }
 
     public void setMaterial(String material){
@@ -65,8 +72,14 @@ public class InventoryItem {
     }
 
     public void setEnchantPool(ArrayList<String> pool){
-        enchantPool = pool;
-        toolTip.setEnchantList(pool.toArray(new String[pool.size()]));
+        if (pool != null){
+            enchantPool = pool;
+            toolTip.setEnchantList(pool.toArray(new String[pool.size()]));
+        }
+        else {
+            enchantPool = null;
+            toolTip.setEnchantList(null);
+        }
     }
 
     public void setCategory(String category){
@@ -241,7 +254,8 @@ public class InventoryItem {
         setPotatoBooks(0);
         setEnchantPool(newEnchants);
         toolTip.resetEnchantDisplay();
-        toolTip.setReforgeList(newReforges.toArray(new String[newReforges.size()]));
+        if (newReforges != null)
+            toolTip.setReforgeList(newReforges.toArray(new String[newReforges.size()]));
         setReforge("");
         statTier = 0;
         itemQuality = 1;
