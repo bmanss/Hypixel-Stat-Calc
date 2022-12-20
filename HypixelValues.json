@@ -29,9 +29,9 @@
         },
         "helmet" : {
             "big_brain" : {
-                "3" : 15,
-                "4" : 20,
-                "5" : 25
+                "1" : 15,
+                "2" : 20,
+                "3" : 25
             }
         },
         "chestplate" : {
@@ -56,6 +56,9 @@
             }
         },
         "sword" : {
+            "ultimate_one_for_all" : {
+                "1" : 500
+            },
             "sharpness" : {
                 "1" : 5,
                 "2" : 10,
@@ -3556,6 +3559,100 @@
                     "action" : "none"
                 }
             ]
+        }
+    },
+    "Pet items" : {
+        "Big Teeth" : {
+            "effect" : "additive",
+            "stats" : {
+                "CRITICAL_CHANCE" : 5
+            }
+        },
+        "Bigger Teeth" : {
+            "effect" : "additive",
+            "stats" : {
+                "CRITICAL_CHANCE" : 10
+            }
+        },
+        "Sharpened Claws" : {
+            "effect" : "additive",
+            "stats" : {
+                "CRITICAL_DAMAGE" : 15
+            }
+        },
+        "Serrated Claws" : {
+            "effect" : "additive",
+            "stats" : {
+                "CRITICAL_DAMAGE" : 25
+            }
+        },
+        "Iron Claws" : {
+            "effect" : "multiplicative",
+            "amount" : 0.40,
+            "stats" : [
+                "CRITICAL_CHANCE",
+                "CRITICAL_DAMAGE"
+            ]
+        },
+        "Gold Claws" : {
+            "effect" : "multiplicative",
+            "amount" : 0.50,
+            "stats" : [
+                "CRITICAL_CHANCE",
+                "CRITICAL_DAMAGE"
+            ]
+        },
+        "Hardened Scales" : {
+            "effect" : "additive",
+            "stats" : {
+                "DEFENSE" : 25
+            }
+        },
+        "Reinforced Scales" : {
+            "effect" : "additive",
+            "stats" : {
+                "DEFENSE" : 40
+            }
+        },
+        "Textbook" : {
+            "effect" : "multiplicative",
+            "amount" : 1,
+            "stats" : [
+                "INTELLIGENCE"
+            ]
+        },
+        "Lucky Clover" : {
+            "effect" : "additive",
+            "stats" : {
+                "MAGIC_FIND" : 7
+            }
+        },
+        "Crochet Tiger Plushie" : {
+            "effect" : "additive",
+            "stats" : {
+                "ATTACK_SPEED" : 35
+            }
+        },
+        "Antique Remedies" : {
+            "effect" : "multiplicative",
+            "amount" : 0.80,
+            "stats" : [
+                "STRENGTH"
+            ]
+        },
+        "Minos Relic" : {
+            "effect" : "multiplicative",
+            "amount" : 0.333,
+            "stats" : [
+                "all"
+            ]
+        },
+        "Spooky Cupcake" : {
+            "effect" : "additive",
+            "stats" : {
+                "STRENGTH" : 30,
+                "WALK_SPEED" : 20
+            }
         }
     },
     "Bestiary" : {
