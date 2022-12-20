@@ -40,6 +40,8 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
 
     JSONObject allEnchantLevels;
 
+    boolean isDisabled = false;
+    boolean test = false;
     ItemTooltipPanel(){
         setSize(300, 300);
         setOpaque(true);
@@ -65,10 +67,17 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
         button_Remove.addActionListener(this);
 
         enchantsList.addItemListener(this);
+        
+        loadComponents();
+    }
 
+    public void loadComponents(){
         add(recombob,"wrap");
         add(Label_Reforge,"split");
         add(reforgeList,"gap 14px, wrap");
+        if (test){
+            add(new JComboBox<String>(),"wrap");
+        }
         add(Label_Stars,"split");
         add(starsCount, "gap 29px , wrap");
         add(Label_Books,"split");
@@ -80,8 +89,44 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
         add(button_Remove);
         add(button_Clear,"wrap");
         add(enchantDisplay);
-        this.revalidate();
-        this.repaint();
+        test = true;    
+       
+    }
+
+    public void disableModifiers(){
+        isDisabled = true;
+        enchantsList.setEnabled(false);
+        reforgeList.setEnabled(false);
+        enchantLevel.setEnabled(false);
+        bookCount.setEnabled(false);
+        starsCount.setEnabled(false);
+        recombob.setEnabled(false);
+        button_Add.setEnabled(false);
+        button_Clear.setEnabled(false);
+        button_Remove.setEnabled(false);
+
+    }
+    public void enableModifiers(){
+        isDisabled = false;
+        enchantsList.setEnabled(true);
+        reforgeList.setEnabled(true);
+        enchantLevel.setEnabled(true);
+        bookCount.setEnabled(true);
+        starsCount.setEnabled(true);
+        recombob.setEnabled(true);
+        button_Add.setEnabled(true);
+        button_Clear.setEnabled(true);
+        button_Remove.setEnabled(true);
+    }
+
+    public boolean isDisabled(){
+        return isDisabled;
+    }
+
+    public void reloadComponents(){
+        removeAll();
+        loadComponents();
+        revalidate();
     }
 
     public void setEnchantReference(JSONObject allEnchantLevels, String enchantCategory){
@@ -111,14 +156,25 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
     }
 
     public void setReforgeList(String [] reforgePool){
-        reforgeList.setModel(new DefaultComboBoxModel<>(reforgePool));
+        if (reforgePool != null)
+            reforgeList.setModel(new DefaultComboBoxModel<>(reforgePool));
+        else {
+            reforgeList.setModel(new DefaultComboBoxModel<>(new String [] {""}));
+        }
         
     }
 
     public void setEnchantList(String [] enchantPool){
-        enchantsList.setModel(new DefaultComboBoxModel<>(enchantPool));
-        if (!enchantCategory.equals(""))
-            updateEnchantLevel();
+        if (enchantPool != null){
+            enchantsList.setModel(new DefaultComboBoxModel<>(enchantPool));
+            if (!enchantCategory.equals(""))
+                updateEnchantLevel();
+        }
+        else {
+            enchantsList.setModel(new DefaultComboBoxModel<>(new String [] {""}));
+            enchantLevel.setModel(new DefaultComboBoxModel<>(new String [] {""}));
+        }
+
     }
 
     public void resetEnchantDisplay(){
@@ -217,7 +273,6 @@ public class ItemTooltipPanel extends JLayeredPane implements ActionListener, It
         enchantLevel.setModel(new DefaultComboBoxModel<>(newLevels));
     }
 
-    @Override
     public void itemStateChanged(ItemEvent e) {
         updateEnchantLevel();
     }
