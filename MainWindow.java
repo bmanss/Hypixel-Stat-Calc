@@ -104,7 +104,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                                                                    "Skeleton", "Slimes", "Spider", "Undead", "Wither" ,"Wolf", "Zombie"};
     JComboBox<String> mobTypesBox = new JComboBox<>(mobTypes);
 
-    JCheckBox enableGodPotion = new JCheckBox("God Potion");
+    JCheckBox godPotionCheckBox = new JCheckBox("God Potion");
 
     Map<String,JSONObject> allItems = new LinkedHashMap<String, JSONObject>();
     Map<String,JSONObject> accessoryItems = new LinkedHashMap<String, JSONObject>();
@@ -139,7 +139,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JLayeredPane armorDisplayBase = new JLayeredPane();
 
     Map<Component,String> manualValues = new LinkedHashMap<>();
-    Map<Component,Integer> extrasComponents = new HashMap<>(); 
+    Map<Component,Integer> modifiersComponents = new HashMap<>(); 
     Map<JComboBox<String>,Integer> itemBoxComponents = new HashMap<>(); 
     Map<JCheckBox,Integer> abilityComponents = new HashMap<>(); 
 
@@ -156,6 +156,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JMenuItem apiKeyMI = new JMenuItem("Api Key");
     Border border = new LineBorder(Color.black, 1, false);
     JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
+
+    Component miscWeaponValue = null;
+    JLabel miscDescription = null;
+    boolean shouldAddMisc = false;
 
     MainWindow(){
         this.setTitle("Hypixel Stat Calculator");
@@ -226,7 +230,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         menuBar.add(settingsMenu);
         setJMenuBar(menuBar);
 
-        enableGodPotion.setEnabled(false);
+        godPotionCheckBox.setEnabled(false);
         JBrefreshProfile.setEnabled(false);
         JBrefreshProfile.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -253,13 +257,28 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         armorDisplayBase.add(armorListPanel, JLayeredPane.DEFAULT_LAYER);
         armorDisplayBase.add(statDisplayPanel, JLayeredPane.DEFAULT_LAYER);
 
-        
         damagePanel.setLayout(new MigLayout("", "","[]20[]"));
 
         bordercontainer.setPreferredSize(new Dimension(400,500));
         bordercontainer.setMinimumSize(new Dimension(400,500));
         bordercontainer.setLayout(new BorderLayout());
         bordercontainer.add(armorDisplayBase,BorderLayout.CENTER);
+        
+        mobTypesBox.addItemListener(this);
+
+        itemBoxComponents.put(helmetBox, 3);
+        itemBoxComponents.put(chestplateBox, 2);
+        itemBoxComponents.put(leggingsBox, 1);
+        itemBoxComponents.put(bootsBox, 0);
+        itemBoxComponents.put(necklaceBox, 4);
+        itemBoxComponents.put(cloakBox, 5);
+        itemBoxComponents.put(beltBox, 6);
+        itemBoxComponents.put(gauntletBox, 7);
+        itemBoxComponents.put(weaponBox, 8);
+        ability1.setSelected(true);
+        ability2.setSelected(true);
+        ability3.setSelected(true);
+        ability4.setSelected(true);
 
         helmetBox.setMaximumSize(new Dimension(200,25));
         helmetBox.setPreferredSize(new Dimension(200,25));
@@ -297,96 +316,16 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petsItemBox.setMaximumSize(new Dimension(200,25));
         petsItemBox.setPreferredSize(new Dimension(200,25));
        
-
         petLevel.setPreferredSize(new Dimension(50,25));
         petLevel.setModel(new SpinnerNumberModel(1, 1, 100, 1));
 
         petTier.setPreferredSize(new Dimension(50,25));
         petTier.setModel(new SpinnerNumberModel(1, 1, 6, 1));
-        
-        mobTypesBox.addItemListener(this);
-        //armorListPanel.setBorder(BorderFactory.createTitledBorder(""));
-        armorListPanel.add(new JLabel("Armor: "),"wrap");
-        armorListPanel.add(helmetBox);
-        itemBoxComponents.put(helmetBox, 3);
-        
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(chestplateBox);
-        itemBoxComponents.put(chestplateBox, 2);
 
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(leggingsBox);
-        itemBoxComponents.put(leggingsBox, 1);
+        loadGearComponents();
 
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(bootsBox);
-        itemBoxComponents.put(bootsBox, 0);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(new JLabel("Equipment: "),"wrap");
-        armorListPanel.add(necklaceBox);
-        itemBoxComponents.put(necklaceBox, 4);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(cloakBox);
-        itemBoxComponents.put(cloakBox, 5);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(beltBox);
-        itemBoxComponents.put(beltBox, 6);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(gauntletBox);
-        itemBoxComponents.put(gauntletBox, 7);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(new JLabel("Weapon: "),"wrap");
-        armorListPanel.add(weaponBox);
-        itemBoxComponents.put(weaponBox, 8);
-
-        armorListPanel.add(new JLabel("Extras"),"Wrap");
-        armorListPanel.add(new JLabel("PowerStone: "),"wrap");
-        armorListPanel.add(reforgePowerBox,"wrap");
-        armorListPanel.add(new JLabel("Pet: "));
-        armorListPanel.add(new JLabel(" Level:      "),"split 2");
-        armorListPanel.add(new JLabel("Tier: "),"wrap");
-        armorListPanel.add(petsBox);
-        armorListPanel.add(petLevel, "split 2");
-        armorListPanel.add(petTier,"wrap");
-        armorListPanel.add(petsItemBox,"wrap");
-        armorListPanel.add(ability1, "split 2");
-        ability1.setSelected(true);
-        armorListPanel.add(ability2,"wrap");
-        ability2.setSelected(true);
-        armorListPanel.add(ability3,"split 2");
-        ability3.setSelected(true);
-        //TODO: check if 4th should be enabled
-        armorListPanel.add(ability4,"wrap");
-        ability4.setSelected(true);
-        armorListPanel.add(enableGodPotion);
-        int armorIndex = 3;
-        int equipIndex = 0;
-
-        // add mouse listeners and effects to each extra label
+        // // add item listener to each gear selection box and checkbox
         for (Component component : armorListPanel.getComponents()){
-            if (component instanceof JLabel && ((JLabel) component).getText().equals("Extras")){
-                JLabel lb = (JLabel) component;
-                if (armorIndex >= 0){
-                    extrasComponents.put(lb, armorIndex);
-                    --armorIndex;
-                }
-                else{
-                    extrasComponents.put(lb, equipIndex);
-                }
-                lb.setPreferredSize(new Dimension(100,30));
-                lb.setHorizontalAlignment(SwingConstants.CENTER);
-                lb.addMouseListener(toolTipListener);  
-                lb.setOpaque(true);
-                lb.setBackground(Color.gray);
-                ++equipIndex;
-            }
-
-            // add item listener to each gear selection box
             if (component instanceof JComboBox){
                 @SuppressWarnings("unchecked")
                 JComboBox<String> temp = (JComboBox<String>) component;
@@ -432,7 +371,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.setLayout(new MigLayout());
         //healthInput.setPreferredSize(new Dimension(50,0));
         //statDisplayPanel.add(new JLabel("Stats: "));
-        //statDisplayPanel.add(new JLabel("Add Extra: "));
+        //statDisplayPanel.add(new JLabel("Add modifier: "));
         
         createMaunalStatEntry();
         statDisplayPanel.add(healthLabel, "cell 0 0");
@@ -451,15 +390,16 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.add(abilityDamageLabel,"cell 0 13");
         //statDisplayPanel.add(manaLabel,"cell 0 14");
         mobHealthInput.setPreferredSize(new Dimension(150,30));
+
         damagePanel.setBackground(Color.gray);
-        statDisplayPanel.add(damagePanel, "cell 0 14");
         damagePanel.add(new JLabel("Mob Type:"), "split 2");
         damagePanel.add(mobTypesBox);
         damagePanel.add(new JLabel("Health: "), "split 2");
         damagePanel.add(mobHealthInput,"wrap");
         damagePanel.add(firstStrikeDamageLabel,"wrap");
         damagePanel.add(abilityHitLabel);
-
+        statDisplayPanel.add(damagePanel, "cell 0 14");
+        
         changefont(statDisplayPanel, baseFont);
         gridContraints.weightx = 0;
         gridContraints.weighty = 1;
@@ -475,6 +415,96 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         buttonPanel.add(JBloadProfile);
         buttonPanel.add(JBcustomProfile);
         buttonPanel.add(JBrefreshProfile);
+    }
+
+    public void loadGearComponents(){
+        
+        armorListPanel.add(new JLabel("Armor: "),"wrap");
+        armorListPanel.add(helmetBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(chestplateBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(leggingsBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(bootsBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Equipment: "),"wrap");
+        armorListPanel.add(necklaceBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(cloakBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(beltBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(gauntletBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Weapon: "),"wrap");
+        armorListPanel.add(weaponBox);
+        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+
+        if (shouldAddMisc){
+            armorListPanel.add(miscDescription,"wrap");
+            armorListPanel.add(miscWeaponValue,"wrap");
+        }
+
+        armorListPanel.add(new JLabel("PowerStone: "),"wrap");
+        armorListPanel.add(reforgePowerBox,"wrap");
+        armorListPanel.add(new JLabel("Pet: "));
+        armorListPanel.add(new JLabel(" Level:      "),"split 2");
+        armorListPanel.add(new JLabel("Tier: "),"wrap");
+        armorListPanel.add(petsBox);
+        armorListPanel.add(petLevel, "split 2");
+        armorListPanel.add(petTier,"wrap");
+        armorListPanel.add(petsItemBox,"wrap");
+        armorListPanel.add(ability1, "split 2");
+        armorListPanel.add(ability2,"wrap");
+        armorListPanel.add(ability3,"split 2");
+        armorListPanel.add(ability4,"wrap");
+        armorListPanel.add(godPotionCheckBox);
+
+        int armorIndex = 3;
+        int equipIndex = 0;
+
+        // add mouse listeners and effects to each modifier label
+        for (Component component : armorListPanel.getComponents()){
+            if (component instanceof JLabel && ((JLabel) component).getText().equals("modifiers")){
+                JLabel lb = (JLabel) component;
+                if (armorIndex >= 0){
+                    modifiersComponents.put(lb, armorIndex);
+                    --armorIndex;
+                }
+                else{
+                    modifiersComponents.put(lb, equipIndex);
+                }
+                lb.setPreferredSize(new Dimension(100,30));
+                lb.setHorizontalAlignment(SwingConstants.CENTER);
+                lb.addMouseListener(toolTipListener);  
+                lb.setOpaque(true);
+                lb.setBackground(Color.gray);
+                ++equipIndex;
+            }
+        }
+    }
+
+    public void reloadArmorPanel(){
+        modifiersComponents.clear();
+        armorListPanel.removeAll();
+        loadGearComponents();
+        revalidate();
+        repaint();
+    }
+
+    public void addNewWeaponValue(Component fieldType,String description, String [] options){
+        miscDescription = new JLabel(description);
+        if (fieldType instanceof JComboBox){
+            miscWeaponValue = new JComboBox<String>(options);
+        }
+        else {
+            miscWeaponValue = new JTextField();
+        }
+        miscWeaponValue.setMaximumSize(new Dimension(200,25));
+        miscWeaponValue.setPreferredSize(new Dimension(200,25));
+        ((JComponent) miscWeaponValue).setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        shouldAddMisc = true;
     }
 
     public void resetAbilityStatus(){
@@ -498,10 +528,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
     }
     public void addManualValues(){
-        for (Entry<Component,String> extraValues : manualValues.entrySet()){
-            JSpinner spinner = (JSpinner) extraValues.getKey();
+        for (Entry<Component,String> modifierValues : manualValues.entrySet()){
+            JSpinner spinner = (JSpinner) modifierValues.getKey();
             double enteredValue = (double) spinner.getValue();
-            currentProfile.addGlobalStat(extraValues.getValue(), enteredValue);
+            currentProfile.addGlobalStat(modifierValues.getValue(), enteredValue);
             spinner.setValue(0.0);
         }
     }
@@ -634,9 +664,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             else {
                 String referenceName = itemList.getJSONObject(i).getString("name").toLowerCase();
                 JSONObject refrenceItem = itemList.getJSONObject(i);
-                allItems.put(referenceName, refrenceItem);
-                if (refrenceItem.has("stats"))
+                if (refrenceItem.has("stats")){
+                    allItems.put(referenceName, refrenceItem);
                     weaponOption.add(referenceName);
+                }
             }
         }
         
@@ -750,11 +781,11 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petsBox.setSelectedItem(" ");
         petLevel.setValue(1);
         petTier.setValue(1);
-        if (!enableGodPotion.isEnabled())
-            enableGodPotion.setEnabled(true);
+        if (!godPotionCheckBox.isEnabled())
+            godPotionCheckBox.setEnabled(true);
             
         JBrefreshProfile.setEnabled(true);
-        enableGodPotion.setSelected(false);
+        godPotionCheckBox.setSelected(false);
         validDependencies = true;
     }
 
@@ -800,7 +831,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 setActiveItems();
                 displayStats(currentProfile);
             } catch (JSONException | IOException e1) {
-                enableGodPotion.setEnabled(false);
+                godPotionCheckBox.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
                 JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Check profile API settings.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -809,8 +840,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         else if(e.getSource() == JBcustomProfile && validDependencies){
             customProfile = new PlayerProfile();
             resetAbilityStatus();
-            enableGodPotion.setEnabled(true);
-            enableGodPotion.setSelected(false);
+            godPotionCheckBox.setEnabled(true);
+            godPotionCheckBox.setSelected(false);
             JBrefreshProfile.setEnabled(true);
             currentProfile = customProfile;
             customProfile.addItemList(allItems,accessoryItems);
@@ -840,11 +871,11 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             currentProfile.setSelectedMob(mobTypesBox.getSelectedItem().toString());
         }
 
-        if (e.getItem() == enableGodPotion && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
+        if (e.getItem() == godPotionCheckBox && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
             currentProfile.setGodPotionStats(true);
             displayStats(currentProfile);
         }
-        else if (e.getItem() == enableGodPotion && currentProfile !=null){
+        else if (e.getItem() == godPotionCheckBox && currentProfile !=null){
             currentProfile.setGodPotionStats(false);
             displayStats(currentProfile);
         }
@@ -860,6 +891,26 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 currentProfile.changeItemName(itemIndex, e.getItem().toString());
                 currentProfile.setWeaponModifierPool(gearPiece,"");
                 gearPiece.resetModifiers(gearPiece.getEnchantPool(), gearPiece.getReforgePool());
+                if (itemIndex == currentProfile.WEAPON_INDEX){
+                    InventoryItem weapon = currentProfile.getItem(currentProfile.WEAPON_INDEX);
+                    if (weapon.getName().equals("emerald blade")){
+                        addNewWeaponValue(new JTextArea(), "Purse Amount:", null);
+                        reloadArmorPanel();
+                    }
+                    else if (weapon.getName().equals("hyperion")){
+                        addNewWeaponValue(new JComboBox<String>(), "Ability:", new String [] {"Implosion"});
+                        reloadArmorPanel();
+                    }
+                    else if (weapon.getName().equals("midas staff")){
+                        addNewWeaponValue(new JTextArea(), "Purchase Amount:", null);
+                        reloadArmorPanel();
+                    }
+                    else if(shouldAddMisc){
+                        shouldAddMisc = false;
+                        reloadArmorPanel();
+                    }
+
+                }
             }
 
         }
@@ -887,7 +938,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                     overlay.setVisible(false);
                 }
                 armorDisplayBase.remove(overlay);
-                overlay = currentProfile.getItem(extrasComponents.get(e.getComponent())).getToolTip();
+                overlay = currentProfile.getItem(modifiersComponents.get(e.getComponent())).getToolTip();
                 overlay.addMouseListener(toolTipListener);
                 armorDisplayBase.add(overlay, JLayeredPane.PALETTE_LAYER);
                 overlay.setBounds(p.x + 100 ,p.y, overlay.getWidth(), overlay.getHeight());
