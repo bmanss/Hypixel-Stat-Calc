@@ -50,13 +50,12 @@ public class PlayerProfile {
 
     int goldCollection = 0;              //TODO: user input
     long bankBalance = 100000000 * 10;        //TODO: user input
-    int enabledPetAbilities [] = {1,1,1,1};
+    int enabledPetAbilities [] = {1,1,1,1};      // 1 is enabled, 2 is not
 
     double enderSlayerBonus = 0;
     double impalingBonus = 0;
     double dragonBonus = 0;
     double smiteBonus = 0;
-    // 1 is enabled, 2 
     double baneBonus = 0;
     double cubismBonus = 0;
 
@@ -94,6 +93,7 @@ public class PlayerProfile {
     String selectedMob = "None";
     String petName = "None";
     String petItem = "None";
+    Rarity petRarity = Rarity.COMMON;
 
     // magic weapons that do not get base multiplier boost 
     String excludedMagicWeapons [] = {"aspect of the dragons","golem sword"}; 
@@ -131,6 +131,19 @@ public class PlayerProfile {
 
     Map<String, JSONObject> allItems;
     Map<String, JSONObject> accessoryItems;
+
+    enum Rarity {
+        COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, DIVINE, SPECIAL, VERY ,VERY_SPECIAL{
+            @Override
+            public Rarity next(){       //have very special return itself in case there's a call for it's next rarity
+                return values()[ordinal()];
+            }
+        };
+
+        public Rarity next() {
+            return values()[ordinal() + 1];
+        }
+    }
 
     PlayerProfile(){
         initInventorySlots();
@@ -383,6 +396,7 @@ public class PlayerProfile {
         if (inventory.getList("i").getCompound(0).size() != 0)
             setArmorFromApi(playerGear.get(playerGearIndex), inventory.getList("i").getCompound(0));
 
+        setActivePet();
         getPetStats();
         addStatMultipliers();
         calcDamage(selectedMobHealth);
@@ -458,9 +472,9 @@ public class PlayerProfile {
         if (itemReference.has("category")){
             if (inventoryItem.getToolTip().isDisabled())
                 inventoryItem.getToolTip().enableModifiers();
-                
+
             itemCategory = itemReference.getString("category"); 
-            if (itemCategory.equals("SWORD")){
+            if (itemCategory.equals("SWORD") || itemCategory.equals("FISHING_WEAPON")){
                 inventoryItem.setEnchantPool(swordEnchants);
                 inventoryItem.setReforgePool(swordReforges, "sword");
             }
@@ -470,6 +484,8 @@ public class PlayerProfile {
             }
             inventoryItem.setReforge(reforge);
         }
+
+        // disable tooltip if there is no category 
         else {
             inventoryItem.getToolTip().disableModifiers();
             inventoryItem.setEnchantPool(null);
@@ -577,25 +593,11 @@ public class PlayerProfile {
         JSONArray dynamicList = hypixelValue.getJSONObject("Accessories").getJSONArray("dynamic");
     
         ArrayList<String> tieredTalismanKeys = jArrayToList(tieredList);
-        ArrayList<String> needLoreStats = jArrayToList(dynamicList);
+        ArrayList<String> dynamicTalisman = jArrayToList(dynamicList);
 
         // this array is reserved for talisman that share the same keyword for a tiered talisman set but are not a part of a tiered set 
-        ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW","MASTER_SKULL_TIER_1","MASTER_SKULL_TIER_2","MASTER_SKULL_TIER_3","MASTER_SKULL_TIER_4",
-                                                                                "MASTER_SKULL_TIER_5","MASTER_SKULL_TIER_6","MASTER_SKULL_TIER_7"));
+        ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW"));
         Map<String,String> loreStatsToRead = new HashMap<>();
-
-        enum Rarity {
-            COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC, DIVINE, SPECIAL, VERY ,VERY_SPECIAL{
-                @Override
-                public Rarity next(){       //have very special return itself in case there's a call for it's next rarity
-                    return values()[ordinal()];
-                }
-            };
-    
-            public Rarity next() {
-                return values()[ordinal() + 1];
-            }
-        }
 
         Map <String, Rarity> heldTalisman = new HashMap<>();
         
@@ -634,20 +636,15 @@ public class PlayerProfile {
              // if an item reference exist check for a rarity and any stats
              if (talismanReference != null){
 
-                // if there is an item Reference take the value of its "tier" and convert it to Rarity 
-                if (talismanReference.has("tier"))
+                // if there is an item Reference take the value of its "tier" and convert it to Rarity
+                if (talismanReference.has("tier") && !dynamicTalisman.contains(currentTalismanID))
                     talismanRarity = Rarity.valueOf(accessoryItems.get(currentTalismanID).get("tier").toString());
                 
-                // if the talisman has base stats add those to global 
-                if (talismanReference.has("stats")){
-                    JSONObject talismanStats = talismanReference.getJSONObject("stats");
-                    for (String stat : talismanStats.keySet()){
-                        Double statValue = talismanStats.getDouble(stat);
-                        addGlobalStat(stat, statValue);
-                    }
+                // if not read the rarity from the lore
+                else {
+                    talismanRarity = Rarity.valueOf(getRarityFromLore(talismanLore));
                 }
             }
-
             /*
              * else get the Rarity from the item's lore and add the item to the list of all talisman
              * 
@@ -667,16 +664,26 @@ public class PlayerProfile {
             if (heldTalisman.containsKey(currentTalismanID) && heldTalisman.get(currentTalismanID).ordinal() != talismanRarity.ordinal())
                 continue;
 
-             // if talisman has enrichment read it from the lore 
-             if (extraAttributes.containsKey("talisman_enrichment"))
+             // if talisman has enrichment add it to list of talisman that need lore stats read 
+             if (extraAttributes.containsKey("talisman_enrichment")){
                 loreStatsToRead.put(currentTalismanID, talismanLore);
+             }
+             
+            // else if it has stats go ahead and read those in
+            else if (talismanReference != null && talismanReference.has("stats")){
+                JSONObject talismanStats = talismanReference.getJSONObject("stats");
+                for (String stat : talismanStats.keySet()){
+                    Double statValue = talismanStats.getDouble(stat);
+                    addGlobalStat(stat, statValue);
+                }
+            }
 
             // check for recombob and get the next rarity
             if (extraAttributes.containsKey("rarity_upgrades"))
                 talismanRarity = talismanRarity.next();
 
             // check if accessory has variable stats that needs to be read from lore
-            for (String itemID : needLoreStats){
+            for (String itemID : dynamicTalisman){
                 if (currentTalismanID.contains(itemID)){
                     loreStatsToRead.put(currentTalismanID, talismanLore);
                 }
@@ -763,7 +770,6 @@ public class PlayerProfile {
         String statName = "";
         Double statValue = 0.0;
         String statsSplit [] = filteredLore.split("(?<=\\+[.0-9]*)\s|(?<=\\.)\s");
-
         // manually read the bonus from the new years cake bag since it does not conform to regualr stat conventions in talismen
         if (talismanID.equals("NEW_YEAR_CAKE_BAG")){
             try {
@@ -777,8 +783,8 @@ public class PlayerProfile {
         // read each line in the split string looking for a stat and try to add it (if the line contains a "+" denoting a possible value)
         for (String newStat : statsSplit){
                 if (newStat.contains("+")){
-                    if (newStat.toUpperCase().equals("SPEED"))
-                        newStat = "WALK_SPEED";
+                    if (newStat.contains("Speed"))
+                        newStat = newStat.replace("Speed", "WALK_SPEED");
                     statName = newStat.substring(0, newStat.indexOf("+") - 1).replaceAll(" ", "_").toUpperCase();
                     statValue = Double.parseDouble(newStat.substring(newStat.indexOf("+") + 1, newStat.length()));
                     addGlobalStat(statName, statValue);
@@ -790,6 +796,7 @@ public class PlayerProfile {
     /**
      * Applys the numerical values associated with its attributes along with the values in the item reference.
      */
+    //TODO: do not show reforges etc. for fishing rods 
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
         JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge");
@@ -817,7 +824,7 @@ public class PlayerProfile {
             equippedItem.setMaterial(itemReference.getString("material"));
 
         // make sure item has a reforge and its in the hypixel values json
-        if(reforgeValues != null && !equippedItem.getReforge().equals("")){
+        if(reforgeValues != null && !equippedItem.getReforge().equals("") && reforgeValues.has(equippedItem.getReforge())){
             reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforge());
 
             // if rarity does not exists i.e. it is special/very special default to mythic rarity
@@ -1465,6 +1472,75 @@ public class PlayerProfile {
         }
     }
 
+    public String toTitleCase(String input){
+        input = input.trim();
+        if (!input.contains(" "))
+            return input.substring(0, 1).toUpperCase() + input.substring(1,input.length()).toLowerCase();
+        return input.substring(0, 1).toUpperCase() + input.substring(1,input.indexOf(" ") + 1).toLowerCase() +
+                toTitleCase(input.substring(input.indexOf(" ") + 1, input.length()));
+    }
+
+    public void setActivePet(){
+        // should not fail all profiles have a pets array
+        JSONArray playerPets = playerApi.getJSONArray("profiles").
+                                        getJSONObject(mainProfileIndex).
+                                        getJSONObject("members").
+                                        getJSONObject(UUID).
+                                        getJSONArray("pets");
+                                        
+        String activePet = "None";
+        double petXp = 0.0;
+        // find active pet 
+        for (int petIndex = 0; petIndex < playerPets.length(); petIndex++){
+            JSONObject currentPet = playerPets.getJSONObject(petIndex);
+            if (currentPet.getBoolean("active")){
+                String pet = currentPet.getString("type");
+                String activeItem = currentPet.getString("heldItem");
+                petXp = currentPet.getDouble("exp");
+                // API pet item gets parsed int "Pet Item ".... so that part is replaced with empty string
+                petItem = toTitleCase(activeItem.replace("_", " ")).replace("Pet Item ", "");
+                activePet = pet.charAt(0) + pet.substring(1, pet.length()).toLowerCase();
+                petRarity = Rarity.valueOf(currentPet.getString("tier"));
+                break;
+            }
+        }
+        petName = activePet;
+        if (!petName.equals("None"))
+            petLevel = calcPetLevel(petXp);
+    }
+
+    // TODO: golden dragon
+    public int calcPetLevel(Double petXp){
+        Rarity rarity = petRarity;
+        if (rarity.toString().equals("MYTHIC")){
+            rarity = Rarity.LEGENDARY;
+        }
+
+        JSONArray cumulativeLevels = hypixelValue.getJSONObject("Pet XpTable").getJSONArray(rarity.toString());
+        int level = 0;
+        for (int xpMilestone = 0; xpMilestone < cumulativeLevels.length(); xpMilestone++){
+            if (petXp >= cumulativeLevels.getInt(xpMilestone))
+                level++;
+            else {
+                break;
+            }
+        }
+        return level;
+    }
+
+    public int getPetLevel(){
+        return petLevel;
+    }
+    public int getPetRarity(){
+        return petRarity.ordinal() + 1;
+    }
+
+    public String getActivePet(){
+        return petName;
+    }
+    public String getActivePetItem(){
+        return petItem;
+    }
     public void getPetStats(){
 
         // remove pet stats from global if present
@@ -1516,8 +1592,11 @@ public class PlayerProfile {
             addPetStat(stat, leveledStats.getDouble(stat) * petLevel);
         }
 
-        // add petitem effects
-        if (!petItem.equals("None")){
+        // add petitem effects if supported. Item name can be something unsupported due to API parsing. If unsupported set it to None
+        if (!petItems.has(petItem)){
+            petItem = "None";
+        }
+        else if (!petItem.equals("None")){
             JSONObject petItemEffects = petItems.getJSONObject(petItem);
             String itemEffect = petItemEffects.getString("effect");
 
@@ -1544,7 +1623,6 @@ public class PlayerProfile {
                 }
             }
         }
-        System.out.println(petStats);
 
         // get armor and weapon effects after all base pet stats are set
         addGearEffects();

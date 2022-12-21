@@ -20,6 +20,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     DecimalFormat decimalFormatter = new DecimalFormat( "#.##" );
     
     Font baseFont = new Font("Arial",Font.PLAIN,17);
+    Font baseFontBold = new Font("Arial",Font.BOLD,17);
 
     PlayerProfile mainProfile = null;
     PlayerProfile customProfile = new PlayerProfile();
@@ -138,6 +139,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JPanel damagePanel = new JPanel();
     JLayeredPane armorDisplayBase = new JLayeredPane();
 
+    JLabel profileName = new JLabel("Profile: ");
+    String namePlaceholer = "BigOofinator";
     Map<Component,String> manualValues = new LinkedHashMap<>();
     Map<Component,Integer> modifiersComponents = new HashMap<>(); 
     Map<JComboBox<String>,Integer> itemBoxComponents = new HashMap<>(); 
@@ -353,7 +356,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         buttonPanel.add(Box.createRigidArea(new Dimension(0, 50))); 
 
-        JBloadProfile.setFocusPainted(true);
+        JBloadProfile.setFocusPainted(false);
         JBloadProfile.setMaximumSize(new Dimension(130,50));
         JBloadProfile.setAlignmentX(Component.CENTER_ALIGNMENT);
         JBloadProfile.addActionListener(this);
@@ -401,6 +404,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.add(damagePanel, "cell 0 14");
         
         changefont(statDisplayPanel, baseFont);
+        changefont(profileName, baseFontBold);
         gridContraints.weightx = 0;
         gridContraints.weighty = 1;
         gridContraints.fill = GridBagConstraints.BOTH;
@@ -412,6 +416,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         validate();
 
         damagePanel.setPreferredSize(new Dimension(damagePanel.getX() + (statDisplayPanel.getWidth() - 150),200));
+        profileName.setAlignmentX(Component.CENTER_ALIGNMENT);
+        buttonPanel.add(profileName);
+        buttonPanel.add(Box.createRigidArea(new Dimension(0, 30))); 
         buttonPanel.add(JBloadProfile);
         buttonPanel.add(JBcustomProfile);
         buttonPanel.add(JBrefreshProfile);
@@ -594,7 +601,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
      */
     public String fetchUUID(String profileName){
         JSONObject apiResponse = null;
-
+        namePlaceholer = profileName;
         // if profile name is not valid return null 
         try {
             apiResponse = readFromApi(mojangProfileAPI + profileName,false);
@@ -629,6 +636,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                         weaponOption.add(referenceName);
                         break;
                     case "BOW":
+                        weaponOption.add(referenceName);
+                        break;
+                    case "FISHING_WEAPON":
                         weaponOption.add(referenceName);
                         break;
                     case "NECKLACE":
@@ -741,7 +751,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
         reforgePowerBox.setModel(new DefaultComboBoxModel<String>(allStones.toArray(new String [allStones.size()])));
         reforgePowerBox.getModel().setSelectedItem(currentProfile.getPowerStone());
-  
+        petsBox.setSelectedItem(currentProfile.getActivePet());
+        petsItemBox.setSelectedItem(currentProfile.getActivePetItem());
+        petLevel.setValue(currentProfile.getPetLevel());
+        petTier.setValue(currentProfile.getPetRarity());
     }
 
     public void createPetOptions(){
@@ -830,7 +843,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 mainProfile.parsePlayerProfile();
                 setActiveItems();
                 displayStats(currentProfile);
+                profileName.setText("Profile: " + namePlaceholer);
             } catch (JSONException | IOException e1) {
+                e1.printStackTrace();
                 godPotionCheckBox.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
                 JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Check profile API settings.", "Error", JOptionPane.ERROR_MESSAGE);
