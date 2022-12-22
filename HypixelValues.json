@@ -2151,7 +2151,7 @@
                 },
                 {
                     "action" : "allStats",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         0.15
                     ]
@@ -2198,7 +2198,6 @@
             "abilities" : [
                 {
                     "action" : "allStats",
-                    "conditional" : true,
                     "amountPerLevel" : [
                         0.1
                     ]
@@ -2318,7 +2317,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                      "DAMAGE" : [
                         0,
@@ -2366,7 +2365,7 @@
             "abilities" : [
                 {
                     "action" : "baseMultiplierPerLevel",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         0.3
                     ] 
@@ -2376,7 +2375,7 @@
                 },
                 {
                     "action" : "petAbility",
-                    "conditional" : true,
+
                     "baseAmount" : [
                         203
                     ],
@@ -2424,7 +2423,8 @@
                 },
                 {
                     "action" : "statByPercentage",
-                    "conditional" : true,
+                    "effect" : "multiplicative",
+                    "baseAmount" : 1,
                     "stat" : "STRENGTH",
                     "amountPerLevel" : [
                         0.14
@@ -2448,7 +2448,7 @@
                 },
                 {
                     "action" : "buffBowDamage",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         0.25
                     ]
@@ -2472,7 +2472,7 @@
                 },
                 {
                     "action" : "statByPercentage",
-                    "conditional" : true,
+                    "effect" : "multiplicative",
                     "stat" : "ATTACK_SPEED",
                     "amountPerLevel" : [
                         0.1
@@ -2608,7 +2608,7 @@
                 },
                 {
                     "action" : "baseMultiplierPerLevel",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         0.25
                     ]
@@ -2651,7 +2651,7 @@
                 },
                 {
                     "action" : "buffBowDamage",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         0.4
                     ]
@@ -2765,8 +2765,8 @@
             "abilities" : [
                 {
                     "action" : "statByPercentage",
-                    "conditional" : true,
                     "stat" : "DEFENSE",
+                    "effect" : "additive",
                     "baseAmount" : 3,
                     "amountPerLevel" : [
                         0.27
@@ -2898,7 +2898,7 @@
                 },
                 {
                     "action" : "petAbility",
-                    "conditional" : true,
+
                     "amountPerLevel" : [
                         2
                     ] 
@@ -2987,7 +2987,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                      "INTELLIGENCE" : [
                         0.2,
@@ -3020,7 +3020,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                      "STRENGTH" : [
                         0.3
@@ -3066,9 +3066,7 @@
                     "action" : "none"
                 },
                 {
-                    "action" : "statByPercentage",
-                    "conditional" : true,
-                    "stat" : "DEFENSE",
+                    "action" : "rockDefense",
                     "amountPerLevel" : [
                         0.2,
                         0.2,
@@ -3077,12 +3075,7 @@
                     ]
                 },
                 {
-                    "action" : "statByPercentage",
-                    "conditional" : true,
-                    "stat" : "DAMAGE",
-                    "amountPerLevel" : [
-                        0.3
-                    ]
+                    "action" : "none"
                 }
             ]
         },"Scatha" : {
@@ -3184,7 +3177,6 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
                     "stats" : {
                     "STRENGTH" : [
                         0.4,
@@ -3219,7 +3211,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                     "WALK_SPEED" : [
                         0.75,
@@ -3288,7 +3280,7 @@
             "abilities" : [
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                     "STRENGTH" : [
                         0.5
@@ -3350,6 +3342,7 @@
                 },
                 {
                     "action" : "statByPercentage",
+                    "effect" : "additive",
                     "stat" : "HEALTH",
                     "amountPerLevel" : [
                         0.2
@@ -3388,7 +3381,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                     "STRENGTH" : [
                         0.8,
@@ -3426,7 +3419,7 @@
                 },
                 {
                     "action" : "addStatPerLevel",
-                    "conditional" : true,
+
                     "stats" : {
                     "STRENGTH" : [
                         0.8,
@@ -3838,6 +3831,10 @@
                 "CAT_TALISMAN" : "UNCOMMON",
                 "LYNX_TALISMAN" : "RARE",
                 "CHEETAH_TALISMAN" : "EPIC"
+            },
+            "Bait" : {
+                "BAIT_RING" : "RARE",
+                "SPIKED_ATROCITY" : "EPIC"
             }
         }
             
