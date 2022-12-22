@@ -3816,7 +3816,10 @@
             "PIGGY_", 
             "SPIDER_",
             "GIFT_",
-            "GLACIAL_"
+            "GLACIAL_",
+            "GREAT_SPOOK_",
+            "BURSTSTOPPER_",
+            "VACCINE_"
         ],
         "dynamic" :[
             "POWER",
@@ -3824,7 +3827,19 @@
             "BLOOD_GOD_CREST",
             "BEASTMASTER_CREST",
             "PULSE_RING"
-        ]
+        ],
+        "sets" : {
+            "Lucius" : {
+                "SHADY_RING" : "UNCOMMON",
+                "CROOKED_ARTIFACT" : "RARE",
+                "SEAL_OF_THE_FAMILY" : "EPIC"
+            },
+            "Guildford" : {
+                "CAT_TALISMAN" : "UNCOMMON",
+                "LYNX_TALISMAN" : "RARE",
+                "CHEETAH_TALISMAN" : "EPIC"
+            }
+        }
             
     },
     "Pet XpTable" : {
