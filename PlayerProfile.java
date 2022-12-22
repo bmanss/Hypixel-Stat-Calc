@@ -587,8 +587,6 @@ public class PlayerProfile {
     }
     
     void parseTalismanBag() throws JSONException, IOException{
-
-        //TODO: Shady talisman tiers and cat/lynx and bait/spiked atrocity
         JSONArray tieredList = hypixelValue.getJSONObject("Accessories").getJSONArray("tiered");
         JSONArray dynamicList = hypixelValue.getJSONObject("Accessories").getJSONArray("dynamic");
         JSONObject talismanSets = hypixelValue.getJSONObject("Accessories").getJSONObject("sets");
@@ -1460,7 +1458,6 @@ public class PlayerProfile {
      *  If an item has a blank name  ("") the values will be stripped from the item and the global stats.
      */
     public void refreshGear(){
-
         if (selectedPowerStone.equals("None"))
             removePowerStoneStats();
         else {
@@ -1541,7 +1538,7 @@ public class PlayerProfile {
             JSONObject currentPet = playerPets.getJSONObject(petIndex);
             if (currentPet.getBoolean("active")){
                 String pet = currentPet.getString("type");
-                String activeItem = currentPet.getString("heldItem");
+                String activeItem = currentPet.get("heldItem").toString();
                 petXp = currentPet.getDouble("exp");
                 // API pet item gets parsed int "Pet Item ".... so that part is replaced with empty string
                 petItem = toTitleCase(activeItem.replace("_", " ")).replace("Pet Item ", "");
@@ -1551,8 +1548,11 @@ public class PlayerProfile {
             }
         }
         petName = toTitleCase(activePet.replace("_", " "));
-        if (!petName.equals("None"))
+        if (!petName.equals("None")){
             petLevel = calcPetLevel(petXp);
+            petTier = petRarity.ordinal() + 1;
+        }
+
     }
 
     // TODO: golden dragon
@@ -1600,8 +1600,6 @@ public class PlayerProfile {
         petBaseAdditive = 0;
         petFirstHit = 0;
         petStats = createBaseStats();
-
-        //TODO: not adding base pet stats is causing error
 
         // if no pet is selected return
         if (petName.equals("None")){
@@ -1800,16 +1798,32 @@ public class PlayerProfile {
                  */
                 case "statByPercentage" :
                     String receiveStat = currentAbility.getString("stat");
+                    String effect = currentAbility.getString("effect");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
                     statValue = statPerLevel * petLevel;
-                    if (petName.equals("Griffin")){
-                        statValue += .01;
+                    // add base amount if pet has it 
+                    if (currentAbility.has("baseAmount")){
+                        statValue += currentAbility.getDouble("baseAmount") / 100;
+                    }
+                    // For multiplicative 
+                    if (effect.equals("multiplicative")){
                         addToGlobalModifer(receiveStat, statValue * globalStatModifiers.get(receiveStat));
                     }
+                    // For additive
                     else {
                         addToGlobalModifer(receiveStat, statValue);
                     }
+                    break;
+                case "rockDefense" :
+                    perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
+                    statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
+                    statValue = statPerLevel * petLevel;
+                    Double rockDefense = (statTotals.get("DEFENSE") + petStats.get("DEFENSE")) * globalStatModifiers.get("DEFENSE") * statValue;
+                    addPetStat("DEFENSE", rockDefense);
+                    break;
+                case "rockDamage" :
+                    // TODO figure out how they do this...
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1818,7 +1832,6 @@ public class PlayerProfile {
                     //TODO: need to implement --- maybe not incredibly negligible 
                     break;
                 case "buffZombieSets" :
-                //TODO: fix so ultimate enchant wisdom not taken into account 
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100;
                     String acceptedArmor[] = {"revenant", "zombie", "heart", "reaper", "rotten", "skeleton grunt", "skeleton soldier", "skeleton master", "skeleton lord", "skeletor"};
