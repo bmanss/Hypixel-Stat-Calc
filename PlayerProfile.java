@@ -591,6 +591,7 @@ public class PlayerProfile {
         //TODO: Shady talisman tiers and cat/lynx and bait/spiked atrocity
         JSONArray tieredList = hypixelValue.getJSONObject("Accessories").getJSONArray("tiered");
         JSONArray dynamicList = hypixelValue.getJSONObject("Accessories").getJSONArray("dynamic");
+        JSONObject talismanSets = hypixelValue.getJSONObject("Accessories").getJSONObject("sets");
     
         ArrayList<String> tieredTalismanKeys = jArrayToList(tieredList);
         ArrayList<String> dynamicTalisman = jArrayToList(dynamicList);
@@ -599,7 +600,7 @@ public class PlayerProfile {
         ArrayList<String> blackListedTalisman = new ArrayList<>(Arrays.asList("WOLF_PAW"));
         Map<String,String> loreStatsToRead = new HashMap<>();
 
-        Map <String, Rarity> heldTalisman = new HashMap<>();
+        Map <String, Rarity> heldTalisman = new LinkedHashMap<>();
         
          // read talisman bag contents
          NBTCompound talismanBag = NBTReader.readBase64(
@@ -660,28 +661,18 @@ public class PlayerProfile {
                 loreStatsToRead.put(currentTalismanID, talismanLore);
             } 
 
-            // skip this talisman if it already exist and its not recombobed
-            if (heldTalisman.containsKey(currentTalismanID) && heldTalisman.get(currentTalismanID).ordinal() != talismanRarity.ordinal())
-                continue;
-
-             // if talisman has enrichment add it to list of talisman that need lore stats read 
-             if (extraAttributes.containsKey("talisman_enrichment")){
-                loreStatsToRead.put(currentTalismanID, talismanLore);
-             }
-             
-            // else if it has stats go ahead and read those in
-            else if (talismanReference != null && talismanReference.has("stats")){
-                JSONObject talismanStats = talismanReference.getJSONObject("stats");
-                for (String stat : talismanStats.keySet()){
-                    Double statValue = talismanStats.getDouble(stat);
-                    addGlobalStat(stat, statValue);
-                }
-            }
-
             // check for recombob and get the next rarity
             if (extraAttributes.containsKey("rarity_upgrades"))
                 talismanRarity = talismanRarity.next();
 
+            // skip this talisman and continue parsing if it already exist and is a greater rarity version (meaning recombob)
+            if (heldTalisman.containsKey(currentTalismanID) && heldTalisman.get(currentTalismanID).ordinal() >= talismanRarity.ordinal())
+                continue;
+
+             // if talisman has enrichment add it to list of talisman that need lore stats read 
+             if (extraAttributes.containsKey("talisman_enrichment"))
+                loreStatsToRead.put(currentTalismanID, talismanLore);
+             
             // check if accessory has variable stats that needs to be read from lore
             for (String itemID : dynamicTalisman){
                 if (currentTalismanID.contains(itemID)){
@@ -690,26 +681,81 @@ public class PlayerProfile {
             }
             heldTalisman.put(currentTalismanID, talismanRarity);
         }
-        
-        // filter dupes/tiered talisman out (will take highest base rarity talisman out of the tiered ones) 
+
+        // filter dupes/tiered talisman out (will take highest base rarity talisman out of the tiered ones)
         for (String accessory : tieredTalismanKeys){
             ArrayList<String> dupes = (ArrayList<String>) heldTalisman.keySet().stream()
                                                                       .filter(acc->acc.contains(accessory) && !(blackListedTalisman.contains(acc)) && acc.lastIndexOf("_") == accessory.lastIndexOf("_"))
                                                                       .collect(Collectors.toList());
 
-            // if dupes are detected remove lowest rarity ones                                                
+            // if dupes are detected remove lowest rarity ones. Prioritizes first in acc bag                    
             if (dupes.size() > 1){
                 String highestTalisman = dupes.get(0);
-                for (int index = 1; index < dupes.size(); ++index){
-                   if (accessoryItems.get(dupes.get(index)).has("tier") && Rarity.valueOf(accessoryItems.get(dupes.get(index)).get("tier").toString()).ordinal() 
-                            <= Rarity.valueOf(accessoryItems.get(highestTalisman).get("tier").toString()).ordinal()){
+                while (dupes.size() > 1){
+                    for (int index = 1; index < dupes.size(); ++index){
+                        if (heldTalisman.get(dupes.get(index)).ordinal() < heldTalisman.get(highestTalisman).ordinal()){
+                            heldTalisman.remove(dupes.get(index));
+                            dupes.remove(dupes.get(index));
+                        }
 
-                        heldTalisman.keySet().remove(dupes.get(index));
-                   }
-                    else{
-                        heldTalisman.keySet().remove(highestTalisman);
-                        highestTalisman = dupes.get(index);
+                        else {
+                            String temp = highestTalisman;
+                            heldTalisman.remove(highestTalisman);
+                            highestTalisman = dupes.get(index);
+                            dupes.remove(temp);
+                        }
                     }
+                }
+            }
+        }
+
+        // check for dupes of Talisman sets
+        for (String set : talismanSets.keySet()){
+            JSONObject currentSet = talismanSets.getJSONObject(set);
+            JSONArray talismanInSet = currentSet.names();
+            ArrayList<String> dupes = new ArrayList<>();
+
+            // find and add set dupes
+            for (int talismanIndex = 0; talismanIndex < talismanInSet.length(); talismanIndex++){
+                if (heldTalisman.containsKey(talismanInSet.get(talismanIndex))){
+                    dupes.add((String) talismanInSet.get(talismanIndex));
+                }
+            }
+            // filter out lower rarity
+            if (dupes.size() > 1){
+                String highestTalisman = dupes.get(0);
+                while (dupes.size() > 1){
+                    for (int index = 1; index < dupes.size(); ++index){
+                        if (heldTalisman.get(dupes.get(index)).ordinal() < heldTalisman.get(highestTalisman).ordinal()){
+                            heldTalisman.remove(dupes.get(index));
+                            dupes.remove(dupes.get(index));
+                        }
+                        else{
+                            String temp = highestTalisman;
+                            heldTalisman.remove(highestTalisman);
+                            highestTalisman = dupes.get(index);
+                            dupes.remove(temp);
+                        }
+                    }
+                }
+            }
+        }
+
+        // remove dupes from map of talisman that need lorestats read
+        for (String talisman : loreStatsToRead.keySet()){
+            if (!heldTalisman.containsKey(talisman)){
+                loreStatsToRead.remove(talisman);
+            }
+        }
+
+        // check all remanining talisman for base stats and read those in
+        for (Entry<String,Rarity> talisman : heldTalisman.entrySet()){
+            JSONObject reference = accessoryItems.get(talisman.getKey());
+            if (reference.has("stats") && !loreStatsToRead.containsKey(talisman.getKey())){
+                JSONObject talismanStats = reference.getJSONObject("stats");
+                for (String stat : talismanStats.keySet()){
+                    Double statValue = talismanStats.getDouble(stat);
+                    addGlobalStat(stat, statValue);
                 }
             }
         }
@@ -1504,7 +1550,7 @@ public class PlayerProfile {
                 break;
             }
         }
-        petName = activePet;
+        petName = toTitleCase(activePet.replace("_", " "));
         if (!petName.equals("None"))
             petLevel = calcPetLevel(petXp);
     }
