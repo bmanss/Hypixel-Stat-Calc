@@ -21,6 +21,7 @@ The main function of the program is to allow users to load their profile and pre
     - Community upgrades (because its very limited in API)
     - Essence shop bonuses
     - Gear attributes i.e. Mana pool, speed shards
+    - Skyblock Level (not feasible with API)
 
 ### 2. Player Profile Modification
 - Add additional stats manually
