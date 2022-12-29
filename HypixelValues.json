@@ -2167,12 +2167,10 @@
             },
             "abilities" : [
                 {
-                    "action" : "addStatPerLevel",
-                    "stats" : {
-                        "WALK_SPEED" : [
-                            1
-                        ]
-                    }
+                    "action" : "IncreaseSpeedCap",
+                    "amountPerLevel" : [
+                        1
+                    ]
                 },
                 {
                     "action" : "none"
@@ -3075,7 +3073,10 @@
                     ]
                 },
                 {
-                    "action" : "none"
+                    "action" : "buffFinalDamage",
+                    "amountPerLevel" : [
+                        0.3
+                    ]
                 }
             ]
         },"Scatha" : {
