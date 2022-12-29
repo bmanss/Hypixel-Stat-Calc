@@ -84,6 +84,7 @@ public class PlayerProfile {
     double petMultiplier = 1;
     double critEffectiveness = 1;
     double abilityBoost = 1;
+    double speedCap = 400;
 
 
     int mainProfileIndex = 0;
@@ -206,6 +207,7 @@ public class PlayerProfile {
     }
 
     public void resetGlobalStatModifer(){
+        speedCap = 400;
 
         // remove all stat modifers
         for (Entry<String,Double> stat : globalStatModifiers.entrySet()){
@@ -1414,6 +1416,8 @@ public class PlayerProfile {
      * @return Global stat if stat exist
      */
     public double getStat(String stat){
+        if (stat.equals("WALK_SPEED") && statTotals.get("WALK_SPEED") > speedCap)
+            return speedCap;
         return statTotals.get(stat);
     }
 
@@ -1458,6 +1462,7 @@ public class PlayerProfile {
      *  If an item has a blank name  ("") the values will be stripped from the item and the global stats.
      */
     public void refreshGear(){
+        resetGlobalStatModifer();
         if (selectedPowerStone.equals("None"))
             removePowerStoneStats();
         else {
@@ -1480,7 +1485,6 @@ public class PlayerProfile {
                 readItemStats(playerItem);
             }
         }
-        resetGlobalStatModifer();
         getPetStats();
         addStatMultipliers();
         calcDamage(selectedMobHealth);
@@ -1789,6 +1793,14 @@ public class PlayerProfile {
                     //TODO: adds percentage to damage calc not damage stat 
                     addPetStat("DAMAGE", 0.1263 * (bankBalance / 1000000));
                     break;
+                case "IncreaseSpeedCap" :
+                    //TODO: adds percentage to damage calc not damage stat 
+                    perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
+                    statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
+                    statValue = statPerLevel * petLevel;
+                    addPetStat("WALK_SPEED", statValue);
+                    speedCap = speedCap + statValue;
+                    break;
                 case "petAbility" :
                     //TODO: need to implement --- probably wont do
                     break;
@@ -1822,8 +1834,11 @@ public class PlayerProfile {
                     Double rockDefense = (statTotals.get("DEFENSE") + petStats.get("DEFENSE")) * globalStatModifiers.get("DEFENSE") * statValue;
                     addPetStat("DEFENSE", rockDefense);
                     break;
-                case "rockDamage" :
-                    // TODO figure out how they do this...
+                    //TODO: figure out where put put buff, needs to be a final multiplier
+                case "buffFinalDamage" :
+                    perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
+                    statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
+                    statValue = statPerLevel * petLevel;
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1972,13 +1987,13 @@ public class PlayerProfile {
      * Get all effects that are unaffected by other modifiers or require all modifier calculations to be completed.
      */
     public void getPostEffects(){
-
     }
     public void calcDamage(int mobHealth){
+
         double baseMultiplier = calcBaseMultiplier(mobHealth, false);
         double magicBaseMultiplier = calcBaseMultiplier(mobHealth, true);
         Double abilityDamage = 1 + (statTotals.get("ABILITY_DAMAGE_PERCENT") / 100);
-        Double postMultiplier = mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier; 
+        Double postMultiplier = (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier); 
         Double strength = statTotals.get("STRENGTH") + strengthOnHit;
         Double critDamage = statTotals.get("CRITICAL_DAMAGE");
         Double damage = statTotals.get("DAMAGE");
@@ -2046,11 +2061,7 @@ public class PlayerProfile {
                     armorAdditive += 20;
                 break;
             case "crown of greed" : 
-            //TODO: check accuracy
-                armorMultiplier += 0.25;;
-                break;
-            case "warden helmet" : 
-            //TODO: implement needs to be done after all speed calcs. Remove from here add to some post calc spot
+                armorMultiplier += 0.25;
                 break;
             case "dungeon helmets" : 
             //TODO: implement
@@ -2326,7 +2337,7 @@ public class PlayerProfile {
      */
      double calcBaseMultiplier(int mobHealth, boolean isMagic){
 
-        // if magic weapon is unaffected by base multiplier
+        // check if weapon is in list of weapons with abilities unaffacted by base multipliers stuff 
         if (isMagic){
             for (String weapon : excludedMagicWeapons){
                 if (playerGear.get(WEAPON_INDEX).getName().equals(weapon))
@@ -2447,9 +2458,28 @@ public class PlayerProfile {
                         baseMultiplier += enchantPercentage;
                         break;
                 }
-                
             }
         }
+
+        /**
+         * check for other base multiplier addition that need to be done after all stats have been calculated
+         * Only done on isMagic = false since baseMultiplier is calculated twice for melee damage and magic damage before being reset 
+         */
+        if (!isMagic){
+            String helmet = playerGear.get(HELMET_INDEX).getName();
+        // check for warden helmet
+            if (helmet.equals("warden helmet")){
+                speedCap = speedCap / 2;
+                if (statTotals.get("WALK_SPEED") >= speedCap){
+                    baseMultiplier += (speedCap/25*20) + 1;
+                }
+
+                else {
+                    baseMultiplier += (statTotals.get("WALK_SPEED")/25*20)/2 + 1;
+                }
+            }
+        }
+
         return baseMultiplier;
     }
 
