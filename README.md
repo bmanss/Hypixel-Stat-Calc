@@ -6,6 +6,6 @@ along with a JSON file that contains all necessary data and values not provided 
 The main function of the program is to allow users to load their profile and preview their stats with various gear.
 
 ## Features
-1. Profile Loading
+1. ### Profile Loading
 - Users can Enter their profile name or UUID along with a valid API Key to load in their player stats and current equipped gear. Only the weapon in their first inventory slot will be loaded.
 -  
