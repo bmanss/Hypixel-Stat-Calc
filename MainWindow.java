@@ -238,7 +238,15 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         JBrefreshProfile.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
                 if (currentProfile != null){
-                    currentProfile.setPet(petsBox.getSelectedItem().toString(), petsItemBox.getSelectedItem().toString() ,(int) petLevel.getValue(),(int) petTier.getValue());
+                    if (petsBox.getSelectedItem().toString().equals("None")){
+                        currentProfile.setPet(petsBox.getSelectedItem().toString(), "None" ,1,1);
+                        petsItemBox.setSelectedItem("None");
+                        petLevel.setValue(1);
+                        petTier.setValue(1);
+                    }
+                    else {
+                        currentProfile.setPet(petsBox.getSelectedItem().toString(), petsItemBox.getSelectedItem().toString() ,(int) petLevel.getValue(),(int) petTier.getValue());
+                    }
                     addManualValues();
                     currentProfile.refreshGear();
                     displayStats(currentProfile);
@@ -377,20 +385,35 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         //statDisplayPanel.add(new JLabel("Add modifier: "));
         
         createMaunalStatEntry();
+        healthLabel.setForeground(new Color(203,13,13));
+        defenseLabel.setForeground(Color.green);
+        intelligenceLabel.setForeground(new Color(43,227,223));
+        damageLabel.setForeground(Color.BLACK);
+        strengthLabel.setForeground(new Color(203,13,13));
+        critChanceLabel.setForeground(Color.blue);
+        critDamageLabel.setForeground(Color.blue);
+        ferocityLabel.setForeground(new Color(203,13,13));
+        SpeedLabel.setForeground(Color.white);
+        magicFindLabel.setForeground(new Color(43,227,223));
+        trueDefenseLabel.setForeground(Color.white);
+        abilityDamageLabel.setForeground(new Color(203,13,13));
+        attackSpeedLabel.setForeground(Color.yellow);
+        magicalPowerLabel.setForeground(Color.orange);
+
         statDisplayPanel.add(healthLabel, "cell 0 0");
         statDisplayPanel.add(defenseLabel,"cell 0 1");
-        statDisplayPanel.add(intelligenceLabel,"cell 0 2");
-        statDisplayPanel.add(damageLabel,"cell 0 3");
+        statDisplayPanel.add(SpeedLabel,"cell 0 2");
         statDisplayPanel.add(strengthLabel,"cell 0 4");
-        statDisplayPanel.add(critChanceLabel,"cell 0 5");
-        statDisplayPanel.add(critDamageLabel,"cell 0 6");
-        statDisplayPanel.add(attackSpeedLabel,"cell 0 7");
-        statDisplayPanel.add(ferocityLabel,"cell 0 8");
-        statDisplayPanel.add(SpeedLabel,"cell 0 9");
+        statDisplayPanel.add(intelligenceLabel,"cell 0 5");
+        statDisplayPanel.add(critChanceLabel,"cell 0 6");
+        statDisplayPanel.add(critDamageLabel,"cell 0 7");
+        statDisplayPanel.add(attackSpeedLabel,"cell 0 8");
+        statDisplayPanel.add(abilityDamageLabel,"cell 0 9");
         statDisplayPanel.add(magicFindLabel,"cell 0 10");
         statDisplayPanel.add(trueDefenseLabel,"cell 0 11");
-        statDisplayPanel.add(magicalPowerLabel,"cell 0 12");
-        statDisplayPanel.add(abilityDamageLabel,"cell 0 13");
+        statDisplayPanel.add(ferocityLabel,"cell 0 12");
+        statDisplayPanel.add(damageLabel,"cell 0 3");
+        statDisplayPanel.add(magicalPowerLabel,"cell 0 13");
         //statDisplayPanel.add(manaLabel,"cell 0 14");
         mobHealthInput.setPreferredSize(new Dimension(150,30));
 
@@ -403,7 +426,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         damagePanel.add(abilityHitLabel);
         statDisplayPanel.add(damagePanel, "cell 0 14");
         
-        changefont(statDisplayPanel, baseFont);
+        changefont(statDisplayPanel, baseFontBold);
         changefont(profileName, baseFontBold);
         gridContraints.weightx = 0;
         gridContraints.weighty = 1;
@@ -428,25 +451,25 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         
         armorListPanel.add(new JLabel("Armor: "),"wrap");
         armorListPanel.add(helmetBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(chestplateBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(leggingsBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(bootsBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(new JLabel("Equipment: "),"wrap");
         armorListPanel.add(necklaceBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(cloakBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(beltBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(gauntletBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
         armorListPanel.add(new JLabel("Weapon: "),"wrap");
         armorListPanel.add(weaponBox);
-        armorListPanel.add(new JLabel("modifiers"),"Wrap");
+        armorListPanel.add(new JLabel("Modifiers"),"Wrap");
 
         if (shouldAddMisc){
             armorListPanel.add(miscDescription,"wrap");
@@ -473,7 +496,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         // add mouse listeners and effects to each modifier label
         for (Component component : armorListPanel.getComponents()){
-            if (component instanceof JLabel && ((JLabel) component).getText().equals("modifiers")){
+            if (component instanceof JLabel && ((JLabel) component).getText().equals("Modifiers")){
                 JLabel lb = (JLabel) component;
                 if (armorIndex >= 0){
                     modifiersComponents.put(lb, armorIndex);
@@ -553,7 +576,14 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     }
 
     public void loadHypixelValues() throws IOException{
-        File enchantsFile = new File("HypixelValues.json");
+        String jarPath = getClass()
+          .getProtectionDomain()
+          .getCodeSource()
+          .getLocation()
+          .getPath();
+        
+        jarPath = jarPath.replace("%20", " ");
+        File enchantsFile = new File(jarPath.toString().substring(0, jarPath.lastIndexOf("/") + 1) + "HypixelValues.json");
         BufferedReader fileReader;
         StringBuilder readerContents = new StringBuilder();
 
@@ -848,7 +878,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 e1.printStackTrace();
                 godPotionCheckBox.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
-                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Check profile API settings.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Unexpected Error.", "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
@@ -906,6 +936,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 currentProfile.changeItemName(itemIndex, e.getItem().toString());
                 currentProfile.setWeaponModifierPool(gearPiece,"");
                 gearPiece.resetModifiers(gearPiece.getEnchantPool(), gearPiece.getReforgePool());
+
+                // check for weapons that have special parameter and add UI element for it
                 if (itemIndex == currentProfile.WEAPON_INDEX){
                     InventoryItem weapon = currentProfile.getItem(currentProfile.WEAPON_INDEX);
                     if (weapon.getName().equals("emerald blade")){
