@@ -32,17 +32,7 @@ public class PlayerProfile {
 
     int fairySouls = 0;
     int skyBlockLevel = 160; //TODO: user input
-    int farmingLevel = 0;
-    int miningLevel = 0;
-    int combatLevel = 0;
-    int foragingLevel = 0;
-    int fishingLevel = 0;
-    int enchantingLevel = 0;
-    int alchemyLevel = 0;
-    int catacombsLevel = 0;
-    int tamingLevel = 0;
     int bestiaryLevel = 0;
-    int carpentryLevel = 0;
     double magicalPower = 0;
     int weaponDamage = 0;
     int mageDamage = 0;
@@ -119,8 +109,15 @@ public class PlayerProfile {
 
     Map<String,Double> statTotals;
     Map<String,Double> petStats = createBaseStats();
+
+    /**
+     * List of stats gained from skills and skyblock level
+     */
     Map<String,Double> miscStats = createBaseStats();
     Map<String,Double> globalStatModifiers = createGlobalModifers();
+
+    Map<String,Integer> skillLevels = new HashMap<>();
+
     int petLevel = 1;
     int petTier = 1;
 
@@ -150,23 +147,40 @@ public class PlayerProfile {
         initInventorySlots();
         playerTalismans = new ArrayList<>();
         allItems = new LinkedHashMap<String, JSONObject>();
+
+        // set default profile stats 
         statTotals = new LinkedHashMap<>();
         statTotals.put("HEALTH", 100.0);
         statTotals.put("DEFENSE", 0.0);                // TODO: temp value for gravity/day/night crystal
-        statTotals.put("INTELLIGENCE", 10.0);           // TODO: temp val for defuse kit
+        statTotals.put("WALK_SPEED", 100.0);
         statTotals.put("DAMAGE", 0.0);
         statTotals.put("STRENGTH", 0.0);               // TODO: temp value for gravity/day/night crystal = 15
+        statTotals.put("INTELLIGENCE", 10.0);           // TODO: temp val for defuse kit
         statTotals.put("CRITICAL_CHANCE", 30.0);
         statTotals.put("CRITICAL_DAMAGE", 50.0);
         statTotals.put("ATTACK_SPEED", 0.0);
-        statTotals.put("FEROCITY", 0.0);
-        statTotals.put("WALK_SPEED", 100.0);
+        statTotals.put("ABILITY_DAMAGE_PERCENT", 0.0);
         statTotals.put("MAGIC_FIND", 0.0);
         statTotals.put("TRUE_DEFENSE", 0.0);
+        statTotals.put("FEROCITY", 0.0);
         statTotals.put("MAGICAL_POWER", 0.0);
-        statTotals.put("ABILITY_DAMAGE_PERCENT", 0.0);
+
+        // add skill levels to Map
+        skillLevels.put("FARMING", 0);
+        skillLevels.put("MINING", 0);
+        skillLevels.put("COMBAT", 0);
+        skillLevels.put("FORAGING", 0);
+        skillLevels.put("FISHING", 0);
+        skillLevels.put("ENCHANTING", 0);
+        skillLevels.put("ALCHEMY", 0);
+        skillLevels.put("CARPENTRY", 0);
+        skillLevels.put("TAMING", 0);
+        skillLevels.put("CATACOMBS", 0);
     }
 
+    /**
+     * @return Map with default values for each tracked stat.
+     */
     public Map<String,Double> createBaseStats(){
         Map<String,Double> newStats = new LinkedHashMap<>();
         newStats.put("HEALTH", 0.0);
@@ -225,6 +239,14 @@ public class PlayerProfile {
         for (Entry<String,Double> stat : globalStatModifiers.entrySet()){
             statTotals.put(stat.getKey(), statTotals.get(stat.getKey()) * stat.getValue());
         }
+    }
+
+    public Integer getSkillLevel(String skill){
+        return skillLevels.get(skill.toUpperCase());
+    }
+
+    public void setSkillLevel(String skill, Integer level){
+        skillLevels.put(skill.toUpperCase(), level);
     }
 
     public void addItemList(Map<String, JSONObject> allItems, Map<String, JSONObject> accessoryItems ){
@@ -326,16 +348,17 @@ public class PlayerProfile {
         int tamingXP = playerProfile.getInt("experience_skill_taming");
         int catacombsXP = playerProfile.getJSONObject("dungeons").getJSONObject("dungeon_types").getJSONObject("catacombs").getInt("experience");
 
-        tamingLevel = findSkillLevel("TAMING", tamingXP);
-        catacombsLevel = findSkillLevel("Catacombs", catacombsXP);
-        miningLevel = findSkillLevel("MINING", miningXP);
-        farmingLevel = findSkillLevel("FARMING", farmingXP);
-        combatLevel = findSkillLevel("COMBAT", combatXP);
-        foragingLevel = findSkillLevel("FORAGING", foragingXP);
-        fishingLevel = findSkillLevel("FISHING", fishingXP);
-        enchantingLevel = findSkillLevel("ENCHANTING", enchantingXP);
-        alchemyLevel = findSkillLevel("ALCHEMY", alchemyXP);
-        carpentryLevel = findSkillLevel("CARPENTRY", carpentryXP);
+        skillLevels.put("FARMING", findSkillLevel("FARMING", farmingXP));
+        skillLevels.put("MINING", findSkillLevel("MINING", miningXP));
+        skillLevels.put("COMBAT", findSkillLevel("COMBAT", combatXP));
+        skillLevels.put("FORAGING", findSkillLevel("FORAGING", foragingXP));
+        skillLevels.put("FISHING", findSkillLevel("FISHING", fishingXP));
+        skillLevels.put("ENCHANTING", findSkillLevel("ENCHANTING", enchantingXP));
+        skillLevels.put("ALCHEMY", findSkillLevel("ALCHEMY", alchemyXP));
+        skillLevels.put("CARPENTRY", findSkillLevel("CARPENTRY", carpentryXP));
+        skillLevels.put("TAMING", findSkillLevel("TAMING", tamingXP));
+        skillLevels.put("CATACOMBS",  findSkillLevel("Catacombs", catacombsXP));
+        
         bestiaryLevel = getBestiaryLevel();
 
         getSkillStatsBoost();
@@ -402,16 +425,6 @@ public class PlayerProfile {
         getPetStats();
         addStatMultipliers();
         calcDamage(selectedMobHealth);
-    }
-
-    public void removeAdditiveMulti(){
-        if (globalStatBoost > 0.0){
-            for (Entry<String, Double> stat : miscStats.entrySet()){
-                addGlobalStat(stat.getKey(), -stat.getValue());
-            }
-            miscStats = createBaseStats();
-            globalStatBoost = 0.0;
-        }
     }
 
     /**
@@ -755,7 +768,7 @@ public class PlayerProfile {
                 JSONObject talismanStats = reference.getJSONObject("stats");
                 for (String stat : talismanStats.keySet()){
                     Double statValue = talismanStats.getDouble(stat);
-                    addGlobalStat(stat, statValue);
+                    addToStats(statTotals,stat, statValue);
                 }
             }
         }
@@ -796,7 +809,7 @@ public class PlayerProfile {
             }
          }
          
-        addGlobalStat("MAGICAL_POWER", magicalPower);
+        addToStats(statTotals,"MAGICAL_POWER", magicalPower);
         magicalMultiiplier = getMagicalMultiplier(magicalPower);
     }
     
@@ -820,7 +833,7 @@ public class PlayerProfile {
         if (talismanID.equals("NEW_YEAR_CAKE_BAG")){
             try {
                 statValue = Double.parseDouble(filteredLore.substring(filteredLore.lastIndexOf("+"),filteredLore.lastIndexOf("H") - 1));
-                addGlobalStat("HEALTH", statValue);
+                addToStats(statTotals,"HEALTH", statValue);
                 return;
             } catch (Exception e) {
                 return;
@@ -833,7 +846,7 @@ public class PlayerProfile {
                         newStat = newStat.replace("Speed", "WALK_SPEED");
                     statName = newStat.substring(0, newStat.indexOf("+") - 1).replaceAll(" ", "_").toUpperCase();
                     statValue = Double.parseDouble(newStat.substring(newStat.indexOf("+") + 1, newStat.length()));
-                    addGlobalStat(statName, statValue);
+                    addToStats(statTotals,statName, statValue);
                 }
             
         }
@@ -927,16 +940,16 @@ public class PlayerProfile {
             // check for special cases here like Daedalus axe which gets its damage from taming level
             else {
                 if (equippedItem.getName().equals("daedalus axe")){
-                    equippedItem.setStat("DAMAGE", 4 * tamingLevel);
+                    equippedItem.setStat("DAMAGE", 4 * skillLevels.get("TAMING"));
                 }
             }
         }
 
         if (equippedItem.getReforge().equals("ancient"))
-            equippedItem.setStat("CRITICAL_DAMAGE", catacombsLevel);
+            equippedItem.setStat("CRITICAL_DAMAGE", skillLevels.get("CATACOMBS"));
 
         if (equippedItem.getReforge().equals("withered"))
-            equippedItem.setStat("STRENGTH", catacombsLevel);
+            equippedItem.setStat("STRENGTH", skillLevels.get("CATACOMBS"));
 
         if (equippedItem.getReforge().equals("loving"))
             abilityBoost = 1.05;
@@ -982,8 +995,15 @@ public class PlayerProfile {
      * Simple function that takes the stat value to the corresponding stat via a switch statment for each possible stat
      */
 
-    void addGlobalStat(String statName, double statValue){
-        statTotals.computeIfPresent(statName, (key, val) -> val + statValue);
+
+    /**
+     * Add value to a stat in particular group.
+     * @param stats Collection of stats and their values.
+     * @param statName Name of stat.
+     * @param statValue Value of stat.
+     */
+    void addToStats(Map<String,Double> stats, String statName ,Double statValue){
+        stats.computeIfPresent(statName, (key, val) -> val + statValue);
     }
 
     /**
@@ -992,7 +1012,7 @@ public class PlayerProfile {
     void readItemStats(InventoryItem inventoryItem){
         Map<String,Double> itemStats = inventoryItem.getStats();
         for (Map.Entry<String,Double> currentStat : itemStats.entrySet()){
-            addGlobalStat(currentStat.getKey(), currentStat.getValue());
+            addToStats(statTotals,currentStat.getKey(), currentStat.getValue());
         }
     }
 
@@ -1007,23 +1027,23 @@ public class PlayerProfile {
                     slayerLevel = slayers.getJSONObject(slayerType).getJSONObject("claimed_levels").length();
                     switch(slayerLevel){
                         case 9: 
-                            addGlobalStat("HEALTH", 6); 
+                            addToStats(statTotals,"HEALTH", 6.0); 
                         case 8:
-                            addGlobalStat("HEALTH", 5); 
+                            addToStats(statTotals,"HEALTH", 5.0); 
                         case 7:
-                            addGlobalStat("HEALTH", 5); 
+                            addToStats(statTotals,"HEALTH", 5.0); 
                         case 6:
-                            addGlobalStat("HEALTH", 4); 
+                            addToStats(statTotals,"HEALTH", 4.0); 
                         case 5:
-                            addGlobalStat("HEALTH", 4);
+                            addToStats(statTotals,"HEALTH", 4.0);
                         case 4:
-                            addGlobalStat("HEALTH", 3); 
+                            addToStats(statTotals,"HEALTH", 3.0); 
                         case 3:
-                            addGlobalStat("HEALTH", 3);
+                            addToStats(statTotals,"HEALTH", 3.0);
                         case 2: 
-                            addGlobalStat("HEALTH", 2); 
+                            addToStats(statTotals,"HEALTH", 2.0); 
                         case 1:
-                            addGlobalStat("HEALTH", 2); 
+                            addToStats(statTotals,"HEALTH", 2.0); 
                         default:
                             break;  
                     }
@@ -1032,23 +1052,23 @@ public class PlayerProfile {
                     slayerLevel = slayers.getJSONObject(slayerType).getJSONObject("claimed_levels").length();
                     switch(slayerLevel){
                         case 9: 
-                            addGlobalStat("CRITICAL_DAMAGE", 3);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 3.0);
                         case 8:
-                            addGlobalStat("CRITICAL_DAMAGE", 3);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 3.0);
                         case 7:
-                            addGlobalStat("CRITICAL_CHANCE", 1);
+                            addToStats(statTotals,"CRITICAL_CHANCE", 1.0);
                         case 6:
-                            addGlobalStat("CRITICAL_DAMAGE", 2);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 2.0);
                         case 5:
-                            addGlobalStat("CRITICAL_DAMAGE", 2);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 2.0);
                         case 4:
-                            addGlobalStat("CRITICAL_DAMAGE", 1);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 1.0);
                         case 3:
-                            addGlobalStat("CRITICAL_DAMAGE", 1); 
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 1.0); 
                         case 2: 
-                            addGlobalStat("CRITICAL_DAMAGE", 1); 
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 1.0); 
                         case 1:
-                            addGlobalStat("CRITICAL_DAMAGE", 1); 
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 1.0); 
                         default:
                             break;  
                     }
@@ -1057,23 +1077,23 @@ public class PlayerProfile {
                     slayerLevel = slayers.getJSONObject(slayerType).getJSONObject("claimed_levels").length();
                     switch(slayerLevel){
                         case 9: 
-                            addGlobalStat("HEALTH", 5);
+                            addToStats(statTotals,"HEALTH", 5.0);
                         case 8:
-                            addGlobalStat("WALK_SPEED", 1);
+                            addToStats(statTotals,"WALK_SPEED", 1.0);
                         case 7:
-                            addGlobalStat("CRITICAL_DAMAGE", 2);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 2.0);
                         case 6:
-                            addGlobalStat("HEALTH", 3); 
+                            addToStats(statTotals,"HEALTH", 3.0); 
                         case 5:
-                            addGlobalStat("CRITICAL_DAMAGE", 1);
+                            addToStats(statTotals,"CRITICAL_DAMAGE", 1.0);
                         case 4:
-                            addGlobalStat("HEALTH", 2);
+                            addToStats(statTotals,"HEALTH", 2.0);
                         case 3:
-                            addGlobalStat("WALK_SPEED", 1);
+                            addToStats(statTotals,"WALK_SPEED", 1.0);
                         case 2: 
-                            addGlobalStat("HEALTH", 2);
+                            addToStats(statTotals,"HEALTH", 2.0);
                         case 1:
-                            addGlobalStat("WALK_SPEED", 1);
+                            addToStats(statTotals,"WALK_SPEED", 1.0);
                         default:
                             break;  
                     }
@@ -1082,23 +1102,23 @@ public class PlayerProfile {
                     slayerLevel = slayers.getJSONObject(slayerType).getJSONObject("claimed_levels").length();
                     switch(slayerLevel){
                         case 9: 
-                            addGlobalStat("HEALTH", 5);
+                            addToStats(statTotals,"HEALTH", 5.0);
                         case 8:
-                            addGlobalStat("INTELLIGENCE", 4);
+                            addToStats(statTotals,"INTELLIGENCE", 4.0);
                         case 7:
-                            addGlobalStat("HEALTH", 4); 
+                            addToStats(statTotals,"HEALTH", 4.0); 
                         case 6:
-                            addGlobalStat("INTELLIGENCE", 3);
+                            addToStats(statTotals,"INTELLIGENCE", 3.0);
                         case 5:
-                            addGlobalStat("HEALTH", 3);
+                            addToStats(statTotals,"HEALTH", 3.0);
                         case 4:
-                            addGlobalStat("INTELLIGENCE", 2); 
+                            addToStats(statTotals,"INTELLIGENCE", 2.0); 
                         case 3:
-                            addGlobalStat("HEALTH", 2);
+                            addToStats(statTotals,"HEALTH", 2.0);
                         case 2: 
-                            addGlobalStat("INTELLIGENCE", 2);
+                            addToStats(statTotals,"INTELLIGENCE", 2.0);
                         case 1:
-                            addGlobalStat("HEALTH", 1);
+                            addToStats(statTotals,"HEALTH", 1.0);
                         default:
                             break;  
                     }
@@ -1107,23 +1127,23 @@ public class PlayerProfile {
                     slayerLevel = slayers.getJSONObject(slayerType).getJSONObject("claimed_levels").length();
                     switch(slayerLevel){
                         case 9: 
-                            addGlobalStat("HEALTH", 7);
+                            addToStats(statTotals,"HEALTH", 7.0);
                         case 8:
-                            addGlobalStat("TRUE_DEFENSE", 2);
+                            addToStats(statTotals,"TRUE_DEFENSE", 2.0);
                         case 7:
-                            addGlobalStat("HEALTH", 6); 
+                            addToStats(statTotals,"HEALTH", 6.0); 
                         case 6:
-                            addGlobalStat("STRENGTH", 2);
+                            addToStats(statTotals,"STRENGTH", 2.0);
                         case 5:
-                            addGlobalStat("HEALTH", 5); 
+                            addToStats(statTotals,"HEALTH", 5.0); 
                         case 4:
-                            addGlobalStat("TRUE_DEFENSE", 1);
+                            addToStats(statTotals,"TRUE_DEFENSE", 1.0);
                         case 3:
-                            addGlobalStat("HEALTH", 4); 
+                            addToStats(statTotals,"HEALTH", 4.0); 
                         case 2: 
-                            addGlobalStat("STRENGTH", 1);
+                            addToStats(statTotals,"STRENGTH", 1.0);
                         case 1:
-                            addGlobalStat("HEALTH", 3);
+                            addToStats(statTotals,"HEALTH", 3.0);
                         default:
                             break;  
                     }
@@ -1153,13 +1173,14 @@ public class PlayerProfile {
             }
         }
 
+        skillLevels.put(skill.toUpperCase(), finalLevel);
         return finalLevel;
     }
 
     void skyBlockLevelBoost(){
-        addGlobalStat("HEALTH", (skyBlockLevel / 10) * 5 );  // extra 5 health for 10 level milestone
-        addGlobalStat("STRENGTH", (skyBlockLevel / 5));      // add 1 strength per 5 level milestone
-        addGlobalStat("HEALTH", skyBlockLevel * 5 );         // 5 health per level
+        addToStats(statTotals,"HEALTH", (skyBlockLevel / 10) * 5.0 );  // extra 5 health for 10 level milestone
+        addToStats(statTotals,"STRENGTH", (skyBlockLevel / 5.0));      // add 1 strength per 5 level milestone
+        addToStats(statTotals,"HEALTH", skyBlockLevel * 5.0 );         // 5 health per level
     }
 
     void getSkillStatsBoost(){
@@ -1167,27 +1188,27 @@ public class PlayerProfile {
         double defenseBonus = 0;
         double intelligenceBonus = 0;
         double healthBonus = 0;
-        if (miningLevel < 15)
-            defenseBonus = miningLevel;
+        if (skillLevels.get("MINING") < 15)
+            defenseBonus = skillLevels.get("MINING");
         else{
-            defenseBonus += ((miningLevel - 14) * 2) + 14;
+            defenseBonus += ((skillLevels.get("MINING") - 14) * 2) + 14;
         }
-        if (foragingLevel < 15)
-            strengthBonus = foragingLevel;
+        if (skillLevels.get("FORAGING") < 15)
+            strengthBonus = skillLevels.get("FORAGING");
         else{
-            strengthBonus = ((foragingLevel - 14) * 2) + 14;
+            strengthBonus = ((skillLevels.get("FORAGING") - 14) * 2) + 14;
         }
-        if (enchantingLevel < 15)
-            intelligenceBonus = enchantingLevel;
+        if (skillLevels.get("ENCHANTING") < 15)
+            intelligenceBonus = skillLevels.get("ENCHANTING");
         else{
-            intelligenceBonus = ((enchantingLevel - 14) * 2) + 14;
+            intelligenceBonus = ((skillLevels.get("ENCHANTING") - 14) * 2) + 14;
         }
-        if (alchemyLevel < 15)
-            intelligenceBonus += enchantingLevel;
+        if (skillLevels.get("ALCHEMY") < 15)
+            intelligenceBonus += skillLevels.get("ENCHANTING");
         else{
-            intelligenceBonus += ((alchemyLevel - 14) * 2) + 14;
+            intelligenceBonus += ((skillLevels.get("ALCHEMY") - 14) * 2) + 14;
         }
-        for (int levelCap = 1; levelCap <= farmingLevel; ++levelCap){
+        for (int levelCap = 1; levelCap <= skillLevels.get("FARMING"); ++levelCap){
             healthBonus += 2;
             if (levelCap >= 15)
                 healthBonus += 1;
@@ -1196,7 +1217,7 @@ public class PlayerProfile {
             if (levelCap >= 26)
                 healthBonus += 1;
         }
-        for (int levelCap = 1; levelCap <= fishingLevel; ++levelCap){
+        for (int levelCap = 1; levelCap <= skillLevels.get("FISHING"); ++levelCap){
             healthBonus += 2;
             if (levelCap >= 15)
                 healthBonus += 1;
@@ -1206,20 +1227,23 @@ public class PlayerProfile {
                 healthBonus += 1;
         }
 
-        playerAbilityDamage = enchantingLevel * 0.5;
+        playerAbilityDamage = skillLevels.get("ENCHANTING") * 0.5;
         statTotals.put("ABILITY_DAMAGE_PERCENT", playerAbilityDamage);
-        addGlobalStat("HEALTH", (catacombsLevel * 2) + carpentryLevel + (bestiaryLevel * 2) + healthBonus);
-        addGlobalStat("INTELLIGENCE",intelligenceBonus);
-        addGlobalStat("STRENGTH", strengthBonus);
-        addGlobalStat("DEFENSE", defenseBonus);
-        addGlobalStat("CRITICAL_CHANCE", combatLevel * 0.5);
+
+        addToStats(statTotals,"HEALTH", (skillLevels.get("CATACOMBS") * 2) + skillLevels.get("CARPENTRY") + (bestiaryLevel * 2) + healthBonus);
+        addToStats(statTotals,"INTELLIGENCE",intelligenceBonus);
+        addToStats(statTotals,"STRENGTH", strengthBonus);
+        addToStats(statTotals,"DEFENSE", defenseBonus);
+        addToStats(statTotals,"CRITICAL_CHANCE", skillLevels.get("COMBAT") * 0.5);
     }
 
-    void getFairySoulsBonus(){
-        int healthBonus = 0;
-        int strengthBonus = 0;
-        int defenseBonus = 0;
-        int speedBonus = 0;
+    // Fairy Souls no longer contribute to any bonus, was converted to skyblock exp
+    /**
+     * void getFairySoulsBonus(){
+        Double healthBonus = 0.0;
+        Double strengthBonus = 0.0;
+        Double defenseBonus = 0.0;
+        Double speedBonus = 0.0;
         double healthIncrement = 3.0;
         for (int incrementCap = 1; incrementCap <= fairySouls/5; ++incrementCap){
             healthBonus += (int) healthIncrement;
@@ -1237,12 +1261,13 @@ public class PlayerProfile {
                 healthIncrement += 0.5;
         }
 
-        addGlobalStat("HEALTH", healthBonus);
-        addGlobalStat("STRENGTH", strengthBonus);
-        addGlobalStat("DEFENSE", defenseBonus);
-        addGlobalStat("WALK_SPEED", speedBonus);
+        addToStats(statTotals,"HEALTH", healthBonus);
+        addToStats(statTotals,"STRENGTH", strengthBonus);
+        addToStats(statTotals,"DEFENSE", defenseBonus);
+        addToStats(statTotals,"WALK_SPEED", speedBonus);
     }
-
+    */
+    
     int getBestiaryLevel(){
         JSONObject playerBestiaryKills = playerApi.getJSONArray("profiles").getJSONObject(mainProfileIndex).
                                                     getJSONObject("members").getJSONObject(UUID).getJSONObject("bestiary");
@@ -1298,16 +1323,16 @@ public class PlayerProfile {
 
         resetGlobalStatModifer();
 
-        addGlobalStat("HEALTH", 100 * modifier);
-        addGlobalStat("STRENGTH", 98.75 * modifier);
-        addGlobalStat("DEFENSE", 66 * modifier);
-        addGlobalStat("WALK_SPEED", 228 * modifier);
-        addGlobalStat("INTELLIGENCE", 100 * modifier);
-        addGlobalStat("CRITICAL_CHANCE", 25 * modifier);
-        addGlobalStat("CRITICAL_DAMAGE", 80 * modifier);
-        addGlobalStat("MAGIC_FIND", 88 * modifier);
-        addGlobalStat("FEROCITY", 2 * modifier);
-        addGlobalStat("TRUE_DEFENSE", 20 * modifier);
+        addToStats(statTotals,"HEALTH", 100.0 * modifier);
+        addToStats(statTotals,"STRENGTH", 98.75 * modifier);
+        addToStats(statTotals,"DEFENSE", 66.0 * modifier);
+        addToStats(statTotals,"WALK_SPEED", 228.0 * modifier);
+        addToStats(statTotals,"INTELLIGENCE", 100.0 * modifier);
+        addToStats(statTotals,"CRITICAL_CHANCE", 25.0 * modifier);
+        addToStats(statTotals,"CRITICAL_DAMAGE", 80.0 * modifier);
+        addToStats(statTotals,"MAGIC_FIND", 88.0 * modifier);
+        addToStats(statTotals,"FEROCITY", 2.0 * modifier);
+        addToStats(statTotals,"TRUE_DEFENSE", 20.0 * modifier);
 
         refreshGear();
     }
@@ -1354,7 +1379,7 @@ public class PlayerProfile {
                     tuningValue = tuningSlot0.getDouble(tuningStat);
                     break;
             }
-            addGlobalStat(tuningStat.toUpperCase(), tuningValue);
+            addToStats(statTotals,tuningStat.toUpperCase(), tuningValue);
         }
     }
 
@@ -1367,16 +1392,15 @@ public class PlayerProfile {
         JSONObject baseValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("base");
         JSONObject uniqueValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("unique");
         magicalMultiiplier = getMagicalMultiplier(statTotals.get("MAGICAL_POWER"));
-
         for (String stat : baseValues.keySet()){
             powerStoneStats.add(stat);
             powerStoneValues.add(baseValues.getDouble(stat) * magicalMultiiplier);
-            addGlobalStat(stat, baseValues.getDouble(stat) * magicalMultiiplier);
+            addToStats(statTotals,stat, baseValues.getDouble(stat) * magicalMultiiplier);
         }
         for (String stat : uniqueValues.keySet()){
             powerStoneStats.add(stat);
             powerStoneValues.add(uniqueValues.getDouble(stat));
-            addGlobalStat(stat, uniqueValues.getDouble(stat));
+            addToStats(statTotals,stat, uniqueValues.getDouble(stat));
         }
     }
 
@@ -1394,7 +1418,7 @@ public class PlayerProfile {
         int harpRewards [] = {1,1,1,2,2,2,3,3,3,4,4,1,1};
         JSONObject harpQuest = null;
         int songCompletions = 0;
-        int intelligenceBonus = 0;
+        Double intelligenceBonus = 0.0;
         if (playerProfile.has("harp_quest"))
             harpQuest = playerProfile.getJSONObject("harp_quest");
         else {
@@ -1408,7 +1432,7 @@ public class PlayerProfile {
         for (int index = 0; index < songCompletions && index < harpRewards.length; ++index){
             intelligenceBonus += harpRewards[index];
         }
-        addGlobalStat("INTELLIGENCE", intelligenceBonus);
+        addToStats(statTotals,"INTELLIGENCE", intelligenceBonus);
     }
 
     /**
@@ -1591,19 +1615,30 @@ public class PlayerProfile {
     public String getActivePetItem(){
         return petItem;
     }
+
+    /**
+     * Remove a collection of stat values from the total values.
+     * @param stats Collection of stats and values.
+     */
+    public void removeStats(Map<String,Double> stats){
+        for (Entry<String, Double> stat : stats.entrySet()){
+            addToStats(statTotals,stat.getKey(), -stat.getValue());
+        }
+    }
+
     public void getPetStats(){
 
         // remove pet stats from global if present
-        for (Entry<String, Double> petStatTotals : petStats.entrySet()){
-            addGlobalStat(petStatTotals.getKey(), -petStatTotals.getValue());
-        }
+        removeStats(petStats);
+
+        // reset stats values 
+        petStats = createBaseStats();
 
         mobAdditiveBoost = 0;
         mobMultiBoost = 1;
 
         petBaseAdditive = 0;
         petFirstHit = 0;
-        petStats = createBaseStats();
 
         // if no pet is selected return
         if (petName.equals("None")){
@@ -1913,14 +1948,14 @@ public class PlayerProfile {
                         if (stat.equals("mining")){
                             perLevelAmount = stats.getJSONArray("mining");
                             statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
-                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
-                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * miningLevel) * (1 + globalStatBoost));
+                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * skillLevels.get("MINING")) * (1 + globalStatBoost));
+                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * skillLevels.get("MINING")) * (1 + globalStatBoost));
                         }
                         else {
                             perLevelAmount = stats.getJSONArray("fishing");
                             statPerLevel = perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()));
-                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
-                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * fishingLevel) * (1 + globalStatBoost));
+                            addPetStat("WALK_SPEED", ((statPerLevel * petLevel) * skillLevels.get("FISHING")) * (1 + globalStatBoost));
+                            addPetStat("DEFENSE", ((statPerLevel * petLevel) * skillLevels.get("FISHING")) * (1 + globalStatBoost));
                         }
                     }
                     break;
@@ -1931,7 +1966,7 @@ public class PlayerProfile {
 
         //add stats to global
         for (Entry<String, Double> petStatTotals : petStats.entrySet()){
-            addGlobalStat(petStatTotals.getKey(), petStatTotals.getValue());
+            addToStats(statTotals,petStatTotals.getKey(), petStatTotals.getValue());
         }
 
         //System.out.println(petStats);
@@ -1965,6 +2000,9 @@ public class PlayerProfile {
             return statValuesLength - 1;
         }
     }
+
+    
+
     void addPetStat(String stat, double value){
         if (petStats.containsKey(stat))
                 petStats.compute(stat, (key, val) -> val + value);
@@ -2045,8 +2083,8 @@ public class PlayerProfile {
         // All individual piece bonuses
         switch (helmet.getName()){
             case "lantern helmet" : 
-                tempHealth += 4 * farmingLevel;
-                tempDefense += 2 * farmingLevel;
+                tempHealth += 4 * skillLevels.get("FARMING");
+                tempDefense += 2 * skillLevels.get("FARMING");
                 break;
             case "taurus helmet" : 
                 if (selectedMob.equals("Lava Sea Creature"))
@@ -2097,12 +2135,12 @@ public class PlayerProfile {
         }
         switch (boots.getName()){
             case "rancher's boots" : 
-                tempSpeed += 4 * farmingLevel;
-                tempDefense += 2 * farmingLevel;
+                tempSpeed += 4 * skillLevels.get("FARMING");
+                tempDefense += 2 * skillLevels.get("FARMING");
                 break;
             case "farmer boots" : 
-                tempSpeed += 4 * farmingLevel;
-                tempDefense += 2 * farmingLevel;
+                tempSpeed += 4 * skillLevels.get("FARMING");
+                tempDefense += 2 * skillLevels.get("FARMING");
                 break;
             case "magma lord boots" : 
                 if (selectedMob.equals("Lava Sea Creature"))
@@ -2206,13 +2244,13 @@ public class PlayerProfile {
         int modifier = 1;
         if (!status) modifier = -1;
 
-        addGlobalStat("HEALTH", tempHealth * modifier);
-        addGlobalStat("STRENGTH", tempStrength * modifier);
-        addGlobalStat("CRITICAL_DAMAGE", tempcritDamage * modifier);
-        addGlobalStat("DAMAGE", tempDamage * modifier);
-        addGlobalStat("DEFENSE", tempDefense * modifier);
-        addGlobalStat("WALK_SPEED", tempSpeed * modifier);
-        addGlobalStat("INTELLIGENCE", tempIntelligence * modifier);
+        addToStats(statTotals,"HEALTH", tempHealth * modifier);
+        addToStats(statTotals,"STRENGTH", tempStrength * modifier);
+        addToStats(statTotals,"CRITICAL_DAMAGE", tempcritDamage * modifier);
+        addToStats(statTotals,"DAMAGE", tempDamage * modifier);
+        addToStats(statTotals,"DEFENSE", tempDefense * modifier);
+        addToStats(statTotals,"WALK_SPEED", tempSpeed * modifier);
+        addToStats(statTotals,"INTELLIGENCE", tempIntelligence * modifier);
 
         if (!status){
             tempSpeed = 0.0;
@@ -2354,10 +2392,10 @@ public class PlayerProfile {
         cubismBonus = 0;
 
         // add combat multiplier
-        if (combatLevel > 50 )
-            combatMultiplier = 200 + combatLevel % 10;
+        if (skillLevels.get("COMBAT") > 50 )
+            combatMultiplier = 200 + skillLevels.get("COMBAT") % 10;
         else {
-            combatMultiplier = combatLevel * 4;
+            combatMultiplier = skillLevels.get("COMBAT") * 4;
         }
         baseMultiplier += combatMultiplier;
 

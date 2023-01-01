@@ -16,7 +16,6 @@ import net.miginfocom.swing.MigLayout;
 import org.json.*;
 
 public class MainWindow extends JFrame implements ActionListener,ItemListener{
-
     DecimalFormat decimalFormatter = new DecimalFormat( "#.##" );
     
     Font baseFont = new Font("Arial",Font.PLAIN,17);
@@ -139,6 +138,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JPanel damagePanel = new JPanel();
     JLayeredPane armorDisplayBase = new JLayeredPane();
 
+    Container glassPanel;
+
     JLabel profileName = new JLabel("Profile: ");
     String namePlaceholer = "BigOofinator";
     Map<Component,String> manualValues = new LinkedHashMap<>();
@@ -152,11 +153,18 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JFrame mainWindow;
     ItemTooltipPanel overlay = new ItemTooltipPanel();
     
-    // menu bar stuff
+    // create Menu Bar
     JMenuBar menuBar = new JMenuBar();
+
+    // create settings tab for menu bar and available options for settings
     JMenu settingsMenu = new JMenu("Settings");
     JMenuItem setProfileMI = new JMenuItem("Profile Name");
     JMenuItem apiKeyMI = new JMenuItem("Api Key");
+
+    // create profile tab for menu bar and available options for profile
+    JMenu profileMenu = new JMenu("Profile");
+    JMenuItem skillsMI = new JMenuItem("Edit Skills");
+
     Border border = new LineBorder(Color.black, 1, false);
     JSeparator sep = new JSeparator(SwingConstants.HORIZONTAL);
 
@@ -164,7 +172,24 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JLabel miscDescription = null;
     boolean shouldAddMisc = false;
 
+    ActionListener closeSkillsEvent;
+
+    private PopupFactory factory = PopupFactory.getSharedInstance();;
+    private Popup skillsPopup;
+
+
     MainWindow(){
+
+        // setup glass panel
+        this.getRootPane().setGlassPane(new JComponent() {
+            public void paintComponent(Graphics g){
+                g.setColor(new Color(0,0,0,150));
+                g.fillRect(0, 0, this.getWidth(), this.getHeight());
+            }
+        });
+        glassPanel = (Container) this.getGlassPane();
+        glassPanel.setVisible(false);
+
         this.setTitle("Hypixel Stat Calculator");
         mainWindow = this;
         this.addMouseListener(toolTipListener);
@@ -182,16 +207,27 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     //add(Box.createVerticalGlue());                        for huge spaces
 
     public void initComponents(){ 
-
         // set up menu bar components
         sep.setBackground(Color.lightGray);
         menuBar.setPreferredSize(new Dimension(30,30));
-        settingsMenu.setPreferredSize(new Dimension(102,0));
+        settingsMenu.setPreferredSize(new Dimension(75,30));
         setProfileMI.setPreferredSize(new Dimension(100,30));
         apiKeyMI.setPreferredSize(new Dimension(100,30));
+        skillsMI.setPreferredSize(new Dimension(75,30));
 
         menuBar.setBackground(new Color(218,221,227));
         setProfileMI.setBackground(new Color(218,221,227));
+        apiKeyMI.setBackground(new Color(218,221,227));
+        skillsMI.setBackground(new Color(218,221,227));
+
+        // set up button even handler for skills menu
+        closeSkillsEvent = new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                skillsPopup.hide();
+                glassPanel.setVisible(false);
+                mainWindow.setEnabled(true);
+            }
+        };
 
         // create action listener for setting profile name or UUID
         setProfileMI.addActionListener(new ActionListener(){
@@ -221,16 +257,38 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             }
             
         });
-        apiKeyMI.setBackground(new Color(218,221,227));
+
+
+        skillsMI.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                if (currentProfile != null){
+                    int x = buttonPanel.getLocationOnScreen().x + mainWindow.getWidth() / 2;
+                    int y = mainWindow.getLocationOnScreen().y + mainWindow.getHeight() / 2;
+                    Dimension size = new Dimension(350,500);
+                    int xOffset = (int) size.getWidth() / 4;
+                    int yOffset = (int) size.getHeight() / 2;
+                    SkillsMenu menu = new SkillsMenu(currentProfile,size);
+                    menu.close.addActionListener(closeSkillsEvent);
+                    skillsPopup = factory.getPopup(null, menu, x - xOffset - 50 , y - yOffset);
+                    skillsPopup.show();
+                    mainWindow.setEnabled(false);
+                    glassPanel.setVisible(true);
+                }
+            }
+        });
 
         settingsMenu.setBorderPainted(false);
+        profileMenu.setBorderPainted(false);
         apiKeyMI.setBorderPainted(false);
+        skillsMI.setBorderPainted(false);
 
         settingsMenu.add(setProfileMI);
         settingsMenu.add(sep);
         settingsMenu.add(apiKeyMI);
+        profileMenu.add(skillsMI);
         menuBar.setBorder(border);
         menuBar.add(settingsMenu);
+        menuBar.add(profileMenu);
         setJMenuBar(menuBar);
 
         godPotionCheckBox.setEnabled(false);
@@ -264,6 +322,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.setBounds(this.getX() + 400, this.getY(), this.getWidth() / 2 , this.getHeight());
 
         overlay.setBounds(mainWindow.getX(), this.getY(), overlay.getWidth() , overlay.getHeight());
+
+        // add tooltip overlay, gear selection, and stat values 
         armorDisplayBase.add(overlay, JLayeredPane.PALETTE_LAYER);
         armorDisplayBase.add(armorListPanel, JLayeredPane.DEFAULT_LAYER);
         armorDisplayBase.add(statDisplayPanel, JLayeredPane.DEFAULT_LAYER);
@@ -380,9 +440,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         statDisplayPanel.setBackground(new Color(177,177,177));
         statDisplayPanel.setLayout(new MigLayout());
-        //healthInput.setPreferredSize(new Dimension(50,0));
-        //statDisplayPanel.add(new JLabel("Stats: "));
-        //statDisplayPanel.add(new JLabel("Add modifier: "));
         
         createMaunalStatEntry();
         healthLabel.setForeground(new Color(203,13,13));
@@ -414,7 +471,6 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.add(ferocityLabel,"cell 0 12");
         statDisplayPanel.add(damageLabel,"cell 0 3");
         statDisplayPanel.add(magicalPowerLabel,"cell 0 13");
-        //statDisplayPanel.add(manaLabel,"cell 0 14");
         mobHealthInput.setPreferredSize(new Dimension(150,30));
 
         damagePanel.setBackground(Color.gray);
@@ -560,8 +616,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     public void addManualValues(){
         for (Entry<Component,String> modifierValues : manualValues.entrySet()){
             JSpinner spinner = (JSpinner) modifierValues.getKey();
-            double enteredValue = (double) spinner.getValue();
-            currentProfile.addGlobalStat(modifierValues.getValue(), enteredValue);
+            Double enteredValue = (double) spinner.getValue();
+            currentProfile.addToStats(currentProfile.statTotals,modifierValues.getValue(), enteredValue);
             spinner.setValue(0.0);
         }
     }
@@ -779,6 +835,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         for (String stone : hypixelCustomValues.getJSONObject("PowerStone").keySet()){
             allStones.add(stone);
         }
+        Collections.sort(allStones);
         reforgePowerBox.setModel(new DefaultComboBoxModel<String>(allStones.toArray(new String [allStones.size()])));
         reforgePowerBox.getModel().setSelectedItem(currentProfile.getPowerStone());
         petsBox.setSelectedItem(currentProfile.getActivePet());
@@ -878,7 +935,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 e1.printStackTrace();
                 godPotionCheckBox.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
-                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Unexpected Error.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Unexpected Error.\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
@@ -1011,5 +1068,4 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
         
     }
-
 }
