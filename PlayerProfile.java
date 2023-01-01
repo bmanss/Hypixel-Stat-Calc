@@ -199,6 +199,14 @@ public class PlayerProfile {
         return newStats;
     }
 
+    public void setSkyblockLevel(int level){
+        skyBlockLevel = level;
+    }
+
+    public int getSkyBlockLevel(){
+        return skyBlockLevel;
+    }
+
     public Map<String,Double> createGlobalModifers(){
         Map<String,Double> temp = createBaseStats();
         Map<String,Double> globalMods = new HashMap<>();
@@ -1267,7 +1275,7 @@ public class PlayerProfile {
         addToStats(statTotals,"WALK_SPEED", speedBonus);
     }
     */
-    
+
     int getBestiaryLevel(){
         JSONObject playerBestiaryKills = playerApi.getJSONArray("profiles").getJSONObject(mainProfileIndex).
                                                     getJSONObject("members").getJSONObject(UUID).getJSONObject("bestiary");

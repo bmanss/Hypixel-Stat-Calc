@@ -172,11 +172,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JLabel miscDescription = null;
     boolean shouldAddMisc = false;
 
-    ActionListener closeSkillsEvent;
+    ActionListener closeSkillsMenu;
 
-    private PopupFactory factory = PopupFactory.getSharedInstance();;
-    private Popup skillsPopup;
-
+    Dimension skillMenuSize = new Dimension(350,500);
+    SkillsMenu skillMenu = new SkillsMenu(skillMenuSize);
 
     MainWindow(){
 
@@ -221,13 +220,15 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         skillsMI.setBackground(new Color(218,221,227));
 
         // set up button even handler for skills menu
-        closeSkillsEvent = new ActionListener(){
+        closeSkillsMenu = new ActionListener(){
             public void actionPerformed(ActionEvent e) {
-                skillsPopup.hide();
+                mainWindow.setVisible(true);
+                skillMenu.setVisible(false);
                 glassPanel.setVisible(false);
                 mainWindow.setEnabled(true);
             }
         };
+        skillMenu.close.addActionListener(closeSkillsMenu);
 
         // create action listener for setting profile name or UUID
         setProfileMI.addActionListener(new ActionListener(){
@@ -267,10 +268,9 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                     Dimension size = new Dimension(350,500);
                     int xOffset = (int) size.getWidth() / 4;
                     int yOffset = (int) size.getHeight() / 2;
-                    SkillsMenu menu = new SkillsMenu(currentProfile,size);
-                    menu.close.addActionListener(closeSkillsEvent);
-                    skillsPopup = factory.getPopup(null, menu, x - xOffset - 50 , y - yOffset);
-                    skillsPopup.show();
+                    skillMenu.setProfile(currentProfile);
+                    skillMenu.setLocation(x - xOffset - 50, y -yOffset);
+                    skillMenu.setVisible(true);
                     mainWindow.setEnabled(false);
                     glassPanel.setVisible(true);
                 }
