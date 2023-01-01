@@ -27,7 +27,7 @@ The main function of the program is to allow users to load their profile and pre
 - Add additional stats manually
 - change power stone
 - enable god potion buff
-- (Planned) change skill levels
+- Change skill levels
 ### 3. Gear Modification
 - Change items
 - Enchant gear
