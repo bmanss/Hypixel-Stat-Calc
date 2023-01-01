@@ -369,8 +369,13 @@ public class PlayerProfile {
         
         bestiaryLevel = getBestiaryLevel();
 
+        // calculate all skill bonuses from skills and skyblock level and store them in miscStats
         getSkillStatsBoost();
         skyBlockLevelBoost();
+
+        // add all calculated bonuses to totals
+        addToTotal(miscStats);
+
         getSlayerBonus();
         parseTalismanBag();
         applyTuningValues();
@@ -1015,6 +1020,16 @@ public class PlayerProfile {
     }
 
     /**
+     * Add Group of stats to total values.
+     * @param stats Collection of stats and their values.
+     */
+    void addToTotal(Map<String,Double> stats){
+        for (Entry<String,Double> stat : stats.entrySet()){
+            statTotals.computeIfPresent(stat.getKey(), (key, val) -> val + stat.getValue());
+        }
+    }
+
+    /**
      * Apply values stored in the object to the global stats
      */
     void readItemStats(InventoryItem inventoryItem){
@@ -1186,9 +1201,9 @@ public class PlayerProfile {
     }
 
     void skyBlockLevelBoost(){
-        addToStats(statTotals,"HEALTH", (skyBlockLevel / 10) * 5.0 );  // extra 5 health for 10 level milestone
-        addToStats(statTotals,"STRENGTH", (skyBlockLevel / 5.0));      // add 1 strength per 5 level milestone
-        addToStats(statTotals,"HEALTH", skyBlockLevel * 5.0 );         // 5 health per level
+        addToStats(miscStats,"HEALTH", (skyBlockLevel / 10) * 5.0 );  // extra 5 health for 10 level milestone
+        addToStats(miscStats,"STRENGTH", (skyBlockLevel / 5.0));      // add 1 strength per 5 level milestone
+        addToStats(miscStats,"HEALTH", skyBlockLevel * 5.0 );         // 5 health per level
     }
 
     void getSkillStatsBoost(){
@@ -1236,13 +1251,13 @@ public class PlayerProfile {
         }
 
         playerAbilityDamage = skillLevels.get("ENCHANTING") * 0.5;
-        statTotals.put("ABILITY_DAMAGE_PERCENT", playerAbilityDamage);
 
-        addToStats(statTotals,"HEALTH", (skillLevels.get("CATACOMBS") * 2) + skillLevels.get("CARPENTRY") + (bestiaryLevel * 2) + healthBonus);
-        addToStats(statTotals,"INTELLIGENCE",intelligenceBonus);
-        addToStats(statTotals,"STRENGTH", strengthBonus);
-        addToStats(statTotals,"DEFENSE", defenseBonus);
-        addToStats(statTotals,"CRITICAL_CHANCE", skillLevels.get("COMBAT") * 0.5);
+        addToStats(miscStats,"ABILITY_DAMAGE_PERCENT", defenseBonus);
+        addToStats(miscStats,"HEALTH", (skillLevels.get("CATACOMBS") * 2) + skillLevels.get("CARPENTRY") + (bestiaryLevel * 2) + healthBonus);
+        addToStats(miscStats,"INTELLIGENCE",intelligenceBonus);
+        addToStats(miscStats,"STRENGTH", strengthBonus);
+        addToStats(miscStats,"DEFENSE", defenseBonus);
+        addToStats(miscStats,"CRITICAL_CHANCE", skillLevels.get("COMBAT") * 0.5);
     }
 
     // Fairy Souls no longer contribute to any bonus, was converted to skyblock exp
@@ -1329,7 +1344,7 @@ public class PlayerProfile {
         if (!status)
             modifier = -1;
 
-        resetGlobalStatModifer();
+        //resetGlobalStatModifer();
 
         addToStats(statTotals,"HEALTH", 100.0 * modifier);
         addToStats(statTotals,"STRENGTH", 98.75 * modifier);
@@ -1501,6 +1516,7 @@ public class PlayerProfile {
             removePowerStoneStats();
             addPowerStoneStats();
         }
+        resetMiscStats();
         for (InventoryItem playerItem : playerGear){
             // only refresh modifiers if item is not empty
             if (!playerItem.getName().equals(""))
@@ -1639,9 +1655,8 @@ public class PlayerProfile {
         // remove pet stats from global if present
         removeStats(petStats);
 
-        // reset stats values 
+        // reset pet stats
         petStats = createBaseStats();
-
         mobAdditiveBoost = 0;
         mobMultiBoost = 1;
 
@@ -1973,11 +1988,8 @@ public class PlayerProfile {
         }
 
         //add stats to global
-        for (Entry<String, Double> petStatTotals : petStats.entrySet()){
-            addToStats(statTotals,petStatTotals.getKey(), petStatTotals.getValue());
-        }
+        addToTotal(petStats);
 
-        //System.out.println(petStats);
     }
 
     public void setSelectedMob(String mobType){
@@ -2009,6 +2021,17 @@ public class PlayerProfile {
         }
     }
 
+    /**
+     * Removes and regathers all misc stats due to a change in skill/skyblock level
+     */
+    public void resetMiscStats(){
+        removeStats(miscStats);
+        miscStats = createBaseStats();
+        getSkillStatsBoost();
+        skyBlockLevelBoost();
+        addToTotal(miscStats);
+    }
+
     
 
     void addPetStat(String stat, double value){
@@ -2029,11 +2052,6 @@ public class PlayerProfile {
         setTempStats(true);     // add temp stats
     }
 
-    /**
-     * Get all effects that are unaffected by other modifiers or require all modifier calculations to be completed.
-     */
-    public void getPostEffects(){
-    }
     public void calcDamage(int mobHealth){
 
         double baseMultiplier = calcBaseMultiplier(mobHealth, false);
