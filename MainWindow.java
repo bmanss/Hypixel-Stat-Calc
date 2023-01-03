@@ -16,7 +16,7 @@ import net.miginfocom.swing.MigLayout;
 import org.json.*;
 
 public class MainWindow extends JFrame implements ActionListener,ItemListener{
-    DecimalFormat decimalFormatter = new DecimalFormat( "#.##" );
+    DecimalFormat decimalFormatter = new DecimalFormat( "#,###.##");
     
     Font baseFont = new Font("Arial",Font.PLAIN,17);
     Font baseFontBold = new Font("Arial",Font.BOLD,17);
@@ -110,9 +110,13 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     Map<String,JSONObject> allItems = new LinkedHashMap<String, JSONObject>();
     Map<String,JSONObject> accessoryItems = new LinkedHashMap<String, JSONObject>();
 
-    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b"; // me
-    //String UUID = "f0ae77503b2347df86e7f053a3b39e86"; //ak1004nk
+    
+    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b";
     String API_KEY = "1ae8df22-ce2f-492c-830d-0a529676bce6";
+     
+
+    //String UUID = "";
+    //String API_KEY = "";
 
     final String mojangProfileAPI = "https://api.mojang.com/users/profiles/minecraft/";
     String itemListUrl = "https://api.hypixel.net/resources/skyblock/items";
@@ -623,7 +627,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
         miscWeaponValue.setMaximumSize(new Dimension(200,25));
         miscWeaponValue.setPreferredSize(new Dimension(200,25));
-        ((JComponent) miscWeaponValue).setBorder(javax.swing.BorderFactory.createEmptyBorder());
+        //((JComponent) miscWeaponValue).setBorder(javax.swing.BorderFactory.createEmptyBorder());
         shouldAddMisc = true;
     }
 
@@ -856,8 +860,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
         // TODO: maybe add dialog popup for wrong health format
         currentProfile.setMobHealth(getMobHealth());
-        firstStrikeDamageLabel.setText("First Hit: " + currentProfile.getWeaponDamage());
-        abilityHitLabel.setText("Ability Hit: " + currentProfile.getMageDamage());
+        firstStrikeDamageLabel.setText("First Hit: " + String.format("%,d", currentProfile.getWeaponDamage()));
+        abilityHitLabel.setText("Ability Hit: " + String.format("%,d", currentProfile.getMageDamage()));
         
     }
 
@@ -876,6 +880,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         for (Entry<JComboBox<String>, Integer> listComponent : itemBoxComponents.entrySet()){
             JComboBox<String> currentBox = listComponent.getKey();
             String itemName = currentProfile.getItem(listComponent.getValue()).getName();
+            if (listComponent.getValue() == currentProfile.WEAPON_INDEX)
+                checkForWeaponInput();
             currentBox.getModel().setSelectedItem(itemName);
         }
         ArrayList<String> allStones = new ArrayList<>(Arrays.asList("None"));
@@ -1007,6 +1013,26 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         }
     }
 
+    public void checkForWeaponInput(){
+        InventoryItem weapon = currentProfile.getItem(currentProfile.WEAPON_INDEX);
+        if (weapon.getName().equals("emerald blade")){
+            addNewWeaponValue(new JTextArea(), "Purse Amount:", null);
+            reloadArmorPanel();
+        }
+        else if (weapon.getName().equals("hyperion")){
+            addNewWeaponValue(new JComboBox<String>(), "Ability:", new String [] {"Implosion/Wither Impact"});
+            reloadArmorPanel();
+        }
+        else if (weapon.getName().equals("midas staff")){
+            addNewWeaponValue(new JTextArea(), "Purchase Amount:", null);
+            reloadArmorPanel();
+        }
+        else if(shouldAddMisc){
+            shouldAddMisc = false;
+            reloadArmorPanel();
+        }
+    }
+
     @Override
     public void itemStateChanged(ItemEvent e) {
         if (e.getSource() == ability1){
@@ -1058,24 +1084,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
 
                 // check for weapons that have special parameter and add UI element for it
                 if (itemIndex == currentProfile.WEAPON_INDEX){
-                    InventoryItem weapon = currentProfile.getItem(currentProfile.WEAPON_INDEX);
-                    if (weapon.getName().equals("emerald blade")){
-                        addNewWeaponValue(new JTextArea(), "Purse Amount:", null);
-                        reloadArmorPanel();
-                    }
-                    else if (weapon.getName().equals("hyperion")){
-                        addNewWeaponValue(new JComboBox<String>(), "Ability:", new String [] {"Implosion"});
-                        reloadArmorPanel();
-                    }
-                    else if (weapon.getName().equals("midas staff")){
-                        addNewWeaponValue(new JTextArea(), "Purchase Amount:", null);
-                        reloadArmorPanel();
-                    }
-                    else if(shouldAddMisc){
-                        shouldAddMisc = false;
-                        reloadArmorPanel();
-                    }
-
+                    checkForWeaponInput();
                 }
             }
 
