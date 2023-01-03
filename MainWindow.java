@@ -59,6 +59,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JLabel magicalPowerLabel = new JLabel("Magical Power:");
     JLabel abilityDamageLabel = new JLabel("Ability Damage: ");
     JLabel manaLabel = new JLabel("Mana: ");
+    JLabel ehpLabel = new JLabel("Effective Health: ");
 
     JLabel firstStrikeDamageLabel = new JLabel("First Hit: ");
     JLabel abilityHitLabel = new JLabel("Ability Hit: ");
@@ -474,6 +475,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         statDisplayPanel.add(JBaddStaticStats,"cell 0 14");
 
         healthLabel.setForeground(new Color(203,13,13));
+        ehpLabel.setForeground(new Color(203,13,13));
+        defenseLabel.setForeground(Color.green);
         defenseLabel.setForeground(Color.green);
         intelligenceLabel.setForeground(new Color(43,227,223));
         damageLabel.setForeground(Color.BLACK);
@@ -488,7 +491,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         attackSpeedLabel.setForeground(Color.yellow);
         magicalPowerLabel.setForeground(Color.orange);
 
-        statDisplayPanel.add(healthLabel, "cell 0 0");
+        statDisplayPanel.add(healthLabel, "cell 0 0, split 2,gap 7px 50px");
+        statDisplayPanel.add(ehpLabel, "cell 2 0");
         statDisplayPanel.add(defenseLabel,"cell 0 1");
         statDisplayPanel.add(SpeedLabel,"cell 0 2");
         statDisplayPanel.add(strengthLabel,"cell 0 4");
@@ -837,7 +841,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     public void displayStats(PlayerProfile profile){
         // jerry boost only visual
         // double jerryBoost = 1.1;
-
+        double ehp = profile.getStat("HEALTH") * (1 + (profile.getStat("DEFENSE") / 100));
+        ehpLabel.setText("Effective Health: " + decimalFormatter.format(ehp));
         healthLabel.setText("Health: " + decimalFormatter.format(profile.getStat("HEALTH")) + " + (" + profile.getStaticStat("HEALTH") + ")");
         strengthLabel.setText("Strength: " + decimalFormatter.format(profile.getStat("STRENGTH")) + " + (" + profile.getStaticStat("STRENGTH") + ")");
         defenseLabel.setText("Defense: " + decimalFormatter.format(profile.getStat("DEFENSE")) + " + (" + profile.getStaticStat("DEFENSE"));
