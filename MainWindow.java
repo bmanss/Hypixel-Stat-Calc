@@ -986,7 +986,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 godPotion_CB.setEnabled(false);
                 dungeonStats_CB.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
-                JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Unexpected Error.\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow, "Error process profile. Unexpected Error.\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
