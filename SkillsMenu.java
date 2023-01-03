@@ -18,6 +18,7 @@ public class SkillsMenu extends JFrame {
     final static int CARPENTRY_MAX = 50;
 
     PlayerProfile currentProfile = null;
+    MainWindow mainWindow = null;
     JSpinner farmingInput = new JSpinner();
     JSpinner miningInput = new JSpinner();
     JSpinner combatInput = new JSpinner();
@@ -34,7 +35,7 @@ public class SkillsMenu extends JFrame {
     public JButton save = new JButton("Save");
     public JButton close = new JButton("Close");
 
-    SkillsMenu(Dimension size) {
+    SkillsMenu(Dimension size, MainWindow mainwindow) {
         this.setPreferredSize(size);
         this.setUndecorated(true);
         this.setVisible(false);
@@ -59,6 +60,8 @@ public class SkillsMenu extends JFrame {
                 currentProfile.setSkillLevel("TAMING", (int)tamingInput.getValue());
                 currentProfile.setSkillLevel("CARPENTRY", (int)carpentryInput.getValue());
                 currentProfile.setSkillLevel("CATACOMBS", (int)catacombsInput.getValue());
+                currentProfile.refreshGear();
+                mainwindow.displayStats(currentProfile);
             }
         });
 
