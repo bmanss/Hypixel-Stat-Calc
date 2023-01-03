@@ -104,7 +104,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                                                                    "Skeleton", "Slimes", "Spider", "Undead", "Wither" ,"Wolf", "Zombie"};
     JComboBox<String> mobTypesBox = new JComboBox<>(mobTypes);
 
-    JCheckBox godPotionCheckBox = new JCheckBox("God Potion");
+    JCheckBox godPotion_CB = new JCheckBox("God Potion");
+    JCheckBox dungeonStats_CB = new JCheckBox("Dungeon Stats");
 
     Map<String,JSONObject> allItems = new LinkedHashMap<String, JSONObject>();
     Map<String,JSONObject> accessoryItems = new LinkedHashMap<String, JSONObject>();
@@ -128,6 +129,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     JButton JBloadProfile = new JButton("load Profile");
     JButton JBcustomProfile = new JButton("Custom Profile");
     JButton JBrefreshProfile = new JButton("Refresh Profile");
+    JButton JBaddBaseStats = new JButton("Add Base Stats");
+    JButton JBaddStaticStats = new JButton("Add Static Stats");
 
     GridBagConstraints gridContraints = new GridBagConstraints();
 
@@ -175,7 +178,7 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     ActionListener closeSkillsMenu;
 
     Dimension skillMenuSize = new Dimension(350,500);
-    SkillsMenu skillMenu = new SkillsMenu(skillMenuSize);
+    SkillsMenu skillMenu = new SkillsMenu(skillMenuSize,this);
 
     MainWindow(){
 
@@ -291,7 +294,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         menuBar.add(profileMenu);
         setJMenuBar(menuBar);
 
-        godPotionCheckBox.setEnabled(false);
+        godPotion_CB.setEnabled(false);
+        dungeonStats_CB.setEnabled(false);
         JBrefreshProfile.setEnabled(false);
         JBrefreshProfile.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e) {
@@ -305,11 +309,26 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                     else {
                         currentProfile.setPet(petsBox.getSelectedItem().toString(), petsItemBox.getSelectedItem().toString() ,(int) petLevel.getValue(),(int) petTier.getValue());
                     }
-                    addManualValues();
+                    currentProfile.setMobHealth(getMobHealth());
                     currentProfile.refreshGear();
                     displayStats(currentProfile);
                     //currentProfile.printItems();
                 }
+            }
+        });
+
+        JBaddBaseStats.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                addBaseManualValues();
+                currentProfile.refreshGear();
+                displayStats(currentProfile);
+            }
+        });
+        JBaddStaticStats.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+                addStaticManualValues();
+                currentProfile.refreshGear();
+                displayStats(currentProfile);
             }
         });
 
@@ -438,10 +457,22 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         JBrefreshProfile.setMaximumSize(new Dimension(130,50));
         JBrefreshProfile.setAlignmentX(Component.CENTER_ALIGNMENT);
 
+        JBaddBaseStats.setFocusPainted(false);
+        JBaddBaseStats.setPreferredSize(new Dimension(130,35));
+
+        JBaddStaticStats.setFocusPainted(false);
+        JBaddStaticStats.setPreferredSize(new Dimension(130,35));
+
         statDisplayPanel.setBackground(new Color(177,177,177));
         statDisplayPanel.setLayout(new MigLayout());
         
+        //add UI element for entering manual values
         createMaunalStatEntry();
+
+        // add buttons for accepting those values
+        statDisplayPanel.add(JBaddBaseStats, "cell 0 14");
+        statDisplayPanel.add(JBaddStaticStats,"cell 0 14");
+
         healthLabel.setForeground(new Color(203,13,13));
         defenseLabel.setForeground(Color.green);
         intelligenceLabel.setForeground(new Color(43,227,223));
@@ -480,10 +511,12 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         damagePanel.add(mobHealthInput,"wrap");
         damagePanel.add(firstStrikeDamageLabel,"wrap");
         damagePanel.add(abilityHitLabel);
-        statDisplayPanel.add(damagePanel, "cell 0 14");
-        
+        statDisplayPanel.add(damagePanel, "cell 0 15");
+
         changefont(statDisplayPanel, baseFontBold);
         changefont(profileName, baseFontBold);
+
+
         gridContraints.weightx = 0;
         gridContraints.weighty = 1;
         gridContraints.fill = GridBagConstraints.BOTH;
@@ -545,7 +578,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         armorListPanel.add(ability2,"wrap");
         armorListPanel.add(ability3,"split 2");
         armorListPanel.add(ability4,"wrap");
-        armorListPanel.add(godPotionCheckBox);
+        armorListPanel.add(godPotion_CB,"wrap");
+        armorListPanel.add(dungeonStats_CB);
 
         int armorIndex = 3;
         int equipIndex = 0;
@@ -613,11 +647,20 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             ++columnIndex;
         }
     }
-    public void addManualValues(){
+    public void addBaseManualValues(){
         for (Entry<Component,String> modifierValues : manualValues.entrySet()){
             JSpinner spinner = (JSpinner) modifierValues.getKey();
             Double enteredValue = (double) spinner.getValue();
             currentProfile.addToStats(currentProfile.statTotals,modifierValues.getValue(), enteredValue);
+            spinner.setValue(0.0);
+        }
+    }
+
+    public void addStaticManualValues(){
+        for (Entry<Component,String> modifierValues : manualValues.entrySet()){
+            JSpinner spinner = (JSpinner) modifierValues.getKey();
+            Double enteredValue = (double) spinner.getValue();
+            currentProfile.addToStats(currentProfile.staticStats,modifierValues.getValue(), enteredValue);
             spinner.setValue(0.0);
         }
     }
@@ -795,34 +838,38 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         // jerry boost only visual
         // double jerryBoost = 1.1;
 
-        healthLabel.setText("Health: " + decimalFormatter.format(profile.getStat("HEALTH")  ));
-        strengthLabel.setText("Strength: " + decimalFormatter.format(profile.getStat("STRENGTH")  ));
-        defenseLabel.setText("Defense: " + decimalFormatter.format(profile.getStat("DEFENSE")  ));
-        intelligenceLabel.setText("Intelligence: " + decimalFormatter.format(profile.getStat("INTELLIGENCE")  )); 
-        critChanceLabel.setText("Crit Chance: " + decimalFormatter.format(profile.getStat("CRITICAL_CHANCE")  ));
-        critDamageLabel.setText("Crit Damage: " + decimalFormatter.format(profile.getStat("CRITICAL_DAMAGE")  ));
-        SpeedLabel.setText("Speed: " + decimalFormatter.format(profile.getStat("WALK_SPEED")  ));
-        attackSpeedLabel.setText("Attack Speed: " + decimalFormatter.format(profile.getStat("ATTACK_SPEED")  ));
-        ferocityLabel.setText("Ferocity: " + decimalFormatter.format(profile.getStat("FEROCITY")  ));
-        damageLabel.setText("Damage: " + decimalFormatter.format(profile.getStat("DAMAGE")  ));
-        magicFindLabel.setText("Magic Find: " + decimalFormatter.format(profile.getStat("MAGIC_FIND")  ));
-        trueDefenseLabel.setText("True Defense: " + decimalFormatter.format(profile.getStat("TRUE_DEFENSE")  ));
+        healthLabel.setText("Health: " + decimalFormatter.format(profile.getStat("HEALTH")) + " + (" + profile.getStaticStat("HEALTH") + ")");
+        strengthLabel.setText("Strength: " + decimalFormatter.format(profile.getStat("STRENGTH")) + " + (" + profile.getStaticStat("STRENGTH") + ")");
+        defenseLabel.setText("Defense: " + decimalFormatter.format(profile.getStat("DEFENSE")) + " + (" + profile.getStaticStat("DEFENSE"));
+        intelligenceLabel.setText("Intelligence: " + decimalFormatter.format(profile.getStat("INTELLIGENCE")) + " + (" + profile.getStaticStat("INTELLIGENCE") + ")"); 
+        critChanceLabel.setText("Crit Chance: " + decimalFormatter.format(profile.getStat("CRITICAL_CHANCE")) + " + (" + profile.getStaticStat("CRITICAL_CHANCE") + ")");
+        critDamageLabel.setText("Crit Damage: " + decimalFormatter.format(profile.getStat("CRITICAL_DAMAGE")) + " + (" + profile.getStaticStat("CRITICAL_DAMAGE") + ")");
+        SpeedLabel.setText("Speed: " + decimalFormatter.format(profile.getStat("WALK_SPEED")) + " + (" + profile.getStaticStat("WALK_SPEED") + ")");
+        attackSpeedLabel.setText("Attack Speed: " + decimalFormatter.format(profile.getStat("ATTACK_SPEED")) + " + (" + profile.getStaticStat("ATTACK_SPEED") + ")");
+        ferocityLabel.setText("Ferocity: " + decimalFormatter.format(profile.getStat("FEROCITY")) + " + (" + profile.getStaticStat("FEROCITY") + ")");
+        damageLabel.setText("Damage: " + decimalFormatter.format(profile.getStat("DAMAGE")) + " + (" + profile.getStaticStat("DAMAGE") + ")");
+        magicFindLabel.setText("Magic Find: " + decimalFormatter.format(profile.getStat("MAGIC_FIND")) + " + (" + profile.getStaticStat("MAGIC_FIND") + ")");
+        trueDefenseLabel.setText("True Defense: " + decimalFormatter.format(profile.getStat("TRUE_DEFENSE")) + " + (" + profile.getStaticStat("TRUE_DEFENSE") + ")");
         magicalPowerLabel.setText("Magical Power: " + (int) profile.getStat("MAGICAL_POWER"));
-        abilityDamageLabel.setText("Ability Damage: " + decimalFormatter.format(profile.getStat("ABILITY_DAMAGE_PERCENT")  ));
+        abilityDamageLabel.setText("Ability Damage: " + decimalFormatter.format(profile.getStat("ABILITY_DAMAGE_PERCENT")) + " + (" + profile.getStaticStat("ABILITY_DAMAGE_PERCENT") + ")");
         //manaLabel.setText("Mana: " + decimalFormatter.format(profile.getStat("INTELLIGENCE") + 100)); 
 
         // TODO: maybe add dialog popup for wrong health format
-        try {
-            mobHealth = Integer.parseInt(mobHealthInput.getText());
-            currentProfile.setMobHealth(mobHealth);
-        } catch (NumberFormatException e) {
-            mobHealth = 0;
-            currentProfile.setMobHealth(mobHealth);
-            mobHealthInput.setText("0");
-        }
+        currentProfile.setMobHealth(getMobHealth());
         firstStrikeDamageLabel.setText("First Hit: " + currentProfile.getWeaponDamage());
         abilityHitLabel.setText("Ability Hit: " + currentProfile.getMageDamage());
         
+    }
+
+    public Long getMobHealth(){
+        Long health = 0L;
+        try {
+            health = Long.parseLong(mobHealthInput.getText());
+        } catch (NumberFormatException e) {
+            health = 0L;
+            mobHealthInput.setText("0");
+        }
+        return health;
     }
 
     public void setActiveItems(){
@@ -881,11 +928,14 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         petsBox.setSelectedItem(" ");
         petLevel.setValue(1);
         petTier.setValue(1);
-        if (!godPotionCheckBox.isEnabled())
-            godPotionCheckBox.setEnabled(true);
+        if (!godPotion_CB.isEnabled()){
+            godPotion_CB.setEnabled(true);
+            dungeonStats_CB.setEnabled(true);
+        }
             
         JBrefreshProfile.setEnabled(true);
-        godPotionCheckBox.setSelected(false);
+        godPotion_CB.setSelected(false);
+        dungeonStats_CB.setSelected(false);
         validDependencies = true;
     }
 
@@ -933,7 +983,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
                 profileName.setText("Profile: " + namePlaceholer);
             } catch (JSONException | IOException e1) {
                 e1.printStackTrace();
-                godPotionCheckBox.setEnabled(false);
+                godPotion_CB.setEnabled(false);
+                dungeonStats_CB.setEnabled(false);
                 JBrefreshProfile.setEnabled(false);
                 JOptionPane.showMessageDialog(mainWindow, "Unable to process profile. Unexpected Error.\n" + e1.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 return;
@@ -942,8 +993,10 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
         else if(e.getSource() == JBcustomProfile && validDependencies){
             customProfile = new PlayerProfile();
             resetAbilityStatus();
-            godPotionCheckBox.setEnabled(true);
-            godPotionCheckBox.setSelected(false);
+            godPotion_CB.setEnabled(true);
+            dungeonStats_CB.setEnabled(true);
+            godPotion_CB.setSelected(false);
+            dungeonStats_CB.setSelected(false);
             JBrefreshProfile.setEnabled(true);
             currentProfile = customProfile;
             customProfile.addItemList(allItems,accessoryItems);
@@ -973,12 +1026,21 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
             currentProfile.setSelectedMob(mobTypesBox.getSelectedItem().toString());
         }
 
-        if (e.getItem() == godPotionCheckBox && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
+        if (e.getItem() == godPotion_CB && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
             currentProfile.setGodPotionStats(true);
             displayStats(currentProfile);
         }
-        else if (e.getItem() == godPotionCheckBox && currentProfile !=null){
+        else if (e.getItem() == godPotion_CB && currentProfile !=null){
             currentProfile.setGodPotionStats(false);
+            displayStats(currentProfile);
+        }
+
+        if (e.getItem() == dungeonStats_CB && e.getStateChange() == ItemEvent.SELECTED && currentProfile !=null){
+            currentProfile.useDungeonStats(true);
+            displayStats(currentProfile);
+        }
+        else if (e.getItem() == dungeonStats_CB && currentProfile !=null){
+            currentProfile.useDungeonStats(false);
             displayStats(currentProfile);
         }
 
