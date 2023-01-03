@@ -44,6 +44,7 @@ public class InventoryItem {
         itemStats.put("CRITICAL_CHANCE", 0.0);
         itemStats.put("HEALTH", 0.0);
         itemStats.put("DEFENSE", 0.0);
+        itemStats.put("MAGIC_FIND", 0.0);
         itemStats.put("INTELLIGENCE", 0.0);
         itemStats.put("WALK_SPEED", 0.0);
         itemStats.put("ATTACK_SPEED", 0.0);
@@ -126,7 +127,7 @@ public class InventoryItem {
         toolTip.setBooks(books);
     }
 
-    public void setStat(String stat, double value){
+    public void addStat(String stat, double value){
         itemStats.computeIfPresent(stat, (key, val) -> val + value);
     }
 
