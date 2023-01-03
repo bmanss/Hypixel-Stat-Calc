@@ -1503,6 +1503,8 @@ public class PlayerProfile {
     }
 
     void addPowerStoneStats(){
+        if (selectedPowerStone.equals("None"))
+            return;
         JSONObject baseValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("base");
         JSONObject uniqueValues = hypixelValue.getJSONObject("PowerStone").getJSONObject(selectedPowerStone).getJSONObject("unique");
         magicalMultiiplier = getMagicalMultiplier(statTotals.get("MAGICAL_POWER"));
