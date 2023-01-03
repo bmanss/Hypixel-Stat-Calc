@@ -29,6 +29,8 @@ public class PlayerProfile {
     final int WEAPON_INDEX = 8;
 
     boolean godPotionEnabled = false;
+    boolean useDungeonStats = false;
+    boolean refreshAll = false;
 
     int fairySouls = 0;
     int skyBlockLevel = 160; //TODO: user input
@@ -49,7 +51,7 @@ public class PlayerProfile {
     double baneBonus = 0;
     double cubismBonus = 0;
 
-    int selectedMobHealth = 0;
+    Long selectedMobHealth = 0L;
     double globalStatBoost = 0.0;
     double magicalMultiiplier = 0;
     double petBaseAdditive = 0;
@@ -75,7 +77,9 @@ public class PlayerProfile {
     double critEffectiveness = 1;
     double abilityBoost = 1;
     double speedCap = 400;
-
+    double dungeonModifier = 0.0;
+    double finalDamageMulti = 1.0;
+    double petFinalDamageMulti = 0.0;
 
     int mainProfileIndex = 0;
 
@@ -108,6 +112,7 @@ public class PlayerProfile {
     ArrayList<Double> powerStoneValues = new ArrayList<>();
 
     Map<String,Double> statTotals;
+    Map<String,Double> staticStats = createBaseStats();
     Map<String,Double> petStats = createBaseStats();
 
     /**
@@ -148,22 +153,15 @@ public class PlayerProfile {
         playerTalismans = new ArrayList<>();
         allItems = new LinkedHashMap<String, JSONObject>();
 
-        // set default profile stats 
-        statTotals = new LinkedHashMap<>();
+        staticStats = createProfileStats();
+
+        // set default profile stat values
+        statTotals = createProfileStats();
         statTotals.put("HEALTH", 100.0);
-        statTotals.put("DEFENSE", 0.0);                // TODO: temp value for gravity/day/night crystal
         statTotals.put("WALK_SPEED", 100.0);
-        statTotals.put("DAMAGE", 0.0);
-        statTotals.put("STRENGTH", 0.0);               // TODO: temp value for gravity/day/night crystal = 15
         statTotals.put("INTELLIGENCE", 10.0);           // TODO: temp val for defuse kit
         statTotals.put("CRITICAL_CHANCE", 30.0);
         statTotals.put("CRITICAL_DAMAGE", 50.0);
-        statTotals.put("ATTACK_SPEED", 0.0);
-        statTotals.put("ABILITY_DAMAGE_PERCENT", 0.0);
-        statTotals.put("MAGIC_FIND", 0.0);
-        statTotals.put("TRUE_DEFENSE", 0.0);
-        statTotals.put("FEROCITY", 0.0);
-        statTotals.put("MAGICAL_POWER", 0.0);
 
         // add skill levels to Map
         skillLevels.put("FARMING", 0);
@@ -196,6 +194,28 @@ public class PlayerProfile {
         newStats.put("MAGIC_FIND", 0.0);
         newStats.put("TRUE_DEFENSE", 0.0);
         newStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
+        return newStats;
+    }
+
+    /** Create a linked hash map for main profile stats with specific ordering.
+     * @return Map with default values for profile stat order.
+     */
+    public Map<String,Double> createProfileStats(){
+        Map<String,Double> newStats = new LinkedHashMap<>();
+        newStats.put("HEALTH", 0.0);
+        newStats.put("DEFENSE", 0.0);   
+        newStats.put("WALK_SPEED", 0.0);
+        newStats.put("DAMAGE", 0.0);
+        newStats.put("STRENGTH", 0.0);               
+        newStats.put("INTELLIGENCE", 0.0);           
+        newStats.put("CRITICAL_CHANCE", 0.0);
+        newStats.put("CRITICAL_DAMAGE", 0.0);
+        newStats.put("ATTACK_SPEED", 0.0);
+        newStats.put("ABILITY_DAMAGE_PERCENT", 0.0);
+        newStats.put("MAGIC_FIND", 0.0);
+        newStats.put("TRUE_DEFENSE", 0.0);
+        newStats.put("FEROCITY", 0.0);
+        newStats.put("MAGICAL_POWER", 0.0);
         return newStats;
     }
 
@@ -318,14 +338,19 @@ public class PlayerProfile {
         playerGear.get(3).toolTip.setEnchantReference(hypixelEnchants, "helmet");
         playerGear.get(8).toolTip.setEnchantReference(hypixelEnchants, "sword");
 
-
         setItemPools();
-
     }
 
     public void setPlayerApi(JSONObject playerApi, String UUID){
         this.playerApi = playerApi;
         this.UUID = UUID;
+    }
+
+    public void useDungeonStats(boolean status){
+        resetGlobalStatModifer();
+        useDungeonStats = status;
+        refreshAll = true;
+        refreshGear();
     }
 
     void initInventorySlots(){
@@ -336,7 +361,7 @@ public class PlayerProfile {
     }
 
     public void initCustomProfile(){
-        calcDamage(0);
+        calcDamage(0L);
     }
 
     public void parsePlayerProfile() throws JSONException, IOException{
@@ -367,6 +392,8 @@ public class PlayerProfile {
         skillLevels.put("TAMING", findSkillLevel("TAMING", tamingXP));
         skillLevels.put("CATACOMBS",  findSkillLevel("Catacombs", catacombsXP));
         
+        getDungeonModifier();
+
         bestiaryLevel = getBestiaryLevel();
 
         // calculate all skill bonuses from skills and skyblock level and store them in miscStats
@@ -418,6 +445,7 @@ public class PlayerProfile {
         
         NBTCompound currentInventory = invArmor;
 
+        // load equipped gear
         int playerGearIndex = 0;
         for (int i = 0 ; i < 2; ++i){
             for (int apiIndex = 0; apiIndex < 4; ++apiIndex){
@@ -669,7 +697,11 @@ public class PlayerProfile {
                 
                 // if not read the rarity from the lore
                 else {
-                    talismanRarity = Rarity.valueOf(getRarityFromLore(talismanLore));
+                    // TODO: sometimes the new years bag crashes don't know why/
+                    try {
+                        talismanRarity = Rarity.valueOf(getRarityFromLore(talismanLore));
+                    } catch (Exception e) {
+                    }
                 }
             }
             /*
@@ -866,14 +898,23 @@ public class PlayerProfile {
     }
 
     /**
-     * Applys the numerical values associated with its attributes along with the values in the item reference.
+     * Applys the numerical values associated with an item's attributes along with the values in the item reference.
      */
     //TODO: do not show reforges etc. for fishing rods 
     void applyArmorStats(InventoryItem equippedItem, JSONObject itemReference){
         String itemRarity = "";
         JSONObject reforgeValues = hypixelValue.getJSONObject("Reforge");
         int potatoBooks = equippedItem.getPotatoBooks();
+        double statModifer = 1.0;
         double starMultiplier = 1.0 + (0.02 * equippedItem.getStars());
+
+        /**
+         * if not using dungeon stats multiply base stats by their star count modifier
+         * else multiple them by 1 because dungeon stats do not benefit from base value increase from stars
+         * an item's dunegeon stats are calculated after all values of an item including enchants are totaled
+         */
+        if (!useDungeonStats)
+            statModifer = starMultiplier;
 
         if (equippedItem.getReforgeCategory() != null)
             reforgeValues = reforgeValues.getJSONObject(equippedItem.getReforgeCategory());
@@ -889,7 +930,7 @@ public class PlayerProfile {
         itemRarity = equippedItem.getRarity();
 
         if (itemReference.has("ability_damage_scaling"))
-            equippedItem.setStat("ABILITY_DAMAGE_SCALING", itemReference.getDouble("ability_damage_scaling"));
+            equippedItem.addStat("ABILITY_DAMAGE_SCALING", itemReference.getDouble("ability_damage_scaling"));
 
         // set item material, currently only to check if its gold for a pet ability
         if (itemReference.has("material"))
@@ -909,20 +950,26 @@ public class PlayerProfile {
             
             // add reforge stats
             for (String reforgeStat : reforgeValues.keySet()){     
-                equippedItem.setStat(reforgeStat, reforgeValues.getDouble(reforgeStat));
+                equippedItem.addStat(reforgeStat, reforgeValues.getDouble(reforgeStat));
             }
 
             if (potatoBooks != 0){
                 if (equippedItem.getReforgeCategory().equals("armor")){
-                    equippedItem.setStat("HEALTH", 4 * potatoBooks);
-                    equippedItem.setStat("DEFENSE", 2 * potatoBooks);
+                    equippedItem.addStat("HEALTH", 4 * potatoBooks);
+                    equippedItem.addStat("DEFENSE", 2 * potatoBooks);
                 }
                 else{
-                    equippedItem.setStat("DAMAGE", 2 * potatoBooks);
-                    equippedItem.setStat("STRENGTH", 2 * potatoBooks);
+                    equippedItem.addStat("DAMAGE", 2 * potatoBooks);
+                    equippedItem.addStat("STRENGTH", 2 * potatoBooks);
                 }
             } 
         }
+
+        /**
+         * if dungeon add enchants 
+         * then add base stats without stars multi
+         * then multiply by dungeon boost
+         */
 
         // add item base stats for tiered dungeon items
         if (itemReference.has("tiered_stats")){
@@ -930,11 +977,11 @@ public class PlayerProfile {
             for (String stat : tieredStats.keySet()){
                 JSONArray statValue = tieredStats.getJSONArray(stat);
                 if (stat.equals("WEAPON_ABILITY_DAMAGE")){
-                    equippedItem.setStat(stat, Math.ceil(statValue.getDouble(0) * equippedItem.getQualityBoost()) * starMultiplier);
+                    equippedItem.addStat(stat, Math.ceil(statValue.getDouble(0) * equippedItem.getQualityBoost()) * statModifer);
                     continue;
                 }
                 int tieredValue = statValue.getInt((equippedItem.getStatTier() - 1) <  0 ? 0 : equippedItem.getStatTier() - 1);
-                equippedItem.setStat(stat, Math.ceil(tieredValue * equippedItem.getQualityBoost()) * starMultiplier);
+                equippedItem.addStat(stat, Math.ceil(tieredValue * equippedItem.getQualityBoost()) * statModifer);
             }
         }
 
@@ -945,64 +992,104 @@ public class PlayerProfile {
                 referenceStats = itemReference.getJSONObject("stats");
                 for (String stat : equippedItem.getStats().keySet()){
                     if (referenceStats.has(stat))
-                        equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * starMultiplier);
+                        equippedItem.addStat(stat, itemReference.getJSONObject("stats").getDouble(stat) * statModifer);
                     else if (referenceStats.has(stat.toLowerCase()))
-                        equippedItem.setStat(stat, itemReference.getJSONObject("stats").getDouble(stat.toLowerCase()) * starMultiplier);
+                        equippedItem.addStat(stat, itemReference.getJSONObject("stats").getDouble(stat.toLowerCase()) * statModifer);
                 }
             }
             // check for special cases here like Daedalus axe which gets its damage from taming level
             else {
                 if (equippedItem.getName().equals("daedalus axe")){
-                    equippedItem.setStat("DAMAGE", 4 * skillLevels.get("TAMING"));
+                    equippedItem.addStat("DAMAGE", 4 * skillLevels.get("TAMING"));
                 }
             }
         }
 
+        // check for special cases
         if (equippedItem.getReforge().equals("ancient"))
-            equippedItem.setStat("CRITICAL_DAMAGE", skillLevels.get("CATACOMBS"));
+            equippedItem.addStat("CRITICAL_DAMAGE", skillLevels.get("CATACOMBS"));
 
         if (equippedItem.getReforge().equals("withered"))
-            equippedItem.setStat("STRENGTH", skillLevels.get("CATACOMBS"));
+            equippedItem.addStat("STRENGTH", skillLevels.get("CATACOMBS"));
 
         if (equippedItem.getReforge().equals("loving"))
             abilityBoost = 1.05;
 
         if (!equippedItem.getEnchantments().isEmpty()){
-            JSONObject HypixelEnchantValues = hypixelValue.getJSONObject("Enchantments").getJSONObject(equippedItem.getReforgeCategory());
-            JSONObject itemSpecificEnchants = null;
-            double enchantValue = 0.0;
+            addItemEnchants(equippedItem);
+        }
 
-            // make sure category is supported 
-            if (hypixelValue.getJSONObject("Enchantments").has(equippedItem.getCategory().toLowerCase()))
-                itemSpecificEnchants = hypixelValue.getJSONObject("Enchantments").getJSONObject(equippedItem.getCategory().toLowerCase());
-            
-            for (Map.Entry<String,String> enchant : equippedItem.getEnchantments().entrySet()){
-                JSONObject valueHolder = null;
-                if (HypixelEnchantValues.has(enchant.getKey()))
-                    valueHolder = HypixelEnchantValues;
-                else {
-                    valueHolder = itemSpecificEnchants;
+        // if dungeon multiply by dungeon boost
+        if (useDungeonStats){
+            int starBoost = equippedItem.getStars();
+            double dungeonModifier = 0.0;
+            if (starBoost > 5)
+                starBoost = ((starBoost - 5) * 5) + 50;
+            else {
+                starBoost = starBoost * 10;
+            }
+            dungeonModifier = getDungeonModifier() + starBoost;
+
+            for (Entry<String, Double> stat: equippedItem.getStats().entrySet()){
+                // crit chance/ATK speed/ferocity/ability damage appears to only be affected by stars (up to 5)
+                if (stat.getKey().equals("CRITICAL_CHANCE") || stat.getKey().equals("ATTACK_SPEED") ||
+                    stat.getKey().equals("FEROCITY")  || stat.getKey().equals("ABILITY_DAMAGE_PERCENT")){
+
+                    // if stars are > 5 add max modifier of 50% to crit chance otherwise add appropriate value depending on stars
+                    if (equippedItem.getStars() > 5)
+                        equippedItem.addStat(stat.getKey(), stat.getValue() * .50);
+                    else {
+                        equippedItem.addStat(stat.getKey(), (equippedItem.getStars() / 10.0) * stat.getValue());
+                    }
                 }
-                enchantValue = valueHolder.getJSONObject(enchant.getKey()).getDouble(enchant.getValue());
-                switch(enchant.getKey()){
-                    case "growth" : 
-                        equippedItem.setStat("HEALTH", enchantValue);
-                        break;
-                    case "protection" : 
-                        equippedItem.setStat("DEFENSE", enchantValue);
-                        break;
-                    case "critical" : 
-                        equippedItem.setStat("CRITICAL_DAMAGE", enchantValue);
-                        break;
-                    //TODO: UI element to show this
-                    case "overload" : 
-                        equippedItem.setStat("CRITICAL_DAMAGE", Double.parseDouble(enchant.getValue()));
-                        equippedItem.setStat("CRITICAL_CHANCE",  Double.parseDouble(enchant.getValue()));
-                        break;
+                else{
+                    equippedItem.addStat(stat.getKey(), stat.getValue() * (dungeonModifier / 100));
+                }
+
+                // check if the item is a golden/diamond helmet and multiply the final stat by 2x
+                if (equippedItem.getName().matches("(golden|diamond).+(head)")){
+                    equippedItem.addStat(stat.getKey(), stat.getValue());
                 }
             }
         }
     }
+
+    void addItemEnchants(InventoryItem equippedItem){
+        JSONObject HypixelEnchantValues = hypixelValue.getJSONObject("Enchantments").getJSONObject(equippedItem.getReforgeCategory());
+        JSONObject itemSpecificEnchants = null;
+        double enchantValue = 0.0;
+
+        // make sure category is supported 
+        if (hypixelValue.getJSONObject("Enchantments").has(equippedItem.getCategory().toLowerCase()))
+            itemSpecificEnchants = hypixelValue.getJSONObject("Enchantments").getJSONObject(equippedItem.getCategory().toLowerCase());
+        
+        for (Map.Entry<String,String> enchant : equippedItem.getEnchantments().entrySet()){
+            JSONObject valueHolder = null;
+            if (HypixelEnchantValues.has(enchant.getKey()))
+                valueHolder = HypixelEnchantValues;
+            else {
+                valueHolder = itemSpecificEnchants;
+            }
+            enchantValue = valueHolder.getJSONObject(enchant.getKey()).getDouble(enchant.getValue());
+            switch(enchant.getKey()){
+                case "growth" : 
+                    equippedItem.addStat("HEALTH", enchantValue);
+                    break;
+                case "protection" : 
+                    equippedItem.addStat("DEFENSE", enchantValue);
+                    break;
+                case "critical" : 
+                    equippedItem.addStat("CRITICAL_DAMAGE", enchantValue);
+                    break;
+                //TODO: UI element to show this
+                case "overload" : 
+                    equippedItem.addStat("CRITICAL_DAMAGE", Double.parseDouble(enchant.getValue()));
+                    equippedItem.addStat("CRITICAL_CHANCE",  Double.parseDouble(enchant.getValue()));
+                    break;
+            }
+        }
+    }
+    
 
     /*
      * Simple function that takes the stat value to the corresponding stat via a switch statment for each possible stat
@@ -1015,7 +1102,7 @@ public class PlayerProfile {
      * @param statName Name of stat.
      * @param statValue Value of stat.
      */
-    void addToStats(Map<String,Double> stats, String statName ,Double statValue){
+    public void addToStats(Map<String,Double> stats, String statName ,Double statValue){
         stats.computeIfPresent(statName, (key, val) -> val + statValue);
     }
 
@@ -1037,6 +1124,11 @@ public class PlayerProfile {
         for (Map.Entry<String,Double> currentStat : itemStats.entrySet()){
             addToStats(statTotals,currentStat.getKey(), currentStat.getValue());
         }
+    }
+
+    int getDungeonModifier(){
+        JSONArray levelStatBoost = hypixelValue.getJSONObject("Catacombs").getJSONArray("StatModifier");
+        return levelStatBoost.getInt(skillLevels.get("CATACOMBS"));
     }
 
     void getSlayerBonus(){
@@ -1180,7 +1272,7 @@ public class PlayerProfile {
         JSONArray skillMilestones;
 
         if (skill.equals("Catacombs")){
-            skillMilestones = hypixelValue.getJSONArray("Catacombs");
+            skillMilestones = hypixelValue.getJSONObject("Catacombs").getJSONArray("XpTable");
             for (int levelIndex = 0; levelIndex < skillMilestones.length(); ++levelIndex){
                 if (xp < skillMilestones.getInt(levelIndex))
                     break;
@@ -1251,8 +1343,7 @@ public class PlayerProfile {
         }
 
         playerAbilityDamage = skillLevels.get("ENCHANTING") * 0.5;
-
-        addToStats(miscStats,"ABILITY_DAMAGE_PERCENT", defenseBonus);
+        addToStats(miscStats,"ABILITY_DAMAGE_PERCENT", playerAbilityDamage);
         addToStats(miscStats,"HEALTH", (skillLevels.get("CATACOMBS") * 2) + skillLevels.get("CARPENTRY") + (bestiaryLevel * 2) + healthBonus);
         addToStats(miscStats,"INTELLIGENCE",intelligenceBonus);
         addToStats(miscStats,"STRENGTH", strengthBonus);
@@ -1344,7 +1435,7 @@ public class PlayerProfile {
         if (!status)
             modifier = -1;
 
-        //resetGlobalStatModifer();
+        resetGlobalStatModifer();
 
         addToStats(statTotals,"HEALTH", 100.0 * modifier);
         addToStats(statTotals,"STRENGTH", 98.75 * modifier);
@@ -1469,6 +1560,14 @@ public class PlayerProfile {
     }
 
     /**
+     * @param stat Name of stat to fetch.
+     * @return Static stat if stat exist.
+     */
+    public double getStaticStat(String stat){
+        return staticStats.get(stat);
+    }
+
+    /**
      * 
      * @return
      * Map containg all stats stored on the profile
@@ -1521,7 +1620,7 @@ public class PlayerProfile {
             // only refresh modifiers if item is not empty
             if (!playerItem.getName().equals(""))
                     playerItem.refreshModifiers();
-            if (playerItem.hasChanged()){
+            if (playerItem.hasChanged() || refreshAll){
                 if (playerItem.getName().equals("")){
                     removeItemStats(playerItem);
                     playerItem.resetStats();
@@ -1536,6 +1635,7 @@ public class PlayerProfile {
         getPetStats();
         addStatMultipliers();
         calcDamage(selectedMobHealth);
+        refreshAll = false;
     }
 
     public void setPowerStone(String powerStone){
@@ -1659,6 +1759,8 @@ public class PlayerProfile {
         petStats = createBaseStats();
         mobAdditiveBoost = 0;
         mobMultiBoost = 1;
+        finalDamageMulti -= petFinalDamageMulti;
+        petFinalDamageMulti = 0;
 
         petBaseAdditive = 0;
         petFirstHit = 0;
@@ -1896,7 +1998,8 @@ public class PlayerProfile {
                 case "buffFinalDamage" :
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
-                    statValue = statPerLevel * petLevel;
+                    petFinalDamageMulti = statPerLevel * petLevel;
+                    finalDamageMulti += petFinalDamageMulti;
                     break;
                 case "buffBowDamage" :
                     //TODO: need to implement   --- need to work on post multiplier damage first 
@@ -1995,7 +2098,7 @@ public class PlayerProfile {
     public void setSelectedMob(String mobType){
         selectedMob = mobType;
     }
-    public void setMobHealth(int mobHealth){
+    public void setMobHealth(Long mobHealth){
         selectedMobHealth = mobHealth;
     }
 
@@ -2052,21 +2155,25 @@ public class PlayerProfile {
         setTempStats(true);     // add temp stats
     }
 
-    public void calcDamage(int mobHealth){
-
+    public void calcDamage(Long mobHealth){
         double baseMultiplier = calcBaseMultiplier(mobHealth, false);
         double magicBaseMultiplier = calcBaseMultiplier(mobHealth, true);
-        Double abilityDamage = 1 + (statTotals.get("ABILITY_DAMAGE_PERCENT") / 100);
+        Double abilityDamage = 1 + ((statTotals.get("ABILITY_DAMAGE_PERCENT") + staticStats.get("ABILITY_DAMAGE_PERCENT") )/ 100);
         Double postMultiplier = (mobMultiBoost * weaponMultiplier * armorMultiplier * petMultiplier); 
-        Double strength = statTotals.get("STRENGTH") + strengthOnHit;
-        Double critDamage = statTotals.get("CRITICAL_DAMAGE");
-        Double damage = statTotals.get("DAMAGE");
+        Double strength = statTotals.get("STRENGTH") + staticStats.get("STRENGTH") + strengthOnHit;
+        Double critDamage = statTotals.get("CRITICAL_DAMAGE") + staticStats.get("CRITICAL_DAMAGE");
+        Double damage = statTotals.get("DAMAGE") + staticStats.get("DAMAGE");
+        Double intelligence = statTotals.get("INTELLIGENCE") + staticStats.get("INTELLIGENCE");
+
         Double weaponAbilityDamage = playerGear.get(WEAPON_INDEX).getStats().get("WEAPON_ABILITY_DAMAGE");
         Double abilityDamagePcercent = playerGear.get(WEAPON_INDEX).getStats().get("ABILITY_DAMAGE_SCALING");
-        if (abilityDamagePcercent == 0)
+
+        // if weapon does not have ability damage default to 1
+        if (abilityDamagePcercent == 0){
             abilityDamagePcercent = 1.0;
-        weaponDamage = (int) ((5 + damage) * (1 + (strength/ 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier));
-        mageDamage =  (int) ((weaponAbilityDamage * abilityBoost) * (1 + ((statTotals.get("INTELLIGENCE") / 100.0) * abilityDamagePcercent)) * (1 + (magicBaseMultiplier / 100.0)) * abilityDamage * postMultiplier);
+        }
+        weaponDamage = (int) ((5 + damage) * (1 + (strength/ 100.0)) * (1 + ((critDamage * critEffectiveness) / 100.0)) * (1 + (baseMultiplier / 100.0)) * (postMultiplier)  * finalDamageMulti);
+        mageDamage =  (int) ((weaponAbilityDamage * abilityBoost) * (1 + ((intelligence / 100.0) * abilityDamagePcercent)) * (1 + (magicBaseMultiplier / 100.0)) * abilityDamage * postMultiplier  * finalDamageMulti);
     }   
 
     public int getWeaponDamage (){
@@ -2126,9 +2233,6 @@ public class PlayerProfile {
                 break;
             case "crown of greed" : 
                 armorMultiplier += 0.25;
-                break;
-            case "dungeon helmets" : 
-            //TODO: implement
                 break;
         }
         switch (chestplate.getName()){
@@ -2399,7 +2503,7 @@ public class PlayerProfile {
      * @param mobHealth
      * @return Total base multiplier across all area including enchants pet/armor/weapon bonuses
      */
-     double calcBaseMultiplier(int mobHealth, boolean isMagic){
+     double calcBaseMultiplier(Long mobHealth, boolean isMagic){
 
         // check if weapon is in list of weapons with abilities unaffacted by base multipliers stuff 
         if (isMagic){
