@@ -8,7 +8,7 @@ The main function of the program is to allow users to load their profile and pre
 ## How To Use
 - There are two required files, Hypixel-Stat-Calc.jar and HypixelValues.json. These files need to be in the same directory for the application to work.
 HypixelValues.json holds all necessary values not provided by Hypixel's Api. Modifying this file improperly can cause the application to break.
-- Within the application a valid Hypixel APi key needs to be set along with a valid profile name or UUID to load a player's Hypixel profile. These input fields can 
+- Within the application a valid Hypixel API key needs to be set along with a valid profile name or UUID to load a player's Hypixel profile. These input fields can 
 be accessed via the settings menu at the top of the program.
 - Another option is to select Custom Profile which does not require a profile name of API key and will create a default state.
 - After choosing to load a profile or create a custom one you are free select and change gear and stats. 
