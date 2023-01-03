@@ -33,7 +33,7 @@ public class PlayerProfile {
     boolean refreshAll = false;
 
     int fairySouls = 0;
-    int skyBlockLevel = 160; //TODO: user input
+    int skyBlockLevel = 0;
     int bestiaryLevel = 0;
     double magicalPower = 0;
     int weaponDamage = 0;
@@ -159,7 +159,7 @@ public class PlayerProfile {
         statTotals = createProfileStats();
         statTotals.put("HEALTH", 100.0);
         statTotals.put("WALK_SPEED", 100.0);
-        statTotals.put("INTELLIGENCE", 10.0);           // TODO: temp val for defuse kit
+        statTotals.put("INTELLIGENCE", 0.0);           // TODO: temp val for defuse kit
         statTotals.put("CRITICAL_CHANCE", 30.0);
         statTotals.put("CRITICAL_DAMAGE", 50.0);
 
@@ -963,6 +963,13 @@ public class PlayerProfile {
                     equippedItem.addStat("STRENGTH", 2 * potatoBooks);
                 }
             } 
+        }
+
+        // check items for special dynamic attributes that have an effect on its stats
+        //TODO: have this work with the special input field UI element
+        if (equippedItem.getName().equals("hyperion")){
+            equippedItem.addStat("WEAPON_ABILITY_DAMAGE",10000);
+            equippedItem.addStat("ABILITY_DAMAGE_SCALING", 0.3);
         }
 
         /**
