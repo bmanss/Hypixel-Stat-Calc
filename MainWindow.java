@@ -111,12 +111,8 @@ public class MainWindow extends JFrame implements ActionListener,ItemListener{
     Map<String,JSONObject> accessoryItems = new LinkedHashMap<String, JSONObject>();
 
     
-    String UUID = "323ab7bbe1974fde9c60fc9ed4b51e8b";
-    String API_KEY = "1ae8df22-ce2f-492c-830d-0a529676bce6";
-     
-
-    //String UUID = "";
-    //String API_KEY = "";
+    String UUID = "";
+    String API_KEY = "";
 
     final String mojangProfileAPI = "https://api.mojang.com/users/profiles/minecraft/";
     String itemListUrl = "https://api.hypixel.net/resources/skyblock/items";
