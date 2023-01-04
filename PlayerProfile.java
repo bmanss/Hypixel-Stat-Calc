@@ -1932,7 +1932,7 @@ public class PlayerProfile {
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
                     if (selectedMob.equals(mobType) || (mobType.equals("EndMobs") && (selectedMob.equals("Dragon") || selectedMob.equals("Enderman")))){
-                        mobMultiBoost = (1 + (statPerLevel * petLevel));
+                        mobMultiBoost += (statPerLevel * petLevel);
                     }
                     break;
                 case "goldsPower" :
