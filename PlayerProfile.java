@@ -1300,8 +1300,10 @@ public class PlayerProfile {
     }
 
     void skyBlockLevelBoost(){
-        addToStats(miscStats,"HEALTH", (skyBlockLevel / 10) * 5.0 );  // extra 5 health for 10 level milestone
-        addToStats(miscStats,"STRENGTH", (skyBlockLevel / 5.0));      // add 1 strength per 5 level milestone
+        int strength = skyBlockLevel / 5;
+        int health = (skyBlockLevel / 10) * 5;
+        addToStats(miscStats,"HEALTH", (double) health);  // extra 5 health for 10 level milestone
+        addToStats(miscStats,"STRENGTH", (double) strength);      // add 1 strength per 5 level milestone
         addToStats(miscStats,"HEALTH", skyBlockLevel * 5.0 );         // 5 health per level
     }
 
@@ -1840,7 +1842,6 @@ public class PlayerProfile {
                 }
             }
         }
-
         // get armor and weapon effects after all base pet stats are set
         addGearEffects();
 
@@ -1929,10 +1930,19 @@ public class PlayerProfile {
                     break;
                 case "buffMobType" :        // pets add multiplicative boost
                     String mobType = currentAbility.getString("mobType");
+                    String effect = currentAbility.getString("effect");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
-                    statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
+                    statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length()) / 100));
                     if (selectedMob.equals(mobType) || (mobType.equals("EndMobs") && (selectedMob.equals("Dragon") || selectedMob.equals("Enderman")))){
-                        mobMultiBoost += (statPerLevel * petLevel);
+                        mobMultiBoost += statPerLevel * petLevel;
+                    }
+                    break;
+                case "buffEnder" : 
+                    mobType = currentAbility.getString("mobType");
+                    perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
+                    statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())));
+                    if ((mobType.equals("EndMobs") && (selectedMob.equals("Dragon") || selectedMob.equals("Enderman")))){
+                        mobAdditiveBoost += (statPerLevel * petLevel) + 100;
                     }
                     break;
                 case "goldsPower" :
@@ -1979,7 +1989,7 @@ public class PlayerProfile {
                  */
                 case "statByPercentage" :
                     String receiveStat = currentAbility.getString("stat");
-                    String effect = currentAbility.getString("effect");
+                    effect = currentAbility.getString("effect");
                     perLevelAmount = currentAbility.getJSONArray("amountPerLevel");
                     statPerLevel = (perLevelAmount.getDouble(getTierToUse(perLevelAmount.length())) / 100);
                     statValue = statPerLevel * petLevel;
@@ -2299,7 +2309,7 @@ public class PlayerProfile {
         switch (cloak.getName()){
             case "dragonfade cloak" : 
                 if (selectedMob.equals("Dragon"))
-                    mobMultiBoost += 0.01;
+                    petMultiplier += 0.01;
                 break;
         }
         // placeholder
@@ -2522,7 +2532,7 @@ public class PlayerProfile {
             }
         }
         int combatMultiplier = 0;
-        double baseMultiplier = petBaseAdditive + weaponAdditive + armorAdditive;
+        double baseMultiplier = petBaseAdditive + weaponAdditive + armorAdditive + mobAdditiveBoost;
         enderSlayerBonus = 0;
         impalingBonus = 0;
         dragonBonus = 0;

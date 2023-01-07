@@ -2314,7 +2314,7 @@
             },
             "abilities": [
                 {
-                    "action": "buffMobType",
+                    "action": "buffEnder",
                     "mobType": "EndMobs",
                     "amountPerLevel": [
                         2
